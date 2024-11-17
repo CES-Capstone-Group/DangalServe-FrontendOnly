@@ -1,0 +1,75 @@
+/* Custom table styling with increased specificity */
+.tableStyle {
+  background-color: #eaf3e8 !important;
+  color: #333 !important;
+  border: 2px solid #b9b9b9 !important;
+  width: 100%; /* Ensure the table takes up the full width */
+  overflow-x: auto; /* Add horizontal scroll for smaller screens */
+}
+
+/* Adjust font size and padding for smaller screens */
+@media (max-width: 768px) {
+  .tableStyle {
+      font-size: medium; /* Decrease font size for smaller screens */
+  }
+
+  .tableStyle th, .tableStyle td {
+      padding: 6px; /* Reduce padding for better fit */
+  }
+
+  .tableStyle th {
+      font-size: medium; /* Adjust header font size */
+  }
+}
+
+/* Adjustments for very small screens */
+@media (max-width: 480px) {
+  .tableStyle {
+      font-size: small; /* Further decrease font size */
+  }
+
+  .tableStyle th, .tableStyle td {
+      padding: 4px; /* Further reduce padding */
+  }
+}
+
+/* Styles for table header */
+.tableStyle th {
+  background-color: #045c2a !important;
+  color: rgb(253, 253, 253) !important;
+  font-weight: bold;
+  padding: 8px;
+  text-align: center; /* Center text */
+  vertical-align: middle; /* Align text vertically in the middle */
+  white-space: nowrap; /* Prevent text wrapping */
+}
+
+/* Styles for table cells */
+.tableStyle td {
+  text-align: center; /* Center the text */
+  vertical-align: middle; /* Align text in the middle vertically */
+  font-size: 14px !important; /* Smaller font size for a sleeker look */
+  line-height: 1 !important; /* Tighter line height */
+}
+
+
+/* Alternating row background color */
+.table-striped tbody tr:nth-of-type(odd) > * {
+  background-color: #f1f1f1 !important;
+}
+
+/* Style for buttons in the Actions column */
+.tableStyle .btn-success {
+  background-color: #71A872 !important;
+  border: none !important;
+}
+
+.tableStyle .btn-danger {
+  background-color: #FF5252 !important;
+  border: none !important;
+}
+
+.tableStyle .btn-success:hover,
+.tableStyle .btn-danger:hover {
+  opacity: 0.8 !important;
+}
