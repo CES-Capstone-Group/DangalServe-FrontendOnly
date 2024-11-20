@@ -66,8 +66,6 @@ const BtnAddSection = ({ onSectionAdded, evalTypeId }) => {
                 is_fixed: isFixed,
             };
 
-            console.log("Section Data:", sectionData);
-
             const sectionResponse = await fetch(API_ENDPOINTS.SECTION_CREATE, {
                 method: "POST",
                 headers: {
@@ -91,8 +89,6 @@ const BtnAddSection = ({ onSectionAdded, evalTypeId }) => {
                         label: label,
                         option_order: index + 1,
                     };
-
-                    console.log("Rating Option Data:", ratingOptData);
 
                     return fetch(API_ENDPOINTS.RATING_OPTION_CREATE, {
                         method: "POST",

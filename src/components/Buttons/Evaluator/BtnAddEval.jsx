@@ -126,7 +126,6 @@ const BtnAddEval = () => {
                 evaluation_type_id: formData.eval_type,
                 user_id: userId // Pass the logged-in user ID
             };
-            console.log(payload);
             setFormData({
                 proposal: '',
                 activity: '',

@@ -25,7 +25,7 @@ html {
   background-color: #b8ebb9;
   color: #1f6119;
   padding: 2rem;
-  margin: 2rem;
+  margin-bottom: 15px;
 }
 
 .side {
@@ -47,7 +47,7 @@ html {
 }
 
 .side.collapsed {
-  padding-top: 5rem;
+  padding-top: 2rem;
   padding-bottom: 10rem;
   width: 70px;
   /* Narrow width when sidebar is collapsed */
@@ -57,6 +57,7 @@ html {
   justify-content: stretch;
   align-items: center;
 }
+
 .side.collapsed .sidebar-menu-body{
   display: flex;
   flex-direction: column;
@@ -94,6 +95,16 @@ html {
 
 /* Media query for smaller screens */
 @media (max-width: 768px) {
+  .topNav .navbar{
+    height: 40px;
+    font-size: 10px !important;
+    padding-top: 0px;
+  }
+
+  .topnav .sideBtn{
+    padding:  5px !important;
+  }
+
   .topNav .navbar-brand .navbar-text {
     display: none !important;
     /* Hide text elements */

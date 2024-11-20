@@ -25,8 +25,7 @@ const MyProfilePage = () => {
     useEffect(() => {
         const token = localStorage.getItem('access_token');
         if (token) {
-            const decodedToken = jwtDecode(token);
-            console.log(decodedToken)
+            const decodedToken = jwtDecode(token);    
             setAccountName(decodedToken.name);
             setDepartment(decodedToken.department);
             setPosition(decodedToken.position);

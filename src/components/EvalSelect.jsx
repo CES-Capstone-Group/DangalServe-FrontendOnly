@@ -125,11 +125,9 @@ const EvalSelect = () => {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(formData),
-            });
-            console.log(JSON.stringify(formData));
+            });        
             if (!response.ok) throw new Error('Network response was not ok');
             const data = await response.json();
-            console.log("Account created successfully:", data);
             navigate("/eval");
         } catch (error) {
             console.error("There was an error creating the account:", error);
@@ -168,21 +166,23 @@ const EvalSelect = () => {
                         )}
                         <InputField label="Contact Number" type="text" name="contactNumber" placeholder="eg. 09123456789" required onChange={handleInputChange} />
 
-                        <Form.Group as={Row} className="mb-3">
-                            <Form.Label column sm={3}>Department:</Form.Label>
-                            <Col>
-                                <Form.Select name="department" onChange={handleDepartmentChange} required>
-                                    <option value="">Select Department</option>
-                                    {departments.map(dept => (
-                                        <option key={dept.dept_id} value={dept.dept_id}>
-                                            {dept.dept_name}
-                                        </option>
-                                    ))}
-                                </Form.Select>
-                            </Col>
-                        </Form.Group>
+                        {(role === 'Student' || role === 'Alumni' || role === 'Faculty') && (
+                            <Form.Group as={Row} className="mb-3">
+                                <Form.Label column sm={3}>Department:</Form.Label>
+                                <Col>
+                                    <Form.Select name="department" onChange={handleDepartmentChange} required>
+                                        <option value="">Select Department</option>
+                                        {departments.map(dept => (
+                                            <option key={dept.dept_id} value={dept.dept_id}>
+                                                {dept.dept_name}
+                                            </option>
+                                        ))}
+                                    </Form.Select>
+                                </Col>
+                            </Form.Group>
+                        )}
 
-                        {(role === 'Student' || role === 'Alumni') && (
+                        {(role === 'Student' || role === 'Alumni' || role === 'Faculty') && (
                             <Form.Group as={Row} className="mb-3">
                                 <Form.Label column sm={3}>Course:</Form.Label>
                                 <Col>

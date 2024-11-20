@@ -1,0 +1,68 @@
+/* General Card Styling */
+.eval-card {
+    border-radius: 12px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+  
+  .eval-card:hover {
+    transform: scale(1.05);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+  }
+  
+  /* Icon Container */
+  .icon-container {
+    background-color: #e6f4eb; /* Light greenish background */
+    border-radius: 50%;
+    padding: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .icon-container .fa {
+    color: #71a872; /* Custom green color */
+  }
+  
+  /* Button Styling */
+  button.evaluate-btn {
+    width: 80%;
+    background-color: #71a872; /* Custom green color */
+    color: #fff;
+    border: none;
+    font-size: 1.1rem;
+    font-weight: bold;
+    border-radius: 8px;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+  }
+  
+  button.evaluate-btn:hover {
+    background-color: #5b8e60; /* Slightly darker green */
+    transform: translateY(-2px);
+  }
+  
+  button.evaluate-btn:active {
+    transform: translateY(0px);
+  }
+  
+  /* Text Styling */
+  .text-success {
+    color: #71a872 !important;
+  }
+  
+  /* Header Styling */
+  .evaluator-header {
+    border-bottom: 2px solid #71a872;
+    padding-bottom: 10px;
+    margin-bottom: 30px;
+  }
+  
+  .evaluator-header h1 {
+    font-size: 2rem;
+    font-weight: bold;
+  }
+  
+  .evaluator-header p {
+    font-size: 0.9rem;
+    color: #6c757d;
+  }
+  

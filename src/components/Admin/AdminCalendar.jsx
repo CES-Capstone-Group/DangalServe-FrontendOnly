@@ -102,8 +102,7 @@ function AdminCalendar() {
 
             if (response.ok) {
                 const data = await response.json();
-                setProposals(data);
-                console.log("Proposals:", data);
+                setProposals(data);       
 
                 // Create a title-to-id mapping for easy lookup
                 const map = {};

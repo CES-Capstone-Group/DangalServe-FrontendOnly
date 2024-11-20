@@ -5,8 +5,7 @@ import { API_ENDPOINTS } from "../../config";
 const BtnDownloadProposal = ({ proposal }) => {
     const [loading, setLoading] = useState(false);
 
-    const handleDownload = async () => {
-        // console.log('clicked')
+    const handleDownload = async () => { 
         setLoading(true); // Start loading
         try {
             const token = localStorage.getItem('access_token'); // Get the token from localStorage
@@ -16,7 +15,7 @@ const BtnDownloadProposal = ({ proposal }) => {
                 return;
             }
             const timestamp = new Date().getTime();
-            const response = await fetch(`${API_ENDPOINTS.DOWNLOAD_PROPOSAL_DOC(proposal.proposal_id)}/?_=${timestamp}`, {
+            const response = await fetch(`${API_ENDPOINTS.DOWNLOAD_PROPOSAL_DOC(proposal.proposal_id)}?_=${timestamp}`, {
                 method: 'GET',
                 headers: {
                     'Authorization': `Bearer ${token}`, // Add this if you are using token-based authentication
@@ -26,19 +25,19 @@ const BtnDownloadProposal = ({ proposal }) => {
                 // Get the filename from Content-Disposition header if present
                 const disposition = response.headers.get('Content-Disposition');
                 let filename = '';
-                
+
                 if (disposition && disposition.includes('attachment')) {
                     const filenameMatch = disposition.match(/filename="(.+)"/);
                     if (filenameMatch && filenameMatch.length === 2) {
                         filename = filenameMatch[1]; // Extract filename from the header
                     }
                 }
-    
+
                 // If no filename is found in the header, use a default filename
                 if (!filename) {
                     filename = `proposal_${proposal.proposal_id}.pdf`; // Default name
                 }
-    
+
                 const blob = await response.blob();
                 const url = window.URL.createObjectURL(blob);
                 const link = document.createElement('a');

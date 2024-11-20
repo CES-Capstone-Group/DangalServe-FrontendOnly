@@ -57,7 +57,6 @@ const BrgyPenProposalPage = () => {
         if (token) {
             try {
                 const decodedToken = jwtDecode(token);
-                // console.log(decodedToken)
                 const departmentFromToken = decodedToken.barangay; // Check if department is present in the token
                 if (departmentFromToken) {
                     setDepartment(departmentFromToken);
@@ -79,7 +78,6 @@ const BrgyPenProposalPage = () => {
     useEffect(() => {
         const fetchProposals = async () => {
             if (!department) {
-                console.log("Department is not set. Cannot fetch proposals.");
                 setLoading(false);
                 return;
             }
@@ -93,7 +91,7 @@ const BrgyPenProposalPage = () => {
         
             try {
                 const queryParams = new URLSearchParams({
-                    status__in: ["Approved by President", "Partly Approved by Barangay"].join(','),
+                    status__in: ["Approved by Director", "Partly Approved by Barangay"].join(','),
                     partner_community: department,
                 });
         
@@ -108,7 +106,7 @@ const BrgyPenProposalPage = () => {
                 if (response.ok) {
                     const data = await response.json();
                     // Add an additional safeguard to filter exactly by "Approved by Barangay"
-                    const filteredProposals = data.filter(proposal => proposal.status === "Approved by President" || proposal.status === "Partly Approved by Barangay");
+                    const filteredProposals = data.filter(proposal => proposal.status === "Approved by Director" || proposal.status === "Partly Approved by Barangay");
                     setProposals(filteredProposals); // Set the proposals after filtering
                 } else if (response.status === 401) {
                     console.error("Unauthorized: Check if the token is valid.");

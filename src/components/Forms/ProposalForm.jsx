@@ -36,8 +36,7 @@ const ProposalForm = () => {
         }
         return response.json();
       })
-      .then(data => {
-        console.log('Fetched signatory names:', data); // Log fetched data
+      .then(data => {      
         if (Array.isArray(data)) {
           setSignatoryNames(data);
         } else {
@@ -46,10 +45,6 @@ const ProposalForm = () => {
       })
       .catch(error => console.error('Error fetching signatory names:', error));
   }, []);
-
-  useEffect(() => {
-    console.log('Updated signatory names:', signatoryNames);
-  }, [signatoryNames]);
 
   const [barangays, setBarangays] = useState([]);
   // Fetch barangays

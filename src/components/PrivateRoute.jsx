@@ -12,8 +12,6 @@ const PrivateRoute = ({ allowedRoles }) => {
     try {
         const decodedToken = jwtDecode(accessToken);
 
-        // Log the decoded token to see its contents
-        // console.log("Decoded Token: ", decodedToken);
 
         const accountType = decodedToken.accountType;
 

@@ -59,8 +59,7 @@ const BtnEditDeleteDept = ({ deptId, deptName: initialDeptName, onDepartmentUpda
 
     // **Handle Delete Functionality**
     const handleDelete = async () => {
-        try {
-            // console.log(`Deleting department with ID: ${deptId}`);
+        try {            
 
             const response = await fetch(API_ENDPOINTS.DEPARTMENT_DETAIL(deptId), {
                 method: "DELETE",
@@ -74,8 +73,7 @@ const BtnEditDeleteDept = ({ deptId, deptName: initialDeptName, onDepartmentUpda
                 handleCloseDeleteConfirm();  // Close delete modal on success
                 onDepartmentUpdated();  // Trigger callback to refresh parent component
             } else {
-                const data = await response.json();
-                // console.log("Failed to delete:", data);
+                const data = await response.json();          
                 alert(`Failed to delete department: ${JSON.stringify(data)}`);
             }
         } catch (error) {

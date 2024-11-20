@@ -1,5 +1,5 @@
-const BASE_URL = "https://pamantasances.pythonanywhere.com";
-// const BASE_URL = "http://127.0.0.1:8000";
+// const BASE_URL = "https://pamantasances.pythonanywhere.com";
+const BASE_URL = "http://127.0.0.1:8000";
 
 export const API_ENDPOINTS = {
     // Authentication Endpoints
@@ -106,6 +106,10 @@ export const API_ENDPOINTS = {
     MULTIPLE_CHOICE_OPTION_DETAIL: (id) => `${BASE_URL}/evaluation/multiple-choice-options/${id}/`,
 
     EVALUATION_FORM_LIST: `${BASE_URL}/evaluation/evaluation-forms/`,  // GET
+    EVALUATION_FORM_LIST_ALL: `${BASE_URL}/evaluation/view-all/evaluation-forms/`, // GET - List all evaluation forms
+    EVALUATION_FORM_LIST_ACTIVE: `${BASE_URL}/evaluation/view-active/evaluation-forms/`, // GET - List all evaluation forms
+    EVALUATION_FORM_SPECIFIC: (form_id) => `${BASE_URL}/evaluation/display-specific-eval-form/${form_id}/`, 
+
     EVALUATION_FORM_CREATE: `${BASE_URL}/evaluation/evaluation-forms/create/`,  // POST
     EVALUATION_FORM_DETAIL: (id) => `${BASE_URL}/evaluation/evaluation-forms/${id}/`,  // GET, PUT, DELETE
 
@@ -116,6 +120,16 @@ export const API_ENDPOINTS = {
     FORM_QUESTION_LIST: `${BASE_URL}/evaluation/form-questions/`,  // GET
     FORM_QUESTION_CREATE: `${BASE_URL}/evaluation/form-questions/create/`,  // POST
     FORM_QUESTION_DETAIL: (id) => `${BASE_URL}/evaluation/form-questions/${id}/`,  // GET, PUT, DELETE
+
+       // Responses
+    RESPONSE_LIST: `${BASE_URL}/evaluation/responses/`, // GET
+    RESPONSE_CREATE: `${BASE_URL}/evaluation/responses/create/`, // POST
+    RESPONSE_DETAIL: (id) => `${BASE_URL}/evaluation/responses/${id}/`, // GET, PUT, DELETE
+
+    // Answers
+    ANSWER_LIST: `${BASE_URL}/evaluation/answers/`, // GET
+    ANSWER_CREATE: `${BASE_URL}/evaluation/answers/create/`, // POST
+    ANSWER_DETAIL: (id) => `${BASE_URL}/evaluation/answers/${id}/`, // GET, PUT, DELETE
 
     KPI_TABLE: `${BASE_URL}/kpi/`,
     KPI_TABLE_KPIS: `${BASE_URL}/kpi/kpis/`

@@ -52,11 +52,6 @@ const BtnAddSchedule = ({ showModal, handleCloseModal, handleShowModal, selected
             console.warn("No files to upload.");
         }
     
-        // Debug: Log FormData content
-        for (let pair of formData.entries()) {
-            console.log(pair[0], pair[1]);
-        }
-    
         // Send the formData to the backend
         fetch(API_ENDPOINTS.ACTIVITY_SCHEDULE_CREATE, {
             method: 'POST',
@@ -71,10 +66,7 @@ const BtnAddSchedule = ({ showModal, handleCloseModal, handleShowModal, selected
                 return response.text().then(text => { throw new Error(text); });
             }
             return response.json();
-        })
-        .then(data => {
-            // console.log('New event added to backend:', data);
-        })
+        })       
         .catch(error => {
             console.error('Error adding event to backend:', error.message);
         });
@@ -103,8 +95,7 @@ const BtnAddSchedule = ({ showModal, handleCloseModal, handleShowModal, selected
     // Handle file input change
     const handleFileChange = (e, id) => {
         const selectedFiles = Array.from(e.target.files); // Convert FileList to an array
-        setFiles(prevFiles => [...prevFiles, ...selectedFiles]); // Add new files to state
-        // console.log(`Files for input ${id}:`, selectedFiles);
+        setFiles(prevFiles => [...prevFiles, ...selectedFiles]); // Add new files to state        
     };
 
     useEffect(() => {

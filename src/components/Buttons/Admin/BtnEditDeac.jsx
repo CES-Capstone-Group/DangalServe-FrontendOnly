@@ -8,7 +8,6 @@ import { API_ENDPOINTS } from "../../../config";
 const BtnEditDeac = ({ account, onDeactivate, onSave }) => {
     const [show, setShow] = useState(false);
     const [formData, setFormData] = useState(account); // Initialize formData with account details
-    // console.log("account is", account);
     const handleShow = () => {
         setShow(true);
 
@@ -19,7 +18,6 @@ const BtnEditDeac = ({ account, onDeactivate, onSave }) => {
 
         // Check if the current user is trying to edit their own account
         if (user && user.user_id === account.user_id) {
-            // console.log("User is editing their own account.");
             // Redirect to profile page
             navigate("/admin/profile");
         }
@@ -101,12 +99,10 @@ const BtnEditDeac = ({ account, onDeactivate, onSave }) => {
 
     // Populate formData on modal open
     useEffect(() => {
-        // console.log(account)
         if (account) {
             if (account.accountType === "Proponent") {
                 const matchedDepartment = departments.find(dept => dept.dept_name === account.department);
                 const matchedCourse = courses.find(course => course.course_name === account.course);
-                // console.log("matched course: ", matchedCourse)
                 setFormData({
                     ...account,
                     department: matchedDepartment ? matchedDepartment.dept_id : "",  // Set dept_id if found
@@ -119,8 +115,6 @@ const BtnEditDeac = ({ account, onDeactivate, onSave }) => {
                     ...account,
                     barangay: matchedBarangay ? matchedBarangay.id : "" // Assuming `barangay
                 });
-                // console.log("matched:", matchedBarangay)
-                // console.log("brgy :", formData.barangay)
             }
         }
     }, [account, departments, courses]);
@@ -167,7 +161,6 @@ const BtnEditDeac = ({ account, onDeactivate, onSave }) => {
 
     const handleSave = async (e) => {
         e.preventDefault();
-        // console.log("form data",  JSON.stringify(formData))
         try {
             const response = await fetch(API_ENDPOINTS.USER_INFO_ACTION(account.user_id), {
                 method: "PUT",
@@ -196,7 +189,6 @@ const BtnEditDeac = ({ account, onDeactivate, onSave }) => {
         const updatedData = {
             status: newStatus,
         };
-        // console.log(JSON.stringify(updatedData))
         try {
             const response = await fetch(API_ENDPOINTS.USER_INFO_ACTION(account.user_id), {
                 method: "PUT",

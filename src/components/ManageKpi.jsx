@@ -39,7 +39,6 @@ const ManageKpi = () => {
             const departmentData = await departmentResponse.json();
             const departments = Array.isArray(departmentData) ? departmentData : [];
 
-            console.log(departments);
             // Fetch KPI tables and associate them with departments
             const updatedDepartments = await Promise.all(
                 departments.map(async (dept) => {

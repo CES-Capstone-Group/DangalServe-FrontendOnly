@@ -11,7 +11,6 @@ const AdminEventDetailsPage = () => {
     const { proposal_title, target_date, target_time, status, file } = eventDetails || {};
     const [showModal, setShowModal] = useState(false);
 
-    console.log(JSON.stringify(eventDetails));
 
     const handleFileClick = () => {
         if (eventDetails.file) {

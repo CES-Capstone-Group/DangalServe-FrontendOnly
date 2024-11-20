@@ -1,0 +1,23 @@
+.card-header {
+    font-size: 1.2rem;
+    letter-spacing: 0.5px;
+  }
+  
+  .table th {
+    background-color: #78C57B;
+    color: white;
+    font-weight: bold;
+  }
+  
+  .table td {
+    vertical-align: middle;
+  }
+  
+  button {
+    transition: all 0.3s ease;
+  }
+  
+  button:hover {
+    background-color: #5CA964 !important;
+  }
+  

@@ -23,7 +23,6 @@ const TopNav = ({ sidebarOpen, sidebarToggle, isHidden }) => {
     if (token) {
       // Decode the JWT token to get the user information and account type
       const decodedToken = jwtDecode(token);
-      console.log(decodedToken);
       const userName = decodedToken.name;
       const userAccountType = decodedToken.accountType; // Ensure this key is in your JWT payload
       setLoggedUser(userName);

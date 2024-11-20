@@ -28,6 +28,7 @@ const BtnViewApproveProposal = ({ proposal, onApprove }) => {
   const [preApproved, setPreApprove] = useState(false);
   const [brgyApproved, setBrgyApprove] = useState(false);
   const [buttonText, setButtonText] = useState("Approve");
+  const [buttonDisabled, setButtonDisabled] = useState(false)
 
   const handleShow = () => setShow(true);
   const handleClose = () => setShow(false);
@@ -77,56 +78,42 @@ const BtnViewApproveProposal = ({ proposal, onApprove }) => {
 
   // Initialize the progress bars and button text based on the current proposal status
   useEffect(() => {
-    switch (proposal.status) {
-      case "Approved by Director":
-        setDirApprove(true);
-        setDirProgress(100);
-        setButtonText("VPRE Approve");
-        break;
-      case "Approved by VPRE":
-        setDirApprove(true);
-        setDirProgress(100);
-        setVpreApprove(true);
-        setVpreProgress(100);
-        setButtonText("President Approve");
-        break;
-      case "Approved by President":
-        setDirApprove(true);
-        setDirProgress(100);
-        setVpreApprove(true);
-        setVpreProgress(100);
-        setPreApprove(true);
-        setPreProgress(100);
+    if (proposal.status === "Pending") {
+      setButtonText("Approve");
+      setButtonDisabled(false);
+    } else if (proposal.status === "Approved by Director") {
+      if (isBrgy) {
         setButtonText("Barangay Approve");
-        break;
-      case "Partly Approved by Barangay":
-        setButtonText("Barangay Approve");
-        break;
-      case "Approved":
-        setIsApproved(true);
-        setBrgyApprove(true);
-        break;
-      default:
-        setButtonText("Approve");
-        break;
+        setButtonDisabled(false);
+      } else {
+        setButtonText("Waiting for Barangay Approval");
+        setButtonDisabled(true);
+      }
+    } else if (proposal.status === "Partly Approved by Barangay" && isBrgy) {
+      setButtonText("Barangay Approve");
+      setButtonDisabled(false);
+    } else if (proposal.status === "Approved by Barangay") {
+      setButtonText("VPRE Approve");
+      setButtonDisabled(false);
+    } else if (proposal.status === "Approved by VPRE") {
+      setButtonText("President Approve");
+      setButtonDisabled(false);
+    } else if (proposal.status === "Approved by President") {
+      setButtonText("Approval Complete");
+      setButtonDisabled(true);
     }
-  }, [proposal.status]);
+  }, [proposal.status, isBrgy]);
 
   const handleApprove = async () => {
     try {
       // Check if the user is a barangay official and if the proposal requires barangay approval
-      if (isBrgy && (proposal.status === "Approved by President" || proposal.status === "Partly Approved by Barangay")  && !isApproved ) {
-        //console.log("not approved")
-        console.log("Final Approval for Barangay...");
+      if (isBrgy && (proposal.status === "Approved by Director" || proposal.status === "Partly Approved by Barangay")  && !isApproved ) {
         await barangayApproval("Approved");
-      } else if (!dirApproved) {
-        console.log("Approving as Director...");
+      } else if (proposal.status === "Pending") {       
         await approval("Approved by Director");
-      } else if (dirApproved && !vpreApproved) {
-        console.log("Approving as VPRE...");
+      } else if (proposal.status ==="Approved by Barangay") {        
         await approval("Approved by VPRE");
-      } else if (dirApproved && vpreApproved && !preApproved) {
-        console.log("Approving as President...");
+      } else if (proposal.status === "Approved by VPRE") {        
         await approval("Approved by President");
       }
     } catch (error) {
@@ -139,8 +126,7 @@ const BtnViewApproveProposal = ({ proposal, onApprove }) => {
     const token = localStorage.getItem("access_token");
     const apiUrl = API_ENDPOINTS.PROPOSAL_DETAIL(proposal.proposal_id);
 
-    try {
-      console.log("Sending approval request with status:", status);
+    try {   
 
       const response = await fetch(apiUrl, {
         method: "PATCH",
@@ -151,24 +137,30 @@ const BtnViewApproveProposal = ({ proposal, onApprove }) => {
         body: JSON.stringify({ status }),
       });
 
-      if (response.ok) {
-        console.log("Proposal approved successfully with status:", status);
+      if (response.ok) {       
         
         if (status === "Approved by Director") {
           setDirApprove(true);
+          setButtonText("Waiting for Barangay Approval");
+          setButtonDisabled(true);
+        } else if(status === "Approved by Barangay"){
           setButtonText("VPRE Approve");
+          setButtonDisabled(false);
         } else if (status === "Approved by VPRE") {
           setVpreApprove(true);
           setButtonText("President Approve");
+          setButtonDisabled(false);
         } else if (status === "Approved by President") {
           setPreApprove(true);
-          setButtonText("Barangay Approve");
-        } else if (status === "Partly Approved by Barangay") {
-          setPreApprove(true);
-          setButtonText("Barangay Approve");
-        } else if (status === "Approved") {
           setButtonText("Approval Complete");
-        }
+          setButtonDisabled(true);
+        } 
+        // else if (status === "Partly Approved by Barangay") {
+        //   setPreApprove(true);
+        //   setButtonText("Barangay Approve");
+        // } else if (status === "Approved") {
+        //   setButtonText("Approval Complete");
+        // }
 
         if (onApprove) onApprove();
         handleClose();
@@ -234,12 +226,6 @@ const BtnViewApproveProposal = ({ proposal, onApprove }) => {
             }
         );
 
-        console.log(JSON.stringify({
-          status: "Rejected",
-          reject_reason: rejectReason,  // Include the rejection reason
-          remarks: remarks,             // Include the remarks
-      }))
-
         if (response.ok) {
             handleRejectClose();
             if (onApprove) onApprove();
@@ -262,20 +248,28 @@ const BtnViewApproveProposal = ({ proposal, onApprove }) => {
         View
       </Button>
 
-      {isBrgy && !isApproved && (proposal.status === "Partly Approved by Barangay" || proposal.status === "Approved by President")  && (
+      {isBrgy && !isApproved && (proposal.status === "Partly Approved by Barangay" || proposal.status === "Approved by Director")  && (
         <Button
-          className="mt-2 mb-2"
-          style={{
-            backgroundColor: isApproved ? "#ccc" : "#71A872",
-            margin: "0px",
-            border: "0px",
-            color: "white",
-          }}
-          onClick={handleApprove}
-          disabled={isApproved} // Disable if already approved
-        >
-          {isApproved ? "Already Approved" : buttonText}
-        </Button>
+        className="mt-2 mb-2"
+        style={{ backgroundColor: buttonDisabled ? "#ccc" : "#71A872", margin: "0px", border: "0px", color: "white" }}
+        onClick={handleApprove}
+        disabled={buttonDisabled}
+      >
+        {buttonText}
+      </Button>
+        // <Button
+        //   className="mt-2 mb-2"
+        //   style={{
+        //     backgroundColor: isApproved ? "#ccc" : "#71A872",
+        //     margin: "0px",
+        //     border: "0px",
+        //     color: "white",
+        //   }}
+        //   onClick={handleApprove}
+        //   disabled={isApproved} // Disable if already approved
+        // >
+        //   {isApproved ? "Already Approved" : buttonText}
+        // </Button>
       )}
       
 
@@ -288,6 +282,7 @@ const BtnViewApproveProposal = ({ proposal, onApprove }) => {
               className="me-2"
               onClick={handleApprove}
               style={{ backgroundColor: "#71A872", border: "0px", color: "white" }}
+              disabled={proposal.status === "Approved by Director" && !isApproved}
             >
               {buttonText}
             </Button>

@@ -51,7 +51,6 @@ const BtnEditDelete = ({ brgyId, brgyName: initialBrgyName, onBrgyUpdated }) => 
     // **Handle Delete Functionality**
     const handleDelete = async () => {
         try {
-            // console.log(`Deleting barangay with ID: ${brgyId}`);
 
             const response = await fetch(API_ENDPOINTS.BARANGAY_UPDATE_DELETE(brgyId), {
                 method: "DELETE",
@@ -65,8 +64,7 @@ const BtnEditDelete = ({ brgyId, brgyName: initialBrgyName, onBrgyUpdated }) => 
                 handleCloseDeleteConfirm();  // Close delete modal on success
                 onBrgyUpdated();  // Trigger callback to refresh parent component
             } else {
-                const data = await response.json();
-                // console.log("Failed to delete:", data);
+                const data = await response.json();               
                 alert(`Failed to delete barangay: ${JSON.stringify(data)}`);
             }
         } catch (error) {

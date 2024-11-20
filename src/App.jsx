@@ -1,5 +1,5 @@
 import React from 'react';
-import { Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import LoginPage from './components/LoginPage';
 import MainContent from './components/MainContent';
 import UserManagementCon from './components/Admin/UserManagementCon.jsx';
@@ -75,6 +75,7 @@ import EvalTypeManagement from './components/EvalTypeManagement.jsx';
 import InvTable from './components/Admin/InvTable.jsx';
 import ManageKpi from './components/ManageKpi.jsx';
 import ImpactPage from './components/Admin/ImpactPage.jsx';
+import EvalAnswerPage from './components/Evaluator/EvalAnswerPage.jsx';
 
 const App = () => {
   return (
@@ -164,6 +165,7 @@ const App = () => {
               <Route path='docs' element={<DocumentPage />} />
               <Route path='calendar' element={<CoorCalendar />} />
               <Route path='kpi' element={<KpiPage />} />
+              <Route path='eval-page' element={<EvalPage />} />
               <Route path='proposal-form' element={<ProposalForm />} />
               <Route path='proposal-form/:proposalId/resubmit' element={<ProposalForm />} /> {/* Resubmission */}
               <Route path='profile' element={<MyProfilePage />} />
@@ -177,6 +179,7 @@ const App = () => {
             <Route path='dashboard' element={<MainContent />} />
             <Route path='eval-page' element={<EvalPage />} />
             <Route path='eval-cards' element={<EvalCards />} />
+            <Route path='eval-answer' element={<EvalAnswerPage/>} />
           </Route>
           {/* </Route> */}
 
@@ -188,9 +191,8 @@ const App = () => {
           <Route path='aarForm' element={<AARForm />} />
           <Route path='impact-eval' element={<ImpactEvalForm />} />
           <Route path='eval-login' element={<EvalLogIn/>} />
-
+          
         </Routes>
-
       </UserProvider>
 
 

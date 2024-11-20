@@ -53,11 +53,10 @@ const Rows = ({ user_id, username, name, type, department_name, course_name, bar
             if (!response.ok) {
                 const errorData = await response.json();
                 console.error('Response error data:', errorData);
-                throw new Error(`HTTP error! status: ${response.status}`);
+                throw new Error(`HksTTP error! status: ${response.status}`);
             }
 
             const data = await response.json();
-            // console.log("Account status updated:", data);
             fetchUsers();
         } catch (error) {
             console.error("Failed to update account status:", error);

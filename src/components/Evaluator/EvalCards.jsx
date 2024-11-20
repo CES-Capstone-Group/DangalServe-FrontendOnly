@@ -1,71 +1,91 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Col, Container, Row, Button, Card } from "react-bootstrap";
-import "../table.css"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faFilter, faChevronLeft } from "@fortawesome/free-solid-svg-icons";
-import { useNavigate } from 'react-router-dom';
+import { faUserCheck } from "@fortawesome/free-solid-svg-icons";
+import { useNavigate } from "react-router-dom";
+import { API_ENDPOINTS } from "../../config";
+import "./EvalCards.css";
 
 const EvalCards = () => {
   const navigate = useNavigate();
+  const [evalCards, setEvalCards] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  const handleEvaluate = (path) => {
-    navigate(path);
+  // Fetch evaluation forms using the API
+  useEffect(() => {
+    const fetchEvalCards = async () => {
+      try {
+        const response = await fetch(API_ENDPOINTS.EVALUATION_FORM_LIST_ACTIVE);
+        if (!response.ok) {
+          throw new Error("Failed to fetch evaluation forms");
+        }
+        const data = await response.json();
+        setEvalCards(data.evaluation_forms || []);
+      } catch (err) {
+        setError(err.message || "Failed to fetch evaluation forms.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchEvalCards();
+  }, []);
+
+  // Handle navigation for evaluation form
+  const handleEvaluate = (formId) => {
+    navigate(`/eval/eval-answer`, { state: { formId } });
   };
-  // // Go back to the previous page
-  const handleBack = () => {
-    navigate(-1); // This will navigate to the previous page in the history
-  };
 
+  if (loading) {
+    return <p>Loading...</p>;
+  }
 
-  const evalCard = [{ title: 'CCLIP: PC Awareness', info: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin aliquam facilisis ex, ut aliquet leo pretium in. Fusce tortor magna, iaculis eget ante sit amet, molestie aliquet turpis.', path: '/actEvalForm' }, { title: 'CCLIP: PC Awareness', info: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin aliquam facilisis ex, ut aliquet leo pretium in. Fusce tortor magna, iaculis eget ante sit amet, molestie aliquet turpis.', path: '/actEvalForm' }, { title: 'CCLIP: PC Awareness', info: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin aliquam facilisis ex, ut aliquet leo pretium in. Fusce tortor magna, iaculis eget ante sit amet, molestie aliquet turpis.', path: '/actEvalForm' }, { title: 'CCLIP: PC Awareness', info: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin aliquam facilisis ex, ut aliquet leo pretium in. Fusce tortor magna, iaculis eget ante sit amet, molestie aliquet turpis.', path: '/actEvalForm' }];
+  if (error) {
+    return <p className="text-danger">{error}</p>;
+  }
 
   return (
-    <Container className="container-fluid">
-      <Row>
-        <Button variant="link" onClick={handleBack} className="backBtn d-flex align-items-center text-success">
-          <FontAwesomeIcon icon={faChevronLeft} size="lg" />
-          <span className="ms-2">Back</span>
-        </Button>
-
-        <Col className="d-flex justify-content-end">
-          <Button style={{ backgroundColor: '#71A872', border: '0px' }}>
-            <FontAwesomeIcon className='me-2' icon={faFilter} ></FontAwesomeIcon>
-            Filter
-          </Button>
-        </Col>
-      </Row>
-      <div className="container mb-4">
-        <h1> ACTIVITY EVALUATION </h1>
+    <Container className="py-4">
+      <div className="text-center mb-4 evaluator-header">
+        <h1 className="text-success">
+          <FontAwesomeIcon icon={faUserCheck} className="me-2" />
+          Evaluation Forms
+        </h1>
+        <p className="text-muted">Access and Answer evaluation forms</p>
       </div>
-
-      <Row>
-        {evalCard.length > 0 ? (
-          evalCard.map((evaluation, index) => (
-            <Col md={4} sm={6} xs={12} key={index} className="mb-3">
-              <Card className="h-100 d-flex flex-column" id="conCard">
-                <Card.Body className="d-flex flex-column justify-content-between">
-                  <Card.Title style={{ fontWeight: 'bold' }}>
-                    {evaluation.title}
-                  </Card.Title>
-                  <Card.Text>
-                    <strong>Evaluation Info:</strong> {evaluation.info}
+      <Row className="g-4">
+        {evalCards.length > 0 ? (
+          evalCards.map((evaluation, index) => (
+            <Col md={4} sm={6} xs={12} key={index}>
+              <Card className="h-100 shadow-sm border-0 text-center eval-card">
+                <Card.Body className="d-flex flex-column align-items-center">
+                  <div className="icon-container mb-3">
+                    <FontAwesomeIcon icon={faUserCheck} size="3x" className="text-success" />
+                  </div>
+                  <Card.Title className="mb-2 text-dark">{evaluation.title}</Card.Title>
+                  <Card.Subtitle className="mb-2 text-muted">
+                    {evaluation.evaluation_type_name}
+                  </Card.Subtitle>
+                  <Card.Text className="text-muted small">
+                    {evaluation.activity_objectives}
                   </Card.Text>
                   <Button
                     variant="success"
-                    onClick={() => handleEvaluate(evaluation.path)}
-                    className="mt-auto"
+                    size="lg"
+                    onClick={() => handleEvaluate(evaluation.form_id)}
+                    className="mt-auto evaluate-btn"
                   >
-                    Evaluate
+                    Start Evaluation
                   </Button>
                 </Card.Body>
               </Card>
             </Col>
           ))
         ) : (
-          <p>No evaluations available.</p>
+          <p className="text-center text-muted">No active evaluations available.</p>
         )}
       </Row>
-
     </Container>
   );
 };

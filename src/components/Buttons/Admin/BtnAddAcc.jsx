@@ -90,7 +90,6 @@ const BtnAddAcc = ({ onAccountAdded }) => {
     // Update filtered courses when department changes
     useEffect(() => {
         const filtered = courses.filter(course => course.dept_id === formData.department);
-        // console.log("filtered",filtered);
         setFilteredCourses(filtered);
     }, [formData.department, courses]);
 
@@ -191,13 +190,11 @@ const BtnAddAcc = ({ onAccountAdded }) => {
                 },
                 body: JSON.stringify(dataToSend),
             });
-            console.log(JSON.stringify(dataToSend));
             if (!response.ok) {
                 const errorData = await response.json();
                 throw new Error(`HTTP error! Status: ${response.status}, Details: ${JSON.stringify(errorData)}`);
             }
             const data = await response.json();
-            // console.log('Account created:', data);
             handleCloseModal();
 
             if (onAccountAdded) onAccountAdded(); // Notify parent component to refresh the list

@@ -64,8 +64,7 @@ const ManageDocuments = () => {
         }
     };
 
-    useEffect(() => {
-        console.log("Updated selected content: ", selectedContent);
+    useEffect(() => {    
     }, [selectedContent]);
 
     const handleCloseModal = () => {

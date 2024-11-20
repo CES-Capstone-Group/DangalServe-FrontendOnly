@@ -52,7 +52,7 @@ const EvalCreate = () => {
     const handleCreateForm = async () => {
         try {
             const formResponse = await axios.post(API_ENDPOINTS.EVALUATION_FORM_CREATE, {
-                title: "New Evaluation Form",
+                title: payload.activity_title,
                 evaluation_type: payload.evaluation_type_id,
                 created_by: payload.user_id,
                 activity_schedule_id: payload.activity_id,

@@ -33,8 +33,7 @@ const BtnAddKpiProposal = ({  deptIndex, departments, fetchData }) => {
                     // Re-fetch data to update the state
                     fetchData();
                     setNewProposalTitle("");
-                    setShowAddProposalModal(null);
-                    console.log(departmentId);
+                    setShowAddProposalModal(null);       
                 } else {
                     console.error("Error creating proposal:", data);
                 }
