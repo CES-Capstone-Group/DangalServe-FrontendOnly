@@ -1,9 +1,10 @@
 const BASE_URL = "https://pamantasances.pythonanywhere.com";
-// const BASE_URL = "http://127.0.0.1:8000/";
-// const BASE_URL = process.env.REACT_APP_API_BASE_URL;
+// const BASE_URL = "http://127.0.0.1:8000";
 
 export const API_ENDPOINTS = {
     // Authentication Endpoints
+    BASE: `${BASE_URL}`,
+
     TOKEN: `${BASE_URL}/api/token/`,
     TOKEN_REFRESH: `${BASE_URL}/api/token/refresh/`,
     REFRESH_TOKEN: `${BASE_URL}/refresh-token/`,
@@ -60,6 +61,8 @@ export const API_ENDPOINTS = {
     ACTIVITY_SCHEDULE_LIST: `${BASE_URL}/api/activity-schedules/`,
     ACTIVITY_SCHEDULE_DETAIL: (id) => `${BASE_URL}/api/activity-schedules/${id}/`,
     ACTIVITY_SCHEDULE_CREATE: `${BASE_URL}/api/activity-schedules/create/`,
+    ACTIVITY_SCHEDULE_BY_PROPOSAL: (proposal_id) => `${BASE_URL}/api/activity-schedules/${proposal_id}/proposals`,
+
 
     // Documents Endpoints
     DOCUMENT_LIST: `${BASE_URL}/api/documents/`,
@@ -79,6 +82,7 @@ export const API_ENDPOINTS = {
     EVALUATION_TYPE_CREATE: `${BASE_URL}/evaluation/evaluation-types/create/`,
     EVAL_TYPE_DETAIL: (id) => `${BASE_URL}/evaluation/evaluation-types/${id}/`,
     EVALUATION_TYPE_WITH_SECTIONS: (evaluationTypeId) => `${BASE_URL}/evaluation/evaluation-types/${evaluationTypeId}/details/`,
+    GET_FIXED_EVALUATION_DETAIL: (id) => `${BASE_URL}/evaluation/evaluation-types/${id}/fixed-detail/`, // GET - Fetch fixed sections and questions for a specific evaluation type
 
     // Section Endpoints
     SECTION_LIST: `${BASE_URL}/evaluation/sections/`,
@@ -100,4 +104,21 @@ export const API_ENDPOINTS = {
     MULTIPLE_CHOICE_OPTION_LIST: `${BASE_URL}/evaluation/multiple-choice-options/`,
     MULTIPLE_CHOICE_OPTION_CREATE: `${BASE_URL}/evaluation/multiple-choice-options/create/`,
     MULTIPLE_CHOICE_OPTION_DETAIL: (id) => `${BASE_URL}/evaluation/multiple-choice-options/${id}/`,
+
+    EVALUATION_FORM_LIST: `${BASE_URL}/evaluation/evaluation-forms/`,  // GET
+    EVALUATION_FORM_CREATE: `${BASE_URL}/evaluation/evaluation-forms/create/`,  // POST
+    EVALUATION_FORM_DETAIL: (id) => `${BASE_URL}/evaluation/evaluation-forms/${id}/`,  // GET, PUT, DELETE
+
+    FORM_SECTION_LIST: `${BASE_URL}/evaluation/form-sections/`,  // GET
+    FORM_SECTION_CREATE: `${BASE_URL}/evaluation/form-sections/create/`,  // POST
+    FORM_SECTION_DETAIL: (id) => `${BASE_URL}/evaluation/form-sections/${id}/`,  // GET, PUT, DELETE
+
+    FORM_QUESTION_LIST: `${BASE_URL}/evaluation/form-questions/`,  // GET
+    FORM_QUESTION_CREATE: `${BASE_URL}/evaluation/form-questions/create/`,  // POST
+    FORM_QUESTION_DETAIL: (id) => `${BASE_URL}/evaluation/form-questions/${id}/`,  // GET, PUT, DELETE
+
+    KPI_TABLE: `${BASE_URL}/kpi/`,
+    KPI_TABLE_KPIS: `${BASE_URL}/kpi/kpis/`
 };
+
+
