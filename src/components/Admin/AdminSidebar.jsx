@@ -9,7 +9,7 @@ import Logo from '/src/assets/pnclogo.png'
 const AdminSidebar = ({ sidebarOpen, toggleSidebar }) => {
   return (
     <div>
-      <SidebarMenu expand="lg" className={`d-md-block bg-light flex-column ${sidebarOpen ? 'side active justify-content-center align-items-center' : 'side collapsed '}`} style={{ width: sidebarOpen ? '250px' : '80px', boxShadow: '0px 3px 10px', marginTop: sidebarOpen ? '0px' : '50px', paddingTop: sidebarOpen ? '0px' : '1rem' }}>
+      <SidebarMenu expand="lg" className={`d-md-block bg-light flex-column ${sidebarOpen ? 'side active justify-content-center align-items-center' : 'side collapsed '}`} style={{ width: sidebarOpen ? '240px' : '80px', boxShadow: '0px 3px 10px', marginTop: sidebarOpen ? '' : '50px', paddingTop: sidebarOpen ? '0px' : '1rem' }}>
         {/*SidebarMenu Header*/}
         <SidebarMenu.Toggle oncClick={toggleSidebar}>
           <SidebarMenu.Brand>
@@ -89,31 +89,6 @@ const AdminSidebar = ({ sidebarOpen, toggleSidebar }) => {
                     <SidebarMenu.Nav.Title> Approved Achievements </SidebarMenu.Nav.Title>
                   </NavLink>
                 </SidebarMenu.Nav>
-              </SidebarMenu.Sub.Collapse>
-            </SidebarMenu.Sub>
-          </SidebarMenu.Nav>
-
-          {/* REQUESTS */}
-          <SidebarMenu.Nav>
-            <SidebarMenu.Sub>
-              <SidebarMenu.Sub.Toggle>
-                <SidebarMenu.Nav.Icon>
-                  <FontAwesomeIcon onClick={toggleSidebar} icon={faInbox} style={{ color: 'grey', fontSize: sidebarOpen ? '20px' : '20px', marginBottom: sidebarOpen ? '0px' : '0px' }}></FontAwesomeIcon>
-                </SidebarMenu.Nav.Icon>
-                {sidebarOpen && (<SidebarMenu.Nav.Title> Requests </SidebarMenu.Nav.Title>)}
-                <SidebarMenu.Nav.Icon>
-                  {sidebarOpen && (<FontAwesomeIcon icon={faChevronDown}></FontAwesomeIcon>)}
-                </SidebarMenu.Nav.Icon>
-              </SidebarMenu.Sub.Toggle>
-
-              <SidebarMenu.Sub.Collapse>
-
-                <SidebarMenu.Nav>
-                  <SidebarMenu.Nav.Link>
-                    <SidebarMenu.Nav.Title> Event Reschedule </SidebarMenu.Nav.Title>
-                  </SidebarMenu.Nav.Link>
-                </SidebarMenu.Nav>
-
               </SidebarMenu.Sub.Collapse>
             </SidebarMenu.Sub>
           </SidebarMenu.Nav>

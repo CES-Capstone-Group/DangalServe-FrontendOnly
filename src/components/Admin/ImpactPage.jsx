@@ -6,7 +6,7 @@ import { API_ENDPOINTS } from '../../config';
 
 const ImpactPage = () => {
     const [activities, setActivities] = useState([]);
-    const [selectedActivity, setSelectedActivity] = useState(null);
+    const [selectedActivity, setSelectedActivity] = useState("all");
     const [averages, setAverages] = useState([]);
     const [assessmentParagraphs, setAssessmentParagraphs] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -20,22 +20,15 @@ const ImpactPage = () => {
             }
             const data = await response.json();
             setActivities(data);
-            // Set the default selected activity to the first in the list
-            if (data.length > 0) {
-                setSelectedActivity(data[0].id);
-            }
-            // console.log(activities);
-            setLoading(false); // Set loading to false after activities are fetched
+            setLoading(false);
         } catch (error) {
             console.error("Error fetching activities:", error);
-            setLoading(false); // Set loading to false even if there is an error
+            setLoading(false);
         }
     };
 
-    // Fetch impact data for the selected activity
+    // Fetch impact data for the selected activity or all activities
     const fetchImpactData = async () => {
-        if (!selectedActivity) return;
-
         setLoading(true);
         try {
             const newAverages = [];
@@ -43,15 +36,25 @@ const ImpactPage = () => {
 
             // Loop through question numbers from 1 to 11
             for (let questionNumber = 1; questionNumber <= 11; questionNumber++) {
-                const response = await fetch(
-                    `${API_ENDPOINTS.IMPACT_EVAL_SUMMARY}?activity_id=${selectedActivity}&question_number=${questionNumber}`
-                );
+                const endpoint =
+                    selectedActivity === "all"
+                        ? `${API_ENDPOINTS.IMPACT_EVAL_SUMMARY}?all_activities=true&question_number=${questionNumber}`
+                        : `${API_ENDPOINTS.IMPACT_EVAL_SUMMARY}?activity_id=${selectedActivity}&question_number=${questionNumber}`;
+
+                const response = await fetch(endpoint);
                 if (!response.ok) {
                     throw new Error('Network response was not ok');
                 }
                 const data = await response.json();
-                newAverages.push(parseFloat(data[`Q${questionNumber}_average`] || 0));
-                newParagraphs.push(data.assessment_paragraph);
+                if(selectedActivity==="all"){
+
+                    newAverages.push(parseFloat(data[`Q${questionNumber}_average_all_activities`] || 0));
+                }
+                else{
+
+                    newAverages.push(parseFloat(data[`Q${questionNumber}_average`] || 0));
+                }
+                newParagraphs.push(data.assessment_paragraph || "No feedback data is available for this question.");
             }
 
             setAverages(newAverages);
@@ -59,7 +62,7 @@ const ImpactPage = () => {
         } catch (error) {
             console.error("Error fetching data:", error);
         } finally {
-            setLoading(false); // Ensure loading is set to false after data fetching completes
+            setLoading(false);
         }
     };
 
@@ -105,7 +108,7 @@ const ImpactPage = () => {
     };
 
     return (
-        <Container>
+        <Container fluid>
             <h3 className="mb-4">Impact Evaluation Results</h3>
             {loading ? (
                 <p>Loading data...</p>
@@ -115,9 +118,10 @@ const ImpactPage = () => {
                         <Form.Label>Select Activity</Form.Label>
                         <Form.Control
                             as="select"
-                            value={selectedActivity || ''}
+                            value={selectedActivity}
                             onChange={(e) => setSelectedActivity(e.target.value)}
-                        >                        
+                        >
+                            <option value="all">All Activities</option>
                             {activities.map(activity => (
                                 <option key={activity.id} value={activity.id}>
                                     {activity.activity_title}
@@ -133,7 +137,7 @@ const ImpactPage = () => {
                         {averages.map((avg, index) => (
                             <div key={index} className="mb-3" style={{ flex: '0 0 50%', paddingRight: '1rem' }}>
                                 <h5>{graphData.labels[index]}</h5>
-                                <p>{assessmentParagraphs[index] || "No feedback data is available for this question."}</p>
+                                <p>{assessmentParagraphs[index]}</p>
                             </div>
                         ))}
                     </div>

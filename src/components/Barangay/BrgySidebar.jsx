@@ -63,30 +63,6 @@ const BrgySidebar = ({ sidebarOpen, toggleSidebar }) => {
         </SidebarMenu.Nav>
 
         <SidebarMenu.Nav>
-          <SidebarMenu.Sub>
-            <SidebarMenu.Sub.Toggle>
-              <SidebarMenu.Nav.Icon>
-                <FontAwesomeIcon onClick={toggleSidebar} icon={faInbox} style={{ color: 'grey' , fontSize: sidebarOpen ? '20px' : '22px', marginBottom: sidebarOpen ? '0px' : '10px'}}></FontAwesomeIcon>
-              </SidebarMenu.Nav.Icon>
-               {sidebarOpen && ( <SidebarMenu.Nav.Title> Requests </SidebarMenu.Nav.Title>)}
-                <SidebarMenu.Nav.Icon>
-                {sidebarOpen && ( <FontAwesomeIcon icon={faChevronDown}></FontAwesomeIcon>)}
-              </SidebarMenu.Nav.Icon>
-            </SidebarMenu.Sub.Toggle>
-            
-            <SidebarMenu.Sub.Collapse>
-
-              <SidebarMenu.Nav>
-                <NavLink to={'/barangay/resched'} className={({ isActive }) => "nav-link" + (isActive ? " active" : "")}>
-                  <SidebarMenu.Nav.Title> Event Reschedule </SidebarMenu.Nav.Title>
-                </NavLink>
-              </SidebarMenu.Nav>
-
-            </SidebarMenu.Sub.Collapse>
-          </SidebarMenu.Sub>
-        </SidebarMenu.Nav>
-
-        <SidebarMenu.Nav>
           <NavLink to={'/barangay/calendar'} className={({ isActive }) => "nav-link" + (isActive ? " active" : "")}>
             <SidebarMenu.Nav.Icon>
               <FontAwesomeIcon icon={faCalendar} style={{ color: 'grey' , fontSize: sidebarOpen ? '20px' : '22px', marginBottom: sidebarOpen ? '0px' : '10px'}}></FontAwesomeIcon>

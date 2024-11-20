@@ -12,40 +12,53 @@ const UserBarangayPage = () => {
   };
 
   return (
-    <div>
-      <header>
-        <TopNav sidebarOpen={sidebarOpen} sidebarToggle={showSidebar} />
-      </header>
-      <Row>
+    <div style={{ backgroundColor: "white" }}>
+    <header>
+      <TopNav sidebarOpen={sidebarOpen} sidebarToggle={showSidebar} />
+    </header>
+    <Container fluid className="p-0">
+      <Row className="g-0">
+        {/* Sidebar Column */}
         <Col
-          xs={"0"}
-          sm={sidebarOpen ? "4" : "2"}
-          md={sidebarOpen ? "4" : "1"}
-          lg={sidebarOpen ? "3" : "1"}
-          xl={sidebarOpen ? "2" : "1"}
-          xxl={sidebarOpen ? "2" : "1"}
-          style={{ paddingLeft: '0' }}
+          xs={sidebarOpen ? "12" : "3"} // Full width on mobile when open
+          sm={sidebarOpen ? "4" : "2"}  // 4/12 (1/3) of the width when open on small screens
+          md={sidebarOpen ? "3" : "2"}  // 3/12 (1/4) of the width when open on medium screens
+          lg={sidebarOpen ? "3" : "2"}  // 3/12 (1/4) of the width when open on large screens
+          xl={sidebarOpen ? "2" : "1"}  // 2/12 (1/6) of the width on extra-large screens
+          xxl={sidebarOpen ? "2" : "1"} // 2/12 (1/6) of the width on extra-extra-large screens
+          className="p-0" // Remove all padding from the sidebar column
+          style={{
+            transition: "width 0.3s ease", // Smooth transition effect for sidebar toggle
+            overflow: "hidden", // Prevent overflow issues
+            maxWidth: sidebarOpen ? "250px" : "80px", // Optional: Restrict sidebar width
+          }}
         >
           <BrgySidebar sidebarOpen={sidebarOpen} toggleSidebar={showSidebar} />
         </Col>
-        <Col className={`d-flex justify-content-${sidebarOpen ? 'start' : 'center'} align-items-start mobileMain`}
+
+        {/* Main Content Column */}
+        <Col
+          xs="12" // Full width on extra-small screens
+          sm={sidebarOpen ? "8" : "10"} // Adjust to 8/12 when sidebar is open, 10/12 when closed on small screens
+          md={sidebarOpen ? "9" : "10"} // 9/12 when open, 10/12 when closed on medium screens
+          lg={sidebarOpen ? "9" : "10"} // 9/12 when open, 10/12 when closed on large screens
+          xl={sidebarOpen ? "10" : "11"} // 10/12 when open, 11/12 when closed on extra-large screens
+          xxl={sidebarOpen ? "10" : "11"} // 10/12 when open, 11/12 when closed on extra-extra-large screens
+          className="d-flex flex-column align-items-start"
           style={{
-            marginTop: "10rem",
-            paddingLeft: "80px",
-            paddingRight: "5rem",
-            paddingBottom: "20px", // Adjust padding as needed
+            marginTop: "6rem",
+            paddingLeft: sidebarOpen ? "60px" : "20px", // Adjust padding for sidebar state
+            paddingRight: sidebarOpen ? "20px" : "20px",
+            paddingBottom: "30px",
+            transition: "padding 0.3s ease", // Smooth transition effect for padding adjustment
+            maxWidth: "100%", // Ensure content doesn't exceed container width
           }}
-          xs={"12"}
-          sm={sidebarOpen ? "8" : "10"}
-          md={sidebarOpen ? "8" : "11"}
-          lg={sidebarOpen ? "9" : "11"}
-          xl={sidebarOpen ? "10" : "11"}
-          xxl={sidebarOpen ? "9" : "10"}
         >
           <Outlet />
         </Col>
       </Row>
-    </div>
+    </Container>
+  </div>
   );
 }
 

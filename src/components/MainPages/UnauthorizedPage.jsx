@@ -9,7 +9,25 @@ const UnauthorizedPage = () => {
     const navigate = useNavigate();
 
     const handleGoBack = () => {
-        navigate(-1); // Navigate to the previous page
+        // Check if token has expired (implement your expiration logic here)
+        const accessToken = localStorage.getItem("access_token");
+        const refreshToken = localStorage.getItem("refresh_token");
+        const isTokenExpired = () => {
+            // Assuming the token payload includes an expiration time 'exp'
+            if (!accessToken) return true;
+            const payload = JSON.parse(atob(accessToken.split(".")[1]));
+            return payload.exp * 1000 < Date.now(); // Check if the token is expired
+        };
+
+        if (isTokenExpired()) {
+            // Clear tokens from local storage and redirect to login
+            localStorage.removeItem("access_token");
+            localStorage.removeItem("refresh_token");
+            navigate("/login");
+        } else {
+            // Navigate to the previous page
+            navigate(-1);
+        }
     };
 
     return (
@@ -21,7 +39,7 @@ const UnauthorizedPage = () => {
                     <p className="unauthorized-message">
                         Sorry, you do not have permission to access this page.
                     </p>
-                    <Button variant="success" onClick={() => navigate("/login")} className="back-button">
+                    <Button variant="success" onClick={handleGoBack} className="back-button">
                         Go Back
                     </Button>
                 </Col>

@@ -55,7 +55,9 @@
 
 /* Alternating row background color */
 .table-striped tbody tr:nth-of-type(odd) > * {
-  background-color: #f1f1f1 !important;
+  background-color: color-mix(in srgb, #f0efed 20%, white 100%) !important;
+
+
 }
 
 /* Style for buttons in the Actions column */

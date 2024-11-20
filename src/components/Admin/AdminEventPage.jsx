@@ -33,7 +33,7 @@ const AdminEventPage = () => {
     };
 
     return (
-        <Container>
+        <Container fluid>
             <Row>
                 <Button
                     variant="link"

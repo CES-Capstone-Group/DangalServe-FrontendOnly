@@ -129,7 +129,7 @@ const BrgyPenProposalPage = () => {
     }, [department]); // Re-fetch when department is set
 
     return (
-        <Container className="container-fluid">
+        <Container fluid>
             <div className="container">
                 <h1> PENDING PROPOSALS </h1>
             </div>

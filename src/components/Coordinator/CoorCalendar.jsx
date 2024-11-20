@@ -40,7 +40,7 @@ function CoorCalendar() {
     };
 
     return (
-        <Container>
+        <Container fluid>
             <h1>Admin Calendar</h1>
             <BtnResched />
             

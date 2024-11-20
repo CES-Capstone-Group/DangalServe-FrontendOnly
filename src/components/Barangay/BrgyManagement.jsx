@@ -42,6 +42,7 @@ const BrgyManagement = () => {
             setContentType("image");
         }
         setSelectedContent(contentUrl);
+        console.log(contentUrl);
         setShowModal(true);
     };
 

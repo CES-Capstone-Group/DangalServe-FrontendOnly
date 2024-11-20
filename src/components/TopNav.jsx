@@ -53,17 +53,17 @@ const TopNav = ({ sidebarOpen, sidebarToggle, isHidden }) => {
   }[accountType];
 
   return (
-    <div className='topNav'>
+    <div fluid className='topNav'>
       <Navbar expand="lg" style={{
         backgroundColor: '#71A872',
-        paddingLeft: sidebarOpen ? '250px' : '0px',
+        paddingLeft: sidebarOpen ? '230px' : '0px',
         transition: 'padding-left 0.3s ease',
       }}>
         <Container fluid className='d-flex'>
           <Navbar.Brand style={{ color: 'white' }}>
             <Button
               variant='outline-light'
-              className={`ms-1 ${isHovered ? 'border-1' : 'border-0'}`}
+              className={`sideBtn ms-1 ${isHovered ? 'border-1' : 'border-0'} `}
               onClick={sidebarToggle}
               onMouseEnter={() => setIsHovered(true)}
               onMouseLeave={() => setIsHovered(false)}

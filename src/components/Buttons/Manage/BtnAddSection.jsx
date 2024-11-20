@@ -5,7 +5,6 @@ import { Button, Modal, Row, Col, Form } from "react-bootstrap";
 import { API_ENDPOINTS } from "../../../config";
 
 const BtnAddSection = ({ onSectionAdded, evalTypeId }) => {
-    // Declare all hooks at the top of the component
     const [showModal, setShowModal] = useState(false);
     const [sectionLabel, setSectionLabel] = useState("");
     const [sectionType, setSectionType] = useState("");
@@ -58,17 +57,15 @@ const BtnAddSection = ({ onSectionAdded, evalTypeId }) => {
 
     const handleAddSection = async () => {
         try {
-            // Prepare the data based on the section type
             const sectionData = {
                 evaluation_type: evalTypeId,
                 title: sectionLabel,
                 section_type: sectionType,
-                question_type: sectionType === "question" ? questionType : null,  // Only include if section_type is "question"
-                content: sectionType === "info" ? informationContent : null,      // Only include content if section_type is "info"
+                question_type: sectionType === "question" ? questionType : null,
+                content: sectionType === "info" ? informationContent : null,
                 is_fixed: isFixed,
             };
 
-            // Log the section data to check before sending the request
             console.log("Section Data:", sectionData);
 
             const sectionResponse = await fetch(API_ENDPOINTS.SECTION_CREATE, {
@@ -85,7 +82,7 @@ const BtnAddSection = ({ onSectionAdded, evalTypeId }) => {
 
             const newSection = await sectionResponse.json();
 
-            // If the question type is "rating," log and add rating options
+            // Handle logic for different question types
             if (questionType === "rating") {
                 const ratingOptionsPromises = ratingLabels.map((label, index) => {
                     const ratingOptData = {
@@ -95,7 +92,6 @@ const BtnAddSection = ({ onSectionAdded, evalTypeId }) => {
                         option_order: index + 1,
                     };
 
-                    // Log each rating option data to check before sending the request
                     console.log("Rating Option Data:", ratingOptData);
 
                     return fetch(API_ENDPOINTS.RATING_OPTION_CREATE, {
@@ -110,7 +106,6 @@ const BtnAddSection = ({ onSectionAdded, evalTypeId }) => {
                 await Promise.all(ratingOptionsPromises);
             }
 
-            // Notify the parent component of the new section and reset the form
             onSectionAdded(newSection);
             handleCloseModal();
             alert("Section added successfully!");
@@ -192,6 +187,7 @@ const BtnAddSection = ({ onSectionAdded, evalTypeId }) => {
                                         <option value="">Select Question Type</option>
                                         <option value="multiple_choice">Multiple Choice</option>
                                         <option value="rating">Rating</option>
+                                        <option value="open_ended">Open Ended</option>
                                     </Form.Control>
                                 </Col>
                             </Form.Group>

@@ -78,7 +78,7 @@ const AdminApprovedPro = () => {
     };
 
     return (
-        <Container className="container-fluid">
+        <Container fluid>
             <div className="container mb-4">
                 <h1>APPROVED PROPOSALS</h1>
             </div>

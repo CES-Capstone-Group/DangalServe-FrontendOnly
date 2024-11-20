@@ -8,7 +8,7 @@ import InvChart from "./InvChart.jsx";
 const InvolvementPage = () => {
     return (
         <div>
-            <Container className="d-flex flex-column justify-content-center me-0 ms-0">
+            <Container fluid className="d-flex flex-column justify-content-center me-0 ms-0">
                 <Row>
                     <Col className="involvement "><h2>Involvement Reports</h2></Col>
                 </Row>

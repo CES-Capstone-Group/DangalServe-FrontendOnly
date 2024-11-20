@@ -86,6 +86,7 @@ const BtnAddSchedule = ({ showModal, handleCloseModal, handleShowModal, selected
         setManualDate(new Date().toISOString().split("T")[0]);
         setProposalTitle("");
         setFiles([]); // Reset files
+        addNewEvent(addNewEvent);
     };
     
 

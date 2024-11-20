@@ -116,7 +116,7 @@ const NewTable = ({ data, fetchUsers }) => {
                 <th>Activation Date</th>
                 <th>Deactivation Date</th>
                 <th>Status</th>
-                <th>Actions</th>
+                <th style={{width: '9%'}}>Actions</th>
             </thead>
             <tbody>
                 {data.map((row) => (
@@ -211,7 +211,7 @@ const UserManagementCon = () => {
     //end of search function
 
     return (
-        <Container fluid
+        <Container fluid style={{padding: '0'}}
             className="py-4 mt-5 d-flex flex-column justify-content-center me-0 ms-0">
             {/* Row for the Back Button */}
             <Row>

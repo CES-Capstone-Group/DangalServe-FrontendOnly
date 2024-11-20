@@ -32,7 +32,7 @@ const AdminEventDetailsPage = () => {
     const handleCloseModal = () => setShowModal(false);
 
     return (
-        <Container className="py-4 mt-5 d-flex flex-column justify-content-center">
+        <Container fluid className="py-4 mt-5 d-flex flex-column justify-content-center">
             {/* Back Button */}
             <Row className="mb-3">
                 <Col>

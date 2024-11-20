@@ -39,7 +39,7 @@ const BrgyApprovedPro = () => {
     }
 
     return (
-        <Container className="container-fluid">
+        <Container fluid>
             <div className="container">
                 <h1>APPROVED PROPOSALS</h1>
             </div>

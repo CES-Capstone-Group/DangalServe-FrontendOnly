@@ -1,15 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from "react-router-dom";
-import { Container, Table, Button, Row, Col, Form } from "react-bootstrap";
+import { Container, Table, Button, Row, Col, Form, Badge } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faChevronLeft } from "@fortawesome/free-solid-svg-icons";
 import BtnAddQuestion from "./Buttons/Manage/BtnAddQuestion.jsx";
 import BtnAddSection from "./Buttons/Manage/BtnAddSection.jsx";
+import BtnEditDelSection from "./Buttons/Manage/BtnEditDelSection.jsx";
+import BtnEditDelQuestion from "./Buttons/Manage/BtnEditDelQuestion.jsx";
 import { API_ENDPOINTS } from '../config.js';
 
 const ManageEvaluationForm = () => {
     const location = useLocation();
-    const { formId } = location.state || {}; // Retrieve formId from state
+    const { formId } = location.state || {};
     const navigate = useNavigate();
 
     const [formDetails, setFormDetails] = useState({ title: "", description: "" });
@@ -18,7 +20,6 @@ const ManageEvaluationForm = () => {
     const [addQuestionType, setAddQuestionType] = useState(null);
     const [selectedSectionId, setSelectedSectionId] = useState(null);
 
-    // Fetch form details and sections when the component mounts
     useEffect(() => {
         if (!formId) {
             console.error("Form ID is missing.");
@@ -32,8 +33,6 @@ const ManageEvaluationForm = () => {
                     throw new Error("Failed to fetch form details");
                 }
                 const data = await response.json();
-
-                // Update form details and sections with data from response
                 setFormDetails({ title: data.name, description: data.description });
                 setSections(data.sections || []);
             } catch (error) {
@@ -48,55 +47,96 @@ const ManageEvaluationForm = () => {
         navigate(-1);
     };
 
-    // Simplified function to open the modal with the correct sectionId and questionType
+    const fetchUpdatedSections = async () => {
+        try {
+            const response = await fetch(API_ENDPOINTS.EVALUATION_TYPE_WITH_SECTIONS(formId));
+            if (!response.ok) {
+                throw new Error("Failed to re-fetch form details");
+            }
+            const data = await response.json();
+            setSections(data.sections || []);
+        } catch (error) {
+            console.error("Error re-fetching sections:", error);
+        }
+    };
+
+    const handleAddNewSection = async (newSection) => {
+        const sectionWithDefaults = {
+            ...newSection,
+            questions: newSection.question_type === "open_ended" ? [] : newSection.questions || [],
+        };
+        setSections([...sections, sectionWithDefaults]);
+        await fetchUpdatedSections();
+    };
+
     const openAddQuestionModal = (sectionId, questionType) => {
-        console.log("Setting sectionId:", sectionId, "and questionType:", questionType); // Debugging output
         setSelectedSectionId(sectionId);
         setAddQuestionType(questionType);
         setIsAddQuestionModalOpen(true);
     };
 
-    const handleAddNewQuestion = (questionData) => {
-        const updatedSections = sections.map((section) => {
-            if (section.section_id=== questionData.sectionId) {
-                return {
-                    ...section,
-                    questions: [...section.questions, questionData]
-                };
-            }
-            return section;
-        });
-
-        setSections(updatedSections);
-    };
-
-    const handleAddNewSection = (newSection) => {
-        setSections([...sections, newSection]);
-    };
-
-    const renderInfoSection = (section) => (
-        <div key={section.section_id} className="mb-4">
-            <h3>{section.title}</h3>
-            <Form.Control as="textarea" value={section.content} disabled className="mb-3" />
-            <Button variant="warning" className="me-2">Edit</Button>
-            <Button variant="danger">Delete</Button>
+    const renderSectionHeader = (section) => (
+        <div className="d-flex justify-content-between align-items-center mb-2">
+            <div>
+                <h3 className="d-inline-block me-2">{section.title}</h3>
+                {section.is_fixed && <Badge bg="info">Fixed</Badge>}
+            </div>
+            <div>
+                <BtnEditDelSection
+                    section={section}
+                    onSectionUpdated={fetchUpdatedSections}
+                />
+            </div>
         </div>
     );
 
-    const renderQuestionSection = (section) => {
-        const isRating = section.question_type === "rating";
-        const isMultipleChoice = section.question_type === "multiple_choice";
-    
+    const renderInfoSection = (section) => (
+        <div key={section.section_id} className="mb-4">
+            {renderSectionHeader(section)}
+            <Form.Control
+                as="textarea"
+                value={section.content || "No information provided"}
+                readOnly
+                className="mt-2"
+            />
+        </div>
+    );
+
+    const renderOpenEndedQuestions = (section) => {
+        const questions = section.questions || [];
         return (
-            <div key={section.section_id} className="mb-4">
-                <h3>{section.title}</h3>
-                <Table responsive striped bordered hover>
+            <>
+                {questions.map((question, index) => (
+                    <div key={question.question_id || index} className="">
+                        <h5 className="d-inline me-2">{`${index + 1}. ${question.text}`}</h5>
+                        {question.is_fixed && <Badge className='mb-2' bg="info">Fixed</Badge>}
+                        <Form.Control as="textarea" value={question.response} disabled className="mb-2" />
+                        <BtnEditDelQuestion
+                            question={question}
+                            section={section} // Pass the section to BtnEditDelQuestion
+                            onQuestionUpdated={fetchUpdatedSections}
+                            onDelete={fetchUpdatedSections}
+                        />
+                    </div>
+                ))}
+
+            </>
+        );
+    };
+
+    const renderQuestionSection = (section) => (
+        <div key={section.section_id} className="mb-4">
+            {renderSectionHeader(section)}
+            {section.question_type === "open_ended" ? (
+                renderOpenEndedQuestions(section)
+            ) : (
+                <Table responsive striped bordered hover className="tableStyle">
                     <thead>
                         <tr>
                             <th>No.</th>
                             <th>Question</th>
-                            {isRating && <th>Rating Options</th>}
-                            {isMultipleChoice && <th>Choices</th>}
+                            {section.question_type === "rating" && <th>Rating Options</th>}
+                            {section.question_type === "multiple_choice" && <th>Choices</th>}
                             <th>Is Fixed</th>
                             <th>Actions</th>
                         </tr>
@@ -107,92 +147,89 @@ const ManageEvaluationForm = () => {
                                 <tr key={question.question_id || index}>
                                     <td>{index + 1}</td>
                                     <td>{question.text}</td>
-                                    {isRating && (
+                                    {section.question_type === "rating" && (
                                         <td>
-                                            {question.rating_options && question.rating_options.length > 0
-                                                ? question.rating_options
-                                                      .sort((a, b) => a.option_order - b.option_order)
-                                                      .map((option) => ` ${option.value} - ${option.label}`)
-                                                      .join(", ")
+                                            {question.rating_options?.length
+                                                ? question.rating_options.map(
+                                                    (opt) => `${opt.value} - ${opt.label}  `
+                                                ).join(", ") // Properly formatted with commas and spacing
                                                 : "No rating options"}
                                         </td>
                                     )}
-                                    {isMultipleChoice && (
+                                    {section.question_type === "multiple_choice" && (
                                         <td>
-                                            {question.multiple_choice_options && question.multiple_choice_options.length > 0
-                                                ? question.multiple_choice_options
-                                                      .sort((a, b) => a.option_order - b.option_order)
-                                                      .map((option) => ` ${option.value} ${option.label}`)
-                                                      .join(", ")
+                                            {question.multiple_choice_options?.length
+                                                ? question.multiple_choice_options.map(
+                                                    (opt) => `${opt.value} - ${opt.label}  `
+                                                ).join(", ") // Properly formatted with commas and spacing
                                                 : "No choices available"}
                                         </td>
                                     )}
                                     <td>{question.is_fixed ? "Fixed" : "Not Fixed"}</td>
                                     <td>
-                                        <Button variant="warning" className="me-2">Edit</Button>
-                                        <Button variant="danger">Delete</Button>
+                                        <BtnEditDelQuestion
+                                            question={question}
+                                            section={section} // Pass the section to BtnEditDelQuestion
+                                            onQuestionUpdated={fetchUpdatedSections}
+                                            onDelete={fetchUpdatedSections}
+                                        />
                                     </td>
                                 </tr>
                             ))
                         ) : (
                             <tr>
-                                <td colSpan={isRating || isMultipleChoice ? 5 : 4} className="text-center">No questions available</td>
+                                <td colSpan={5} className="text-center">
+                                    No questions available. Please add one using the button below.
+                                </td>
                             </tr>
                         )}
                     </tbody>
                 </Table>
+            )}
+            <div className='text-end'>
                 <Button
-                    variant="primary"
-                    onClick={() => {
-                        console.log("Button clicked for section:", section.section_id); // Log the section ID here
-                        openAddQuestionModal(section.section_id, section.question_type); // Pass section.id and question_type directly
-                    }}
+                    variant="success"
+                    className="mt-3"
+                    onClick={() => openAddQuestionModal(section.section_id, section.question_type)}
                 >
-                    Add {section.question_type === "rating" ? "Rating" : "Multiple Choice"} Question
+                    Add Question
                 </Button>
             </div>
-        );
-    };
-    
-    
-
-    useEffect(() => {
-        // Debug log to ensure sectionId is being set
-        console.log("Selected Section ID:", selectedSectionId);
-        console.log("Question Type:", addQuestionType);
-    }, [selectedSectionId, addQuestionType]);
+        </div>
+    );
 
     return (
-        <Container fluid className="vh-80 d-flex flex-column justify-content-center m-5">
+        <Container fluid className="py-4 mt-5 d-flex flex-column justify-content-center">
             <Row>
-                <Button variant="link" onClick={handleBack} className="d-flex align-items-center text-success me-3">
+                <Button variant="link" onClick={handleBack} className="d-flex align-items-center text-success">
                     <FontAwesomeIcon icon={faChevronLeft} size="lg" />
                     <span className="ms-2">Back</span>
                 </Button>
             </Row>
             <Row>
-                <Col><h1>{formDetails.title}</h1></Col>
+                <Col>
+                    <h1>{formDetails.title}</h1>
+                </Col>
             </Row>
             <Row>
-                <Col><p>{formDetails.description}</p></Col>
+                <Col>
+                    <p>{formDetails.description}</p>
+                </Col>
             </Row>
-
             {sections.map((section) =>
                 section.section_type === "info" ? renderInfoSection(section) : renderQuestionSection(section)
             )}
-
             <Row>
                 <Col className="d-flex align-items-center">
                     <BtnAddSection onSectionAdded={handleAddNewSection} evalTypeId={formId} />
                 </Col>
             </Row>
-
             <BtnAddQuestion
                 show={isAddQuestionModalOpen}
                 onHide={() => setIsAddQuestionModalOpen(false)}
                 questionType={addQuestionType}
-                sectionId={selectedSectionId} // Pass the correct sectionId
-                onSubmit={handleAddNewQuestion}
+                sectionId={selectedSectionId}
+                onSubmit={fetchUpdatedSections}
             />
         </Container>
     );

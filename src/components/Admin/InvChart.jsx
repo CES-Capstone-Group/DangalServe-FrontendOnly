@@ -16,7 +16,7 @@ const InvChart = () => {
     };
 
     return (
-        <Container>
+        <Container fluid>
             <Row>
                 <Col className="mb-3">
                     <Card

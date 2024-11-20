@@ -15,6 +15,9 @@ const EvalTypeManagement = () => {
   const [deleteFormId, setDeleteFormId] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [showConfirmation, setShowConfirmation] = useState(false);
+  const [formName, setFormName] = useState('');
+  const [formDescription, setFormDescription] = useState('');
 
   const navigate = useNavigate();
 
@@ -102,6 +105,27 @@ const EvalTypeManagement = () => {
     setShowDeleteConfirm(true);
   };
 
+  const handleAddClick = () => {
+    // Show the confirmation modal while keeping the Add Form modal open
+    setShowConfirmation(true);
+    setAddModalOpen(false);
+  };
+
+  const handleConfirmAdd = () => {
+    // Use the form values from state to proceed with adding the form
+    addEvaluationForm(formName, formDescription);
+    setFormName('');
+    setFormDescription('');
+    setShowConfirmation(false); // Close the confirmation modal
+    setAddModalOpen(false); // Close the Add Form modal after confirmation
+  };
+
+  const handleCancelAdd = () => {
+    setShowConfirmation(false); // Close the confirmation modal without action
+    setFormName('');
+    setFormDescription('');
+  };
+
   const handleCloseDeleteConfirm = () => setShowDeleteConfirm(false);
 
   const handleDelete = async () => {
@@ -178,19 +202,50 @@ const EvalTypeManagement = () => {
           <Modal.Title>Add New Evaluation Form</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <Form onSubmit={(e) => { e.preventDefault(); addEvaluationForm(e.target.formName.value, e.target.formDescription.value); }}>
+          <Form onSubmit={(e) => { e.preventDefault(); handleAddClick(); }}>
             <Form.Group controlId="formName">
               <Form.Label>Form Name</Form.Label>
-              <Form.Control type="text" placeholder="Enter form name" required />
+              <Form.Control
+                type="text"
+                placeholder="Enter form name"
+                value={formName}
+                onChange={(e) => setFormName(e.target.value)}
+                required
+              />
             </Form.Group>
             <Form.Group controlId="formDescription" className="mt-3">
               <Form.Label>Description</Form.Label>
-              <Form.Control as="textarea" rows={3} placeholder="Enter description" />
+              <Form.Control
+                as="textarea"
+                rows={3}
+                placeholder="Enter description"
+                value={formDescription}
+                onChange={(e) => setFormDescription(e.target.value)}
+              />
             </Form.Group>
-            <Button variant="success" type="submit" className="mt-3 d-flex justify-content-end">+ Add</Button>
+            <div className="d-flex justify-content-end">
+              <Button variant="success" type="submit" className="mt-3">+ Add</Button>
+            </div>
           </Form>
         </Modal.Body>
       </Modal>
+
+      {/* Confirm Modal */}
+      <Modal show={showConfirmation} onHide={handleCancelAdd}>
+        <Modal.Header closeButton>
+          <Modal.Title>Confirm Add</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>Are you sure you want to add this new form?</Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={handleCancelAdd}>
+            Cancel
+          </Button>
+          <Button variant="success" onClick={handleConfirmAdd}>
+            Confirm
+          </Button>
+        </Modal.Footer>
+      </Modal>
+
 
       {/* Delete Confirmation Modal */}
       <Modal size="m" centered show={showDeleteConfirm} onHide={handleCloseDeleteConfirm} backdrop="static">
@@ -226,7 +281,7 @@ const EvalTypeManagement = () => {
               <Form.Control as="textarea" rows={3} defaultValue={editingForm?.description} />
             </Form.Group>
             <div className='d-flex justify-content-end'>
-            <Button variant="success" type="submit" className="mt-3">Save</Button>
+              <Button variant="success" type="submit" className="mt-3">Save</Button>
             </div>
           </Form>
         </Modal.Body>

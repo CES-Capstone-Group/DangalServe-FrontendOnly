@@ -38,7 +38,7 @@ function BrgyCalendar() {
     };
 
     return (
-        <Container>
+        <Container fluid>
             <h1>Calendar</h1>
             <BtnResched />
             <div className="calendar-header">

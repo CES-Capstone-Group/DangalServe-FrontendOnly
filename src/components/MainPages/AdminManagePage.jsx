@@ -10,7 +10,7 @@ const AdminManagePage = () => {
       <header>
         <TopNav />
       </header>
-      <Container className="py-4">
+      <Container style={{padding: '1'}} className="py-2">
         <Outlet />
       </Container>
     </div>

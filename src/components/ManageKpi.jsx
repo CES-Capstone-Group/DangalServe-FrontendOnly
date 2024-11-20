@@ -1,12 +1,10 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import {
-    Col,
     Container,
     Row,
     Table,
     Form,
-    Alert,
     Modal,
     Button,
     InputGroup
@@ -14,6 +12,11 @@ import {
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faChevronLeft, faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
 import "./table.css";
+import BtnAddKpiProposal from "./Buttons/BtnAddKpiProposal";
+
+// Import API_ENDPOINTS from your config
+import { API_ENDPOINTS } from "../config";
+import BtnAddKpi from "./Buttons/BtnAddKpi";
 
 const ManageKpi = () => {
     const [selectedDepartment, setSelectedDepartment] = useState("");
@@ -23,99 +26,66 @@ const ManageKpi = () => {
     const [password, setPassword] = useState("");
     const [showPassword, setShowPassword] = useState(false);
     const [passwordError, setPasswordError] = useState("");
-    const [showAddKpiModal, setShowAddKpiModal] = useState(null); // Changed to null initially
-    const [newKpi, setNewKpi] = useState({ kpi: "", target: "" });
-    const [showAddProposalModal, setShowAddProposalModal] = useState(null); // Changed to null initially
-    const [newProposalTitle, setNewProposalTitle] = useState("");
+    const [departments, setDepartments] = useState([]);
     const navigate = useNavigate();
+    const [originalDepartments, setOriginalDepartments] = useState([]);
 
-    const [departments, setDepartments] = useState([
-        {
-            name: "College of Computing Studies",
-            tables: [
-                {
-                    title: "Cabuyeño’s Computer Literacy Program (CCLIP)",
-                    kpis: [
-                        {
-                            kpi: "Average score of individuals' knowledge assessment",
-                            target: "Achieve an average score of 80% or higher in the knowledge assessment by the end of 2025",
-                            quarterlyData: {
-                                "2023": [1, 0, 0, 84],
-                                "2024": [0, 0, 0, 85],
-                                "2025": [0, 0, 0, 86]
-                            }
-                        },
-                        {
-                            kpi: "Number of computer seminars and trainings conducted",
-                            target: "Conduct at least 20 computer seminars and trainings by the end of 2025",
-                            quarterlyData: {
-                                "2023": [0, 1, 2, 4],
-                                "2024": [2, 3, 5, 7],
-                                "2025": [4, 6, 9, 12]
-                            }
-                        },
-                        {
-                            kpi: "Number of beneficiaries trained on software applications",
-                            target: "Train at least 500 beneficiaries on the use of software applications by the end of 2025",
-                            quarterlyData: {
-                                "2023": [0, 0, 23, 44],
-                                "2024": [25, 30, 40, 50],
-                                "2025": [60, 70, 80, 94]
-                            }
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            name: "College of Engineering",
-            tables: [
-                {
-                    title: "Green Community Initiative: Empowering Sustainable Living through Energy and Waste Management",
-                    kpis: [
-                        {
-                            kpi: "Completion rate of engineering projects",
-                            target: "Achieve a 90% completion rate for all engineering projects by the end of 2025",
-                            quarterlyData: {
-                                "2023": [70, 75, 80, 85],
-                                "2024": [80, 85, 88, 90],
-                                "2025": [85, 88, 90, 90]
-                            }
-                        },
-                        {
-                            kpi: "Number of safety trainings conducted",
-                            target: "Conduct at least 15 safety trainings for engineering students and staff by the end of 2025",
-                            quarterlyData: {
-                                "2023": [3, 4, 5, 6],
-                                "2024": [6, 7, 8, 10],
-                                "2025": [10, 12, 14, 15]
-                            }
-                        },
-                        {
-                            kpi: "Energy efficiency improvements in engineering labs",
-                            target: "Improve energy efficiency in engineering labs by 20% by the end of 2025",
-                            quarterlyData: {
-                                "2023": [5, 7, 10, 12],
-                                "2024": [12, 15, 18, 20],
-                                "2025": [15, 18, 19, 20]
-                            }
-                        }
-                    ]
-                }
-            ]
+
+    // Function to fetch departments and KPI tables
+    const fetchData = async () => {
+        try {
+            // Fetch departments
+            const departmentResponse = await fetch(API_ENDPOINTS.DEPARTMENT_LIST);
+            const departmentData = await departmentResponse.json();
+            const departments = Array.isArray(departmentData) ? departmentData : [];
+
+            console.log(departments);
+            // Fetch KPI tables and associate them with departments
+            const updatedDepartments = await Promise.all(
+                departments.map(async (dept) => {
+                    // Fetch KPI tables for each department
+                    const kpiTableResponse = await fetch(`${API_ENDPOINTS.KPI_TABLE}?dept_id=${dept.dept_id}`);
+                    const kpiTables = await kpiTableResponse.json();
+                    dept.tables = Array.isArray(kpiTables) ? kpiTables : [];
+                    return dept;
+                })
+            );
+
+            setDepartments(updatedDepartments);
+        } catch (error) {
+            console.error("Error fetching department and KPI data:", error);
+            setDepartments([]);
         }
-    ]);
+    };
 
+    // Fetch data when the component mounts
+    useEffect(() => {
+        fetchData();
+    }, []);
+
+    // Function to toggle edit mode
     const toggleEdit = () => {
-        setIsEditing(!isEditing);
+        if (isEditing) {
+            handleSave();
+        } else {
+            // Store a copy of the current departments state before editing
+            setOriginalDepartments(JSON.parse(JSON.stringify(departments)));
+            setIsEditing(true);
+        }
     };
 
     const handleSave = () => {
         setShowPasswordModal(true);
     };
 
+    const handleCancel = () => {
+        // Reset departments to the original state
+        setDepartments(originalDepartments);
+        setIsEditing(false);
+    };
+
     const handlePasswordConfirm = () => {
-        const correctPassword = "yourPassword"; // Replace with your actual password for confirmation
+        const correctPassword = "yourPassword"; // Replace with your actual password
 
         if (password === correctPassword) {
             setIsEditing(false);
@@ -132,29 +102,6 @@ const ManageKpi = () => {
 
     const togglePasswordVisibility = () => {
         setShowPassword(!showPassword);
-    };
-
-    const addKpi = (deptIndex, tableIndex) => {
-        const updatedDepartments = [...departments];
-        updatedDepartments[deptIndex].tables[tableIndex].kpis.push({
-            kpi: newKpi.kpi,
-            target: newKpi.target,
-            quarterlyData: { "2023": [0, 0, 0, 0], "2024": [0, 0, 0, 0], "2025": [0, 0, 0, 0] }
-        });
-        setDepartments(updatedDepartments);
-        setNewKpi({ kpi: "", target: "" });
-        setShowAddKpiModal(null);
-    };
-
-    const addProposal = (deptIndex) => {
-        const updatedDepartments = [...departments];
-        updatedDepartments[deptIndex].tables.push({
-            title: newProposalTitle,
-            kpis: []
-        });
-        setDepartments(updatedDepartments);
-        setNewProposalTitle("");
-        setShowAddProposalModal(null);
     };
 
     const handleBack = () => {
@@ -188,107 +135,120 @@ const ManageKpi = () => {
                         onChange={(e) => setSelectedDepartment(e.target.value)}
                     >
                         <option value="">Select Department</option>
-                        {departments.map((dept, index) => (
-                            <option key={index} value={dept.name}>
-                                {dept.name}
+                        {departments.map((dept) => (
+                            <option key={dept.dept_id} value={dept.dept_name}>
+                                {dept.dept_name}
                             </option>
                         ))}
                     </Form.Control>
                 </Form.Group>
 
                 <div className="mt-4 d-flex justify-content-end align-items-center">
-                    <Button
-                        onClick={toggleEdit}
-                        className={`btn ${isEditing ? "btn-success" : "btn-warning"}`}
-                    >
-                        {isEditing ? "Save" : "Edit"}
-                    </Button>
+                    {isEditing ? (
+                        <>
+                            <Button onClick={toggleEdit} className="btn btn-success me-2">
+                                Save
+                            </Button>
+                            <Button onClick={handleCancel} className="btn btn-danger">
+                                Cancel
+                            </Button>
+                        </>
+                    ) : (
+                        <Button onClick={toggleEdit} className="btn btn-warning">
+                            Edit
+                        </Button>
+                    )}
                 </div>
 
                 {departments.map((dept, deptIndex) => (
-                    (!selectedDepartment || selectedDepartment === dept.name) && (
-                        <div key={deptIndex} className="mt-5">
-                            <h5>{dept.name}</h5>
-                            {dept.tables.map((table, tableIndex) => (
-                                <div key={tableIndex}>
-                                    <h6>{table.title}</h6>
-                                    <Table responsive bordered striped hover className="tableStyle mt-3">
-                                        <thead>
-                                            <tr>
-                                                <th>KPI's</th>
-                                                <th>Target</th>
-                                                <th colSpan={4}>2023</th>
-                                                <th colSpan={4}>2024</th>
-                                                <th colSpan={4}>2025</th>
-                                            </tr>
-                                            <tr>
-                                                <th></th>
-                                                <th></th>
-                                                <th>Q1</th>
-                                                <th>Q2</th>
-                                                <th>Q3</th>
-                                                <th>Q4</th>
-                                                <th>Q1</th>
-                                                <th>Q2</th>
-                                                <th>Q3</th>
-                                                <th>Q4</th>
-                                                <th>Q1</th>
-                                                <th>Q2</th>
-                                                <th>Q3</th>
-                                                <th>Q4</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            {table.kpis.map((kpi, kpiIndex) => (
-                                                <tr key={kpiIndex}>
-                                                    <td>{kpi.kpi}</td>
-                                                    <td>{kpi.target}</td>
-                                                    {Object.keys(kpi.quarterlyData).map((year) =>
-                                                        kpi.quarterlyData[year].map((value, quarterIndex) => (
-                                                            <td key={`${year}-${quarterIndex}`}>
-                                                                {isEditing ? (
-                                                                    <input
-                                                                        type="text"
-                                                                        value={value}
-                                                                        onChange={(e) => {
-                                                                            const updatedDepartments = [...departments];
-                                                                            updatedDepartments[deptIndex].tables[tableIndex].kpis[kpiIndex].quarterlyData[year][quarterIndex] = e.target.value;
-                                                                            setDepartments(updatedDepartments);
-                                                                        }}
-                                                                        style={{ width: "50px" }}
-                                                                    />
-                                                                ) : (
-                                                                    value
-                                                                )}
-                                                            </td>
-                                                        ))
-                                                    )}
+                    (!selectedDepartment || selectedDepartment === dept.dept_name) && (
+                        <div key={dept.dept_id} className="mt-5">
+                            <h5>{dept.dept_name}</h5>
+                            {dept.tables && dept.tables.length > 0 ? (
+                                dept.tables.map((table, tableIndex) => (
+                                    <div key={tableIndex}>
+                                        <h6>{table.title}</h6>
+                                        <Table responsive bordered striped hover className="tableStyle mt-3">
+                                            <thead>
+                                                <tr>
+                                                    <th>KPI's</th>
+                                                    <th>Target</th>
+                                                    <th colSpan={4}>2023</th>
+                                                    <th colSpan={4}>2024</th>
+                                                    <th colSpan={4}>2025</th>
                                                 </tr>
-                                            ))}
-                                        </tbody>
-                                    </Table>
-                                    <div className="d-flex justify-content-end">
-                                        <Button
-                                            variant="success"
-                                            className="mt-2"
-                                            onClick={() => setShowAddKpiModal({ deptIndex, tableIndex })}
-                                        >
-                                            + Add KPI
-                                        </Button>
+                                                <tr>
+                                                    <th></th>
+                                                    <th></th>
+                                                    <th>Q1</th>
+                                                    <th>Q2</th>
+                                                    <th>Q3</th>
+                                                    <th>Q4</th>
+                                                    <th>Q1</th>
+                                                    <th>Q2</th>
+                                                    <th>Q3</th>
+                                                    <th>Q4</th>
+                                                    <th>Q1</th>
+                                                    <th>Q2</th>
+                                                    <th>Q3</th>
+                                                    <th>Q4</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {table.kpis.map((kpi, kpiIndex) => (
+                                                    <tr key={kpiIndex}>
+                                                        <td>{kpi.kpi_name}</td>
+                                                        <td>{kpi.target}</td>
+                                                        {Object.keys(kpi.quarterly_data).map((year) =>
+                                                            kpi.quarterly_data[year].map((value, quarterIndex) => (
+                                                                <td key={`${year}-${quarterIndex}`}>
+                                                                    {isEditing ? (
+                                                                        <input
+                                                                            type="text"
+                                                                            value={value}
+                                                                            onChange={(e) => {
+                                                                                // Create a deep copy of the departments state
+                                                                                const updatedDepartments = departments.map(dept => ({
+                                                                                    ...dept,
+                                                                                    tables: dept.tables.map(table => ({
+                                                                                        ...table,
+                                                                                        kpis: table.kpis.map(kpi => ({
+                                                                                            ...kpi,
+                                                                                            quarterly_data: { ...kpi.quarterly_data }
+                                                                                        }))
+                                                                                    }))
+                                                                                }));
+
+                                                                                // Update the specific value
+                                                                                updatedDepartments[deptIndex].tables[tableIndex].kpis[kpiIndex].quarterly_data[year][quarterIndex] = e.target.value;
+
+                                                                                // Set the updated state
+                                                                                setDepartments(updatedDepartments);
+                                                                            }}
+                                                                            style={{ width: "50px" }}
+                                                                        />
+                                                                    ) : (
+                                                                        value
+                                                                    )}
+                                                                </td>
+                                                            ))
+                                                        )}
+                                                    </tr>
+                                                ))}
+                                            </tbody>
+                                        </Table>
+                                        <div className="d-flex justify-content-end">
+                                            <BtnAddKpi departments={departments} fetchData={fetchData} deptIndex={deptIndex} tableIndex={tableIndex} />
+                                        </div>
                                     </div>
+                                ))
+                            ) : (
+                                <p>No KPI tables available for this department.</p>
+                            )}
 
-                                </div>
-                            ))}
                             <div className="d-flex justify-content-end">
-                                <Button
-                                    variant="success"
-                                    className="mt-3"
-                                    onClick={() => setShowAddProposalModal(deptIndex)}
-                                >
-                                    + Add Proposal / Activity KPI
-                                </Button>
+                                <BtnAddKpiProposal fetchData={fetchData} departments={departments} deptIndex={dept.dept_id} />
                             </div>
-
                         </div>
                     )
                 ))}
@@ -324,67 +284,6 @@ const ManageKpi = () => {
                     </Button>
                     <Button variant="success" onClick={handlePasswordConfirm}>
                         Confirm
-                    </Button>
-                </Modal.Footer>
-            </Modal>
-
-            {/* Add KPI Modal */}
-            <Modal show={!!showAddKpiModal} onHide={() => setShowAddKpiModal(false)}>
-                <Modal.Header closeButton>
-                    <Modal.Title>Add KPI</Modal.Title>
-                </Modal.Header>
-                <Modal.Body>
-                    <Form.Group controlId="kpiInput">
-                        <Form.Label>KPI</Form.Label>
-                        <Form.Control
-                            type="text"
-                            value={newKpi.kpi}
-                            onChange={(e) => setNewKpi({ ...newKpi, kpi: e.target.value })}
-                        />
-                    </Form.Group>
-                    <Form.Group controlId="targetInput" className="mt-3">
-                        <Form.Label>Target</Form.Label>
-                        <Form.Control
-                            type="text"
-                            value={newKpi.target}
-                            onChange={(e) => setNewKpi({ ...newKpi, target: e.target.value })}
-                        />
-                    </Form.Group>
-                </Modal.Body>
-                <Modal.Footer>
-                    <Button variant="secondary" onClick={() => setShowAddKpiModal(false)}>
-                        Cancel
-                    </Button>
-                    <Button
-                        variant="success"
-                        onClick={() => addKpi(showAddKpiModal.deptIndex, showAddKpiModal.tableIndex)}
-                    >
-                        Add KPI
-                    </Button>
-                </Modal.Footer>
-            </Modal>
-
-            {/* Add Proposal/Activity KPI Modal */}
-            <Modal show={!!showAddProposalModal} onHide={() => setShowAddProposalModal(false)}>
-                <Modal.Header closeButton>
-                    <Modal.Title>Add Proposal / Activity KPI</Modal.Title>
-                </Modal.Header>
-                <Modal.Body>
-                    <Form.Group controlId="proposalTitleInput">
-                        <Form.Label>Proposal Title</Form.Label>
-                        <Form.Control
-                            type="text"
-                            value={newProposalTitle}
-                            onChange={(e) => setNewProposalTitle(e.target.value)}
-                        />
-                    </Form.Group>
-                </Modal.Body>
-                <Modal.Footer>
-                    <Button variant="secondary" onClick={() => setShowAddProposalModal(false)}>
-                        Cancel
-                    </Button>
-                    <Button variant="success" onClick={() => addProposal(showAddProposalModal)}>
-                        Add Proposal
                     </Button>
                 </Modal.Footer>
             </Modal>

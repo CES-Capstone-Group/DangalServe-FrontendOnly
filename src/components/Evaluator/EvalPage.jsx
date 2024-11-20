@@ -17,7 +17,7 @@ const EvalPage = () => {
     };
 
     return (
-        <Container className="py-4 mt-5 d-flex flex-column justify-content-center">
+        <Container fluid className="py-4 d-flex flex-column justify-content-center">
             <Row>
                 <Button variant="link" onClick={handleBack} className="backBtn d-flex align-items-center text-success">
                     <FontAwesomeIcon icon={faChevronLeft} size="lg" />
@@ -41,7 +41,7 @@ const EvalPage = () => {
                         <th>Proposal Title</th>
                         <th>Location</th>
                         <th>Target Date</th>
-                        <th></th>
+                        <th style={{width: '40%'}}>Actions</th>
                     </tr>
                 </thead>
                 <tbody>

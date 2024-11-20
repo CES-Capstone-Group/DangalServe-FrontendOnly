@@ -103,41 +103,6 @@ const CoorSidebar = ({ sidebarOpen, toggleSidebar }) => {
           </SidebarMenu.Sub>
         </SidebarMenu.Nav>
 
-        {/* REQUESTS */}
-        <SidebarMenu.Nav>
-          <SidebarMenu.Sub>
-            <SidebarMenu.Sub.Toggle>
-              <SidebarMenu.Nav.Icon>
-                <FontAwesomeIcon onClick={toggleSidebar} icon={faInbox} style={{ color: 'grey', fontSize: sidebarOpen ? '20px' : '20px', marginBottom: sidebarOpen ? '0px' : '10px' }}></FontAwesomeIcon>
-              </SidebarMenu.Nav.Icon>
-              {sidebarOpen && (<SidebarMenu.Nav.Title> Requests </SidebarMenu.Nav.Title>)}
-              <SidebarMenu.Nav.Icon>
-                {sidebarOpen && (<FontAwesomeIcon icon={faChevronDown}></FontAwesomeIcon>)}
-              </SidebarMenu.Nav.Icon>
-            </SidebarMenu.Sub.Toggle>
-
-            <SidebarMenu.Sub.Collapse>
-
-              <SidebarMenu.Nav>
-                <NavLink to={'/coor/resched'} className={({ isActive }) => "nav-link" + (isActive ? " active" : "")}>
-                  <SidebarMenu.Nav.Title> Event Reschedule </SidebarMenu.Nav.Title>
-                </NavLink>
-              </SidebarMenu.Nav>
-
-            </SidebarMenu.Sub.Collapse>
-          </SidebarMenu.Sub>
-        </SidebarMenu.Nav>
-
-        {/* DOCUMENTS */}
-        <SidebarMenu.Nav>
-          <NavLink to={'/coor/docs'} className={({ isActive }) => "nav-link" + (isActive ? " active" : "")}>
-            <SidebarMenu.Nav.Icon>
-              <FontAwesomeIcon icon={faFile} style={{ color: 'grey', fontSize: sidebarOpen ? '20px' : '22px', marginBottom: sidebarOpen ? '0px' : '10px' }} />
-            </SidebarMenu.Nav.Icon>
-            {sidebarOpen && (<SidebarMenu.Nav.Title> Documents </SidebarMenu.Nav.Title>)}
-          </NavLink>
-        </SidebarMenu.Nav>
-
         {/* CALENDAR */}
         <SidebarMenu.Nav>
           <NavLink to={'/coor/calendar'} className={({ isActive }) => "nav-link" + (isActive ? " active" : "")}>

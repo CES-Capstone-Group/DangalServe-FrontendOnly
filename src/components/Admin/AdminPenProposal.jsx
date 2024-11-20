@@ -66,7 +66,7 @@ const AdminPenProposal = () => {
     };
 
     return (
-        <Container className="container-fluid">
+        <Container fluid>
             <div className="container">
                 <h1>{filterStatus.toUpperCase()} PROPOSALS</h1>
             </div>

@@ -20,6 +20,26 @@ function LoginPage() {
     const [errors, setErrors] = useState({});
     const navigate = useNavigate();
 
+    
+    useEffect(() => {
+        const accessToken = localStorage.getItem('access_token');
+        if (accessToken) {
+            try {
+                const decodedToken = jwtDecode(accessToken);
+                const accountType = decodedToken.accountType;
+                redirectToRolePage(accountType);
+            } catch (error) {
+                console.error('Error decoding token:', error);
+            }
+        }
+
+        const rememberedUsername = localStorage.getItem('rememberedUsername');
+        if (rememberedUsername) {
+            setUsername(rememberedUsername);
+            setRememberMe(true);
+        }
+    }, []);
+
     const validateLogin = () => {
         const newErrors = {};
 
@@ -29,15 +49,7 @@ function LoginPage() {
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
     }
-
-    useEffect(() => {
-        const rememberedUsername = localStorage.getItem('rememberedUsername');
-        if (rememberedUsername) {
-            setUsername(rememberedUsername);
-            setRememberMe(true);
-        }
-    }, []);
-
+    
     const handleLogin = async (e) => {
         e.preventDefault();
         if(!validateLogin()) return;

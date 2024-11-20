@@ -46,26 +46,27 @@ const ManageDocuments = () => {
       });
     //end of search function
 
-    // Handle content view modal
     const handleContentClick = (contentUrl) => {
-        if (contentUrl.endsWith(".pdf")) {
-            setContentType("pdf");
-            setSelectedContent(contentUrl);
-            setShowModal(true);
-        } else if (contentUrl.endsWith(".docx")) {
-            // Automatically trigger download for .docx files
+        const fullUrl = `${API_ENDPOINTS.BASE}${contentUrl}`;
+        if (fullUrl.endsWith(".pdf")) {
+            window.open(fullUrl, "_blank"); // Open PDF in a new tab
+        } else if (fullUrl.endsWith(".docx")) {
             const link = document.createElement("a");
-            link.href = contentUrl;
-            link.download = contentUrl.split('/').pop(); // Use the file name from the URL
+            link.href = fullUrl;
+            link.download = fullUrl.split('/').pop();
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
         } else {
             setContentType("image");
-            setSelectedContent(contentUrl);
+            setSelectedContent(fullUrl);
             setShowModal(true);
         }
     };
+
+    useEffect(() => {
+        console.log("Updated selected content: ", selectedContent);
+    }, [selectedContent]);
 
     const handleCloseModal = () => {
         setShowModal(false);
@@ -105,7 +106,7 @@ const ManageDocuments = () => {
                 <td>{id}</td>
                 <td>{title}</td>
                 <td>
-                    <Button style={{fontSize: '13px'}} variant="success link" onClick={() => handleContentClick(file)}> 
+                    <Button style={{fontSize: '13px'}} variant="success" onClick={() => handleContentClick(file)}> 
                             <FontAwesomeIcon icon={faEye} />
                     </Button>
                 </td>
@@ -194,16 +195,6 @@ const ManageDocuments = () => {
                     <BtnAddDocument onDocumentAdded={fetchDocuments}  />  {/* <-- Call the refresh function on add */}
                 </Col>
             </Row>
-
-            {/* Modal for viewing PDF content */}
-            <Modal size="lg" show={showModal} onHide={handleCloseModal} centered>
-                <Modal.Header closeButton></Modal.Header>
-                <Modal.Body className="text-center">
-                    {selectedContent && contentType === "pdf" && (
-                        <embed src={selectedContent} type="application/pdf" width="100%" height="900px" />
-                    )}
-                </Modal.Body>
-            </Modal>
         </Container>
     );
 };

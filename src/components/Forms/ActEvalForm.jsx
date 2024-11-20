@@ -59,6 +59,7 @@ const ActEvalForm = () => {
                                     value={value}
                                     type="radio"
                                     name="clarityOfObjectives"
+                                    id={`a1-${value}`}
                                     key={value}
                                 />
                             ))}
@@ -77,6 +78,7 @@ const ActEvalForm = () => {
                                     value={value}
                                     type="radio"
                                     name="relevanceOfObjectives"
+                                    id={`a2-${value}`}
                                     key={value}
                                 />
                             ))}
@@ -95,6 +97,7 @@ const ActEvalForm = () => {
                                     value={value}
                                     type="radio"
                                     name="attainmentOfObjectives"
+                                    id={`a3-${value}`}
                                     key={value}
                                 />
                             ))}
@@ -115,6 +118,7 @@ const ActEvalForm = () => {
                                     value={value}
                                     type="radio"
                                     name="alignmentOfObjectives"
+                                    id={`b1-${value}`}
                                     key={value}
                                 />
                             ))}
@@ -133,6 +137,7 @@ const ActEvalForm = () => {
                                     value={value}
                                     type="radio"
                                     name="extentToWhichTheyEnrichParticipants"
+                                    id={`b2-${value}`}
                                     key={value}
                                 />
                             ))}
@@ -151,6 +156,7 @@ const ActEvalForm = () => {
                                     value={value}
                                     type="radio"
                                     name="conductOfActivities"
+                                    id={`c-${value}`}
                                     key={value}
                                 />
                             ))}
@@ -169,6 +175,7 @@ const ActEvalForm = () => {
                                     value={value}
                                     type="radio"
                                     name="flowOfTheProgram"
+                                    id={`d-${value}`}
                                     key={value}
                                 />
                             ))}
@@ -187,6 +194,7 @@ const ActEvalForm = () => {
                                     value={value}
                                     type="radio"
                                     name="timeManagement"
+                                    id={`e-${value}`}
                                     key={value}
                                 />
                             ))}
@@ -207,6 +215,7 @@ const ActEvalForm = () => {
                                     value={value}
                                     type="radio"
                                     name="suitability"
+                                    id={`f-${value}`}
                                     key={value}
                                 />
                             ))}
@@ -225,6 +234,7 @@ const ActEvalForm = () => {
                                     value={value}
                                     type="radio"
                                     name="cleanliness"
+                                    id={`g-${value}`}
                                     key={value}
                                 />
                             ))}
@@ -243,6 +253,7 @@ const ActEvalForm = () => {
                                     value={value}
                                     type="radio"
                                     name="food"
+                                    id={`h-${value}`}
                                     key={value}
                                 />
                             ))}
@@ -263,6 +274,7 @@ const ActEvalForm = () => {
                                     value={value}
                                     type="radio"
                                     name="suitability"
+                                    id={`i1-${value}`}
                                     key={value}
                                 />
                             ))}
@@ -281,6 +293,7 @@ const ActEvalForm = () => {
                                     value={value}
                                     type="radio"
                                     name="orderliness"
+                                    id={`i2-${value}`}
                                     key={value}
                                 />
                             ))}
@@ -301,6 +314,7 @@ const ActEvalForm = () => {
                                     value={value}
                                     type="radio"
                                     name="humanRelations"
+                                    id={`j1-${value}`}
                                     key={value}
                                 />
                             ))}
@@ -319,6 +333,7 @@ const ActEvalForm = () => {
                                     value={value}
                                     type="radio"
                                     name="promptnessInDeliveryOfService"
+                                    id={`j2-${value}`}
                                     key={value}
                                 />
                             ))}

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { Container, Row, Col, Badge, Card, Button } from 'react-bootstrap';
+import { Container, Row, Col, ProgressBar, Card, Button } from 'react-bootstrap';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faFilter, faChevronLeft } from "@fortawesome/free-solid-svg-icons";
+import { faChevronLeft, faFilter } from "@fortawesome/free-solid-svg-icons";
 import { useNavigate } from 'react-router-dom';
 
 const EvalSummary = () => {
@@ -133,8 +133,8 @@ const EvalSummary = () => {
     }, []);
 
     return (
-        <Container fluid style={{ width: '100rem' }} className="vh-100 justify-content-center me-0 ms-0">
-            <Row className="mt-5">
+        <Container fluid className="py-5">
+            <Row className="mb-5">
                 <Col xs={6} className="d-flex align-items-center mt-4">
                     <Button variant="link" onClick={() => window.history.back()} className="backBtn d-flex align-items-center text-success">
                         <FontAwesomeIcon icon={faChevronLeft} size="lg" />
@@ -148,43 +148,65 @@ const EvalSummary = () => {
                     </Button>
                 </Col>
             </Row>
-            <Card className="mx-auto mt-4" style={{ width: '80%' }}>
+
+
+            <Card className="mx-auto" id='conCard' style={{ maxWidth: '1000px' }}>
                 <Card.Header className="text-center">
                     <h2>Evaluation Results Summary</h2>
                 </Card.Header>
                 <Card.Body>
                     {tallyData ? (
                         <>
-                            {/* Display Department and Activity Title */}
                             <Row className="mb-4">
-                                <Col md={4}><strong>Division/Department/Organizing Team:</strong></Col>
-                                <Col md={8}>{tallyData.department}</Col>
-                            </Row>
-                            <Row className="mb-4">
-                                <Col md={4}><strong>Title of the Activity:</strong></Col>
-                                <Col md={8}>{tallyData.activityTitle}</Col>
+                                <Col>
+                                    <strong className='h4'>Activity:</strong> <span style={{ fontSize: '17px' }}>{tallyData.activityTitle}</span>
+                                </Col>
                             </Row>
 
-                            {/* Display Questions by Sections */}
+                            <Row className="mb-4">
+                                <Col>
+                                    <strong className='h4'>Department:</strong> <span style={{ fontSize: '17px' }}>{tallyData.department}</span>
+                                </Col>
+                            </Row>
+
+                            <Row><p id='scale'>1 – Poor, 2 – Fair, 3 – Satisfactory, 4 – Very Good, 5 – Excellent</p></Row>
+
                             {tallyData.questions.map((sectionData, sectionIndex) => (
-                                <div key={sectionIndex} className="mb-4">
-                                    <h5>{sectionData.section}</h5>
-                                    {sectionData.items.map((item, itemIndex) => (
-                                        <div key={itemIndex} className="mb-3">
-                                            <p>{item.question}</p>
-                                            <Row className="mb-2">
-                                                {[1, 2, 3, 4, 5].map((value) => (
-                                                    <Col key={value} xs={2} className="d-flex align-items-center">
-                                                        <Badge pill bg="primary" className="me-2">
-                                                            {value}
-                                                        </Badge>
-                                                        <span>{item.tally[value] || 0}</span>
-                                                    </Col>
-                                                ))}
-                                            </Row>
-                                        </div>
-                                    ))}
-                                </div>
+                                <Card key={sectionIndex} id='conCard' className="mb-4">
+                                    <Card.Body>
+                                        <h3 className="mb-3">{sectionData.section}</h3>
+                                        {sectionData.items.map((item, itemIndex) => {
+                                            // Calculate total responses for the question
+                                            const totalResponses = Object.values(item.tally).reduce((sum, count) => sum + count, 0);
+
+                                            return (
+                                                <div key={itemIndex} className="mb-4">
+                                                    <Row className="align-items-center">
+                                                        <Col className="mb-2 h5">
+                                                            <strong>{item.question}</strong>
+                                                        </Col>
+                                                        <Col className="text-end">
+                                                            <small className="text-muted">{totalResponses} responses</small>
+                                                        </Col>
+                                                    </Row>
+                                                    {Object.entries(item.tally).map(([key, value]) => (
+                                                        <div key={key} className="d-flex align-items-center mb-2">
+                                                            <span className="me-3" style={{ minWidth: '20px' }}>{key}</span>
+                                                            <ProgressBar
+                                                                now={(value / totalResponses) * 100}
+                                                                label={`${((value / totalResponses) * 100).toFixed(1)}%`}
+                                                                className="flex-grow-1"
+                                                                style={{ height: '20px' }}
+                                                                variant='success'
+                                                            />
+                                                            <span className="ms-3">{value}</span>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            );
+                                        })}
+                                    </Card.Body>
+                                </Card>
                             ))}
                         </>
                     ) : (

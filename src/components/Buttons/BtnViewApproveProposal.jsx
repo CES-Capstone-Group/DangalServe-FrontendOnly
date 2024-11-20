@@ -217,28 +217,40 @@ const BtnViewApproveProposal = ({ proposal, onApprove }) => {
 
   const handleReject = async () => {
     try {
-      const token = localStorage.getItem("access_token");
-      const response = await fetch(
-        API_ENDPOINTS.PROPOSAL_DETAIL(proposal.proposal_id),
-        {
-          method: "PATCH",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify({ status: "Rejected" }),
+        const token = localStorage.getItem("access_token");
+        const response = await fetch(
+            API_ENDPOINTS.PROPOSAL_DETAIL(proposal.proposal_id),
+            {
+                method: "PATCH",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`,
+                },
+                body: JSON.stringify({
+                    status: "Rejected",
+                    reject_reason: rejectReason,  // Include the rejection reason
+                    remarks: remarks,             // Include the remarks
+                }),
+            }
+        );
+
+        console.log(JSON.stringify({
+          status: "Rejected",
+          reject_reason: rejectReason,  // Include the rejection reason
+          remarks: remarks,             // Include the remarks
+      }))
+
+        if (response.ok) {
+            handleRejectClose();
+            if (onApprove) onApprove();
+        } else {
+            const errorData = await response.json();
+            console.error("Failed to reject the proposal:", errorData);
         }
-      );
-      if (response.ok) {
-        handleRejectClose();
-        if (onApprove) onApprove();
-      } else {
-        console.error("Failed to reject the proposal");
-      }
     } catch (error) {
-      console.error("Error rejecting the proposal:", error);
+        console.error("Error rejecting the proposal:", error);
     }
-  };
+};
 
   return (
     <>
@@ -341,7 +353,13 @@ const BtnViewApproveProposal = ({ proposal, onApprove }) => {
                 Remarks
               </Form.Label>
               <Col sm={8}>
-                <Form.Control as="textarea" />
+                <Form.Control 
+                  as="textarea" 
+                  rows={3} 
+                  value={remarks} 
+                  onChange={(e) => setRemarks(e.target.value)}  // Correctly handle the change event
+                  placeholder="Add any remarks (optional)" 
+                />
               </Col>
             </Form.Group>
           </Form>
