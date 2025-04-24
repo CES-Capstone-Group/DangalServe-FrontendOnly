@@ -6,14 +6,11 @@ import "../../App.css";
 
 const AdminManagePage = () => {
   return (
-    <div>
-      <header>
-        <TopNav />
-      </header>
-      <Container style={{padding: '1'}} className="py-2">
+
+      <Container style={{padding: '1'}} className="py-2 mt-5">
         <Outlet />
       </Container>
-    </div>
+
   );
 };
 

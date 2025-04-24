@@ -7,23 +7,26 @@ import { API_ENDPOINTS } from "../../config";
 const BtnAddSchedule = ({ showModal, handleCloseModal, handleShowModal, selectedDate, addNewEvent }) => {
     const [fileInputs, setFileInputs] = useState([{ id: 1 }]);
     const [files, setFiles] = useState([]); // Changed to an array to handle multiple files
-    const [activityTitle, setActivityTitle] = useState(""); 
-    const [targetTime, setTargetTime] = useState("");  
+    const [activityTitle, setActivityTitle] = useState("");
+    const [targetTime, setTargetTime] = useState("");
     const [manualDate, setManualDate] = useState(selectedDate || new Date().toISOString().split('T')[0]);
-    const [proposalTitle, setProposalTitle] = useState(""); 
+    const [proposalTitle, setProposalTitle] = useState("");
     const [proposals, setProposals] = useState([]);
+    const [venue, setVenue] = useState('');
+    const [activityObjectives, setActivityObjectives] = useState('');
+    const [organizingTeam, setOrganizingTeam] = useState(''); // Added state for Organizing Team
     const [error, setError] = useState(null);
     const [loadingProposals, setLoadingProposals] = useState(true);
-    
+
     const handleAddSchedule = () => {
-        if (!activityTitle || !manualDate || !targetTime || !proposalTitle) {
+        if (!activityTitle || !manualDate || !targetTime || !proposalTitle || !venue || !activityObjectives || !organizingTeam) {
             alert("Please fill in all the details.");
             return;
         }
     
-        // Format date and time correctly
-        const formattedDate = new Date(manualDate).toISOString().split('T')[0];
-        const formattedTime = targetTime.length === 5 ? `${targetTime}:00` : targetTime;
+        // Format date and time correctly for the backend
+        const formattedDate = new Date(manualDate).toISOString().split('T')[0]; // Ensure date is in YYYY-MM-DD
+        const formattedTime = `${targetTime}:00.000000`; // Add seconds and microseconds to match backend format
     
         const selectedProposal = proposals.find(proposal =>
             proposal.title.trim().toLowerCase() === proposalTitle.trim().toLowerCase()
@@ -39,9 +42,12 @@ const BtnAddSchedule = ({ showModal, handleCloseModal, handleShowModal, selected
         // Create FormData for API request
         const formData = new FormData();
         formData.append("activity_title", activityTitle);
-        formData.append("target_date", formattedDate);
-        formData.append("target_time", formattedTime);
+        formData.append("target_date", formattedDate); // Date in YYYY-MM-DD
+        formData.append("target_time", formattedTime); // Time in HH:mm:ss.000000 format
         formData.append("proposal", proposalId);
+        formData.append("activity_venue", venue);
+        formData.append("activity_objectives", activityObjectives);
+        formData.append("organizing_team", organizingTeam);
     
         // Append each file to FormData
         if (files.length > 0) {
@@ -52,24 +58,25 @@ const BtnAddSchedule = ({ showModal, handleCloseModal, handleShowModal, selected
             console.warn("No files to upload.");
         }
     
+        console.log("Form Data Sent:", Object.fromEntries(formData));
+    
         // Send the formData to the backend
         fetch(API_ENDPOINTS.ACTIVITY_SCHEDULE_CREATE, {
             method: 'POST',
             body: formData,
             headers: {
-                Authorization: `Bearer ${localStorage.getItem("access_token")}`
-                // Note: Do NOT set 'Content-Type'; the browser will handle it
-            }
+                Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+            },
         })
-        .then(response => {
-            if (!response.ok) {
-                return response.text().then(text => { throw new Error(text); });
-            }
-            return response.json();
-        })       
-        .catch(error => {
-            console.error('Error adding event to backend:', error.message);
-        });
+            .then(response => {
+                if (!response.ok) {
+                    return response.text().then(text => { throw new Error(text); });
+                }
+                return response.json();
+            })
+            .catch(error => {
+                console.error('Error adding event to backend:', error.message);
+            });
     
         // Close the modal and reset fields
         handleCloseModal();
@@ -78,9 +85,10 @@ const BtnAddSchedule = ({ showModal, handleCloseModal, handleShowModal, selected
         setManualDate(new Date().toISOString().split("T")[0]);
         setProposalTitle("");
         setFiles([]); // Reset files
-        addNewEvent(addNewEvent);
+        setVenue("");
+        setActivityObjectives("");
+        setOrganizingTeam(""); // Reset organizing team
     };
-    
 
     // Handle adding a new file input field
     const handleAddMoreFile = () => {
@@ -109,7 +117,7 @@ const BtnAddSchedule = ({ showModal, handleCloseModal, handleShowModal, selected
             }
 
             try {
-                const response = await fetch(`${API_ENDPOINTS.PROPOSAL_LIST_CREATE}?status=Approved%20by%20Barangay`, {
+                const response = await fetch(`${API_ENDPOINTS.PROPOSAL_LIST_CREATE}?status=Approved%20by%20President`, {
                     method: "GET",
                     headers: {
                         "Content-Type": "application/json",
@@ -159,11 +167,12 @@ const BtnAddSchedule = ({ showModal, handleCloseModal, handleShowModal, selected
                 <Modal.Body className="">
                     <Form>
                         <Form.Group className="mb-3" as={Row} controlId="proposalTitle">
-                            <Form.Label column sm={2}>Proposal:</Form.Label>
+                            <Form.Label column sm={2}>Proposal:<span style={{ color: "red" }}>*</span></Form.Label>
                             <Col>
                                 <Form.Select
                                     value={proposalTitle}
                                     onChange={(e) => setProposalTitle(e.target.value)}
+                                    required={true}
                                 >
                                     <option value="" disabled>Select Proposal</option>
                                     {proposals.map((proposal) => (
@@ -176,12 +185,13 @@ const BtnAddSchedule = ({ showModal, handleCloseModal, handleShowModal, selected
                         </Form.Group>
 
                         <Form.Group as={Row} className="mb-3" controlId="txtActivityTitle">
-                            <Form.Label column sm={2} className="h5">Activity Title:</Form.Label>
+                            <Form.Label column sm={2} className="h5">Activity Title:<span style={{ color: "red" }}>*</span></Form.Label>
                             <Col>
                                 <InputGroup>
                                     <Form.Control
                                         className="input"
                                         type="text"
+                                        required={true}
                                         placeholder="Enter activity title"
                                         value={activityTitle}
                                         onChange={(e) => setActivityTitle(e.target.value)}
@@ -191,22 +201,24 @@ const BtnAddSchedule = ({ showModal, handleCloseModal, handleShowModal, selected
                         </Form.Group>
 
                         <Form.Group as={Row} className="mb-3" controlId="DateActivity">
-                            <Form.Label column sm={2} className="h5">Target Date:</Form.Label>
+                            <Form.Label column sm={2} className="h5">Target Date:<span style={{ color: "red" }}>*</span></Form.Label>
                             <Col>
                                 <InputGroup>
                                     <Form.Control
                                         className="input"
+                                        required={true}
                                         type="date"
                                         value={manualDate}
                                         onChange={(e) => setManualDate(e.target.value)}
                                     />
                                 </InputGroup>
                             </Col>
-                            <Form.Label column sm={2} className="h5">Target Time:</Form.Label>
+                            <Form.Label column sm={2} className="h5">Target Time:<span style={{ color: "red" }}>*</span></Form.Label>
                             <Col>
                                 <InputGroup>
                                     <Form.Control
                                         className="input"
+                                        required={true}
                                         type="time"
                                         value={targetTime}
                                         onChange={handleTimeChange}
@@ -215,49 +227,83 @@ const BtnAddSchedule = ({ showModal, handleCloseModal, handleShowModal, selected
                             </Col>
                         </Form.Group>
 
-                        {fileInputs.map((input, index) => (
-                            <Form.Group as={Row} className="mb-3 align-items-center" controlId={`file-${input.id}`} key={input.id}>
-                                <Form.Label column sm={2} className="h5">File {index + 1}</Form.Label>
-                                <Col className="d-flex align-items-center">
-                                    <InputGroup>
-                                        <Form.Control
-                                            className="inputFile"
-                                            type="file"
-                                            accept="image/*, application/pdf, .docx"
-                                            onChange={(e) => handleFileChange(e, input.id)}
-                                            style={{ height: '38px' }}
-                                        />
-                                        {fileInputs.length > 1 && (
-                                            <Button
-                                                onClick={() => handleRemoveFile(input.id)}
-                                                variant="danger"
-                                                className="d-flex align-items-center"
-                                                style={{ height: '38px' }}
-                                            >
-                                                <FontAwesomeIcon icon={faMinus} />
-                                            </Button>
-                                        )}
-                                    </InputGroup>
+                        {/* Venue */}
+                        <Form.Group as={Row} className="mb-3" controlId="venue">
+                            <Form.Label column sm={2} className="h5">Venue:<span style={{ color: "red" }}>*</span></Form.Label>
+                            <Col>
+                                <Form.Control
+                                    className="input"
+                                    type="text"
+                                    required={true}
+                                    placeholder="Enter venue"
+                                    value={venue}
+                                    onChange={(e) => setVenue(e.target.value)}
+                                />
+                            </Col>
+                        </Form.Group>
+
+                        {/* Organizing Team */}
+                        <Form.Group as={Row} className="mb-3" controlId="organizingTeam">
+                            <Form.Label column sm={2} className="h5">Organizing Team:<span style={{ color: "red" }}>*</span></Form.Label>
+                            <Col>
+                                <Form.Control
+                                    className="input"
+                                    type="text"
+                                    required={true}
+                                    placeholder="Enter the name of the division/department/organizing team"
+                                    value={organizingTeam}
+                                    onChange={(e) => setOrganizingTeam(e.target.value)}
+                                />
+                            </Col>
+                        </Form.Group>
+
+                        {/* Objectives */}
+                        <Form.Group as={Row} className="mb-3" controlId="activityObjectives">
+                            <Form.Label column sm={2} className="h5">Objectives:<span style={{ color: "red" }}>*</span></Form.Label>
+                            <Col>
+                                <Form.Control
+                                    className="input"
+                                    as="textarea"
+                                    rows={4}
+                                    required={true}
+                                    placeholder="Enter the objectives of the activity"
+                                    value={activityObjectives}
+                                    onChange={(e) => setActivityObjectives(e.target.value)}
+                                />
+                            </Col>
+                        </Form.Group>
+
+                        {/* File Inputs */}
+                        {fileInputs.map((input) => (
+                            <Form.Group as={Row} className="mb-3" controlId="formFileMultiple" key={input.id}>
+                                <Form.Label column sm={2}>Upload Files</Form.Label>
+                                <Col sm={8}>
+                                    <Form.Control
+                                        type="file"
+                                        multiple
+                                        onChange={(e) => handleFileChange(e, input.id)}
+                                    />
                                 </Col>
-                                <p className="text-sm">Max Size: 25MB</p>
+                                <Col sm={2}>
+                                    <Button
+                                        variant="danger"
+                                        onClick={() => handleRemoveFile(input.id)}
+                                    >
+                                        <FontAwesomeIcon icon={faMinus} />
+                                    </Button>
+                                </Col>
                             </Form.Group>
                         ))}
 
-                        <Container fluid className="d-flex justify-content-center align-items-center">
-                            <Button onClick={handleAddMoreFile} variant="success" className="mt-2">
-                                <FontAwesomeIcon icon={faPlus} />
-                            </Button>
-                        </Container>
+                        <Button variant="success" onClick={handleAddMoreFile}>
+                            <FontAwesomeIcon icon={faPlus} /> Add More File
+                        </Button>
                     </Form>
                 </Modal.Body>
 
-                <Modal.Footer className="d-flex justify-content-center">
-                    <Button size="lg" variant="success" onClick={handleAddSchedule}>
-                        Add Schedule
-                    </Button>
-                    <Button size="lg" variant="danger" onClick={handleCloseModal}>
-                        Cancel
-                    </Button>
+                <Modal.Footer>
+                    <Button variant="secondary" onClick={handleCloseModal}>Close</Button>
+                    <Button variant="success" onClick={handleAddSchedule}>Add Schedule</Button>
                 </Modal.Footer>
             </Modal>
         </div>

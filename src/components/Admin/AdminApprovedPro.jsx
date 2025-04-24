@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Container, Table, Card, Row, Col } from "react-bootstrap";
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import BtnCoorViewApprovedProposal from "../Buttons/Coordinator/BtnCoorViewApprovedProposal";
 import "../table.css";
 import '/src/App.css';
@@ -8,10 +8,12 @@ import '/src/App.css';
 import { API_ENDPOINTS } from "../../config";
 
 const AdminApprovedPro = () => {
+    const { departmentId } = useParams();
+    const [departmentProposals, setDepartmentProposals] = useState([]);
+    const [departmentName, setDepartmentName] = useState("");
     const [proposals, setProposals] = useState([]);
     const [departments, setDepartments] = useState([]);
     const [loading, setLoading] = useState(true);
-    const [departmentProposals, setDepartmentProposals] = useState([]);
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -24,7 +26,7 @@ const AdminApprovedPro = () => {
             }
 
             try {
-                const response = await fetch(API_ENDPOINTS.PROPOSAL_LIST_CREATE+`?status=Approved by President`, {
+                const response = await fetch(API_ENDPOINTS.PROPOSAL_LIST_CREATE + `?status=Approved%20by%20President`, {
                     method: "GET",
                     headers: {
                         "Content-Type": "application/json",
@@ -79,9 +81,8 @@ const AdminApprovedPro = () => {
 
     return (
         <Container fluid>
-            <div className="container mb-4">
-                <h1>APPROVED PROPOSALS</h1>
-            </div>
+            <h1>APPROVED PROPOSALS</h1>
+
 
 
             <Row className="gy-1 g-4 mb-4">
@@ -95,7 +96,7 @@ const AdminApprovedPro = () => {
                                 <Card.Title style={{ fontSize: "medium" }}>
                                     {department.dept_name}
                                 </Card.Title>
-                                <Card.Text style={{fontSize: '12px'}}>
+                                <Card.Text style={{ fontSize: '12px' }}>
                                     No. of Approved Proposals:{" "}
                                     {proposals.filter(
                                         (proposal) => proposal.user_department_id === department.dept_id

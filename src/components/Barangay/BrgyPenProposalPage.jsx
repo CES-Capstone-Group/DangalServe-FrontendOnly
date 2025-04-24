@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Container, Table } from "react-bootstrap";
-import {jwtDecode} from "jwt-decode"; // To decode JWT and get user info
+import { jwtDecode } from "jwt-decode"; // To decode JWT and get user info
 import "../table.css";
 import BtnViewApproveProposal from "../Buttons/BtnViewApproveProposal";
 import { API_ENDPOINTS } from "../../config";
@@ -17,7 +17,7 @@ const BrgyPenProposalPage = () => {
             setLoading(false);
             return;
         }
-        
+
         try {
             const response = await fetch(`${API_ENDPOINTS.PROPOSAL_LIST_CREATE}?${filter}`, {
                 method: 'GET',
@@ -81,20 +81,20 @@ const BrgyPenProposalPage = () => {
                 setLoading(false);
                 return;
             }
-        
+
             const token = localStorage.getItem("access_token");
             if (!token) {
                 console.error("No token found.");
                 setLoading(false);
                 return;
             }
-        
+
             try {
                 const queryParams = new URLSearchParams({
                     status__in: ["Approved by Director", "Partly Approved by Barangay"].join(','),
                     partner_community: department,
                 });
-        
+
                 const response = await fetch(`${API_ENDPOINTS.PROPOSAL_LIST_CREATE}?${queryParams.toString()}`, {
                     method: "GET",
                     headers: {
@@ -102,7 +102,7 @@ const BrgyPenProposalPage = () => {
                         Authorization: `Bearer ${token}`,
                     },
                 });
-        
+
                 if (response.ok) {
                     const data = await response.json();
                     // Add an additional safeguard to filter exactly by "Approved by Barangay"
@@ -119,7 +119,7 @@ const BrgyPenProposalPage = () => {
                 setLoading(false);
             }
         };
-        
+
 
         if (department) {
             fetchProposals();
@@ -128,9 +128,8 @@ const BrgyPenProposalPage = () => {
 
     return (
         <Container fluid>
-            <div className="container">
-                <h1> PENDING PROPOSALS </h1>
-            </div>
+
+            <h1> PENDING PROPOSALS </h1>
 
             {loading ? (
                 <p>Loading...</p>
@@ -153,10 +152,10 @@ const BrgyPenProposalPage = () => {
                                     <td>{proposal.location}</td>
                                     <td>{new Date(proposal.target_date).toLocaleDateString()}</td>
                                     <td>{proposal.status}</td>
-                                    <td><BtnViewApproveProposal 
-                                        proposal={proposal} 
-                                        onApprove={handleProposalApproved} 
-                                     /></td>
+                                    <td><BtnViewApproveProposal
+                                        proposal={proposal}
+                                        onApprove={handleProposalApproved}
+                                    /></td>
                                 </tr>
                             ))
                         ) : (

@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import { Button, Modal, Form, InputGroup } from "react-bootstrap";
 import { API_ENDPOINTS } from "../../../config";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faPlus } from "@fortawesome/free-solid-svg-icons";
 
 const BtnAddResearchAgenda = ({ onResearchAgendaAdded }) => {
     const [showModal, setShowModal] = useState(false);
@@ -22,7 +24,7 @@ const BtnAddResearchAgenda = ({ onResearchAgendaAdded }) => {
     const validateForm = () => {
         const newErrors = {};
 
-        if(!label) newErrors.label = 'Research Agenda Label Name is Required'
+        if (!label) newErrors.label = 'Research Agenda Label Name is Required'
 
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
@@ -30,11 +32,11 @@ const BtnAddResearchAgenda = ({ onResearchAgendaAdded }) => {
 
     const addResearchAgenda = async (e) => {
         e.preventDefault();
-        if(!validateForm()) return;
+        if (!validateForm()) return;
 
         const researchAgendaData = new FormData();
         researchAgendaData.append("label", label); // Add the label field
-        
+
         if (image) {
             researchAgendaData.append("image", image); // Add the image if available
         }
@@ -64,8 +66,8 @@ const BtnAddResearchAgenda = ({ onResearchAgendaAdded }) => {
     return (
         <div className="justify-content-end m-3">
             <div>
-                <Button className="shadow" style={{ backgroundColor: "#71A872", border: '0px', fontSize: '1rem' }} onClick={handleShowModal}>
-                    + Add Research Agenda
+                <Button className="shadow" style={{ backgroundColor: "#71A872", border: '0px', fontSize: '1rem', padding: "10px 20px" }} onClick={handleShowModal}>
+                    <FontAwesomeIcon icon={faPlus} size={16} /> {/* Add the icon */} Add Research Agenda
                 </Button>
             </div>
 
@@ -77,17 +79,17 @@ const BtnAddResearchAgenda = ({ onResearchAgendaAdded }) => {
                 <Modal.Body>
                     <Form onSubmit={addResearchAgenda}>
                         <Form.Group className='mb-3' controlId='ResearchLabel'>
-                            <Form.Label className='h5'>Research Agenda Label</Form.Label>
+                            <Form.Label className='h5'>Research Agenda Label<span style={{ color: "red" }}>*</span></Form.Label>
                             <InputGroup>
-                                <Form.Control 
-                                    className='input' 
-                                    type='text' 
+                                <Form.Control
+                                    className='input'
+                                    type='text'
                                     name='label'
-                                    placeholder='Enter research agenda label' 
+                                    placeholder='Enter research agenda label'
                                     value={label}
                                     onChange={(e) => setLabel(e.target.value)}
                                     isInvalid={!!errors.label}
-                                    
+
                                 />
                                 <Form.Control.Feedback type="invalid">
                                     {errors.label}
@@ -99,10 +101,10 @@ const BtnAddResearchAgenda = ({ onResearchAgendaAdded }) => {
                         <Form.Group className='mb-3' controlId='ResearchImage'>
                             <Form.Label className='h5'>Upload Research Image</Form.Label>
                             <InputGroup>
-                                <Form.Control 
-                                    className="inputFile" 
-                                    type="file" 
-                                    onChange={(e) => setImage(e.target.files[0])} 
+                                <Form.Control
+                                    className="inputFile"
+                                    type="file"
+                                    onChange={(e) => setImage(e.target.files[0])}
                                     accept="image/*"
                                 />
                             </InputGroup>
@@ -110,10 +112,10 @@ const BtnAddResearchAgenda = ({ onResearchAgendaAdded }) => {
                         </Form.Group>
 
                         <Modal.Footer className="d-flex justify-content-center">
-                            <Button size="lg" variant='success' type="submit">
+                            <Button variant='success' type="submit">
                                 Add
                             </Button>
-                            <Button size="lg" variant="danger" onClick={handleCloseModal}>
+                            <Button variant="danger" onClick={handleCloseModal}>
                                 Cancel
                             </Button>
                         </Modal.Footer>

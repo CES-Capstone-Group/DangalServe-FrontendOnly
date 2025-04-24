@@ -5,6 +5,8 @@ import { Form, Button, Row, Col, Container } from 'react-bootstrap';
 import { useParams } from 'react-router-dom';
 import { useEffect } from 'react';
 import { API_ENDPOINTS } from '../../config';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faMinus } from '@fortawesome/free-solid-svg-icons';
 
 const ProposalForm = () => {
   const [text, setText] = useState("");
@@ -26,24 +28,51 @@ const ProposalForm = () => {
     concurredByPosition: '',
   });
 
-  const [signatoryNames, setSignatoryNames] = useState([]);
+  const [signatorySuggestions, setSignatorySuggestions] = useState([]);
   const [selectedSignatory, setSelectedSignatory] = useState('');
+
+  const handleDeleteProponent = (indexToDelete) => {
+    const updatedProponents = proponents.filter((_, index) => index !== indexToDelete);
+    setProponents(updatedProponents);
+  };
+
+  const handleDeletePreparedBy = (id) => {
+    const updatedPrepared = signatories.filter(
+      (s) => !(s.section === 'prepared' && s.id === id)
+    );
+    setSignatories(updatedPrepared);
+  };
+
+  const handleDeleteEndorsedBy = (id) => {
+    const updatedEndorsed = signatories.filter(
+      (s) => !(s.section === 'endorsed' && s.id === id)
+    );
+    setSignatories(updatedEndorsed);
+  };
+
+  const handleDeleteConcurredBy = (id) => {
+    const updatedConcurred = signatories.filter(
+      (s) => !(s.section === 'concurred' && s.id === id)
+    );
+    setSignatories(updatedConcurred);
+  };
+
   useEffect(() => {
     fetch(API_ENDPOINTS.SIGNATORY_NAMES)
       .then(response => {
         if (!response.ok) {
-          throw new Error('Network response was not ok');
+          throw new Error("Network response was not ok");
         }
         return response.json();
       })
-      .then(data => {      
+      .then(data => {
         if (Array.isArray(data)) {
-          setSignatoryNames(data);
+          setSignatorySuggestions(data);
         } else {
-          console.error('Unexpected data format:', data);
+          console.error("Unexpected data format:", data);
         }
       })
-      .catch(error => console.error('Error fetching signatory names:', error));
+      .catch(error => console.error("Error fetching signatory suggestions:", error));
   }, []);
 
   const [barangays, setBarangays] = useState([]);
@@ -131,18 +160,26 @@ const ProposalForm = () => {
 
   const handleResearchAgendaChange = (e) => {
     const { value, checked } = e.target;
-    const agendaId = Number(value); // Or use `String(value)` if agenda.id is a string
+    const agendaId = Number(value); // Assuming agenda.id is numeric
+  
     setFormData((prevData) => {
       let updatedAgendas;
       if (checked) {
-        // Add the value only if it doesn't already exist in the array
+        // Add selected agenda
         updatedAgendas = prevData.research_agendas.includes(agendaId)
           ? prevData.research_agendas
           : [...prevData.research_agendas, agendaId];
       } else {
-        // Remove the value
+        // Remove unselected agenda
         updatedAgendas = prevData.research_agendas.filter((agenda) => agenda !== agendaId);
       }
+  
+      // Update error state
+      setErrors((prevErrors) => ({
+        ...prevErrors,
+        agenda: updatedAgendas.length === 0 ? 'Please select at least one agenda.' : '',
+      }));
+  
       return { ...prevData, research_agendas: updatedAgendas };
     });
   };
@@ -210,19 +247,89 @@ const ProposalForm = () => {
 
   const handleSignatoryChange = (e) => {
     const { name, value } = e.target;
-
-    // Update the input value
-    setSignatoryInput({
-      ...signatoryInput,
-      [name]: value,
-    });
-
+  
+    // Check if the field being updated is 'preparedByName'
+    if (name === "preparedByName") {
+      // Find the selected signatory based on the name
+      const selectedSignatory = signatorySuggestions.find(
+        (s) => s.name === value
+      );
+  
+    // If a match is found, update the position field as well
+      if (selectedSignatory) {
+        setSignatoryInput({
+          ...signatoryInput,
+          preparedByName: value,
+          preparedByPosition: selectedSignatory.position,  // Set the position
+        });
+      } else {
+        // If no match, just update the name
+        setSignatoryInput({
+          ...signatoryInput,
+          preparedByName: value,
+          preparedByPosition: "",  // Clear the position if no name matches
+        });
+      }
+    }  
+    else if (name === "endorsedByName") {
+      // Find the selected signatory based on the name
+      const selectedSignatory = signatorySuggestions.find(
+        (s) => s.name === value
+      );
+  
+      // If a match is found, update the position field as well
+      if (selectedSignatory) {
+        setSignatoryInput({
+          ...signatoryInput,
+          endorsedByName: value,
+          endorsedByPosition: selectedSignatory.position,  // Set the position
+        });
+      } else {
+        // If no match, just update the name
+        setSignatoryInput({
+          ...signatoryInput,
+          endorsedByName: value,
+          endorsedByPosition: "",  // Clear the position if no name matches
+        });
+      }
+    } 
+    else if (name === "concurredByName") {
+      // Find the selected signatory based on the name
+      const selectedSignatory = signatorySuggestions.find(
+        (s) => s.name === value
+      );
+  
+      // If a match is found, update the position field as well
+      if (selectedSignatory) {
+        setSignatoryInput({
+          ...signatoryInput,
+          concurredByName: value,
+          concurredByPosition: selectedSignatory.position,  // Set the position
+        });
+      } else {
+        // If no match, just update the name
+        setSignatoryInput({
+          ...signatoryInput,
+          concurredByName: value,
+          concurredByPosition: "",  // Clear the position if no name matches
+        });
+      }
+    }
+    else {
+      // For other fields, just update the value
+      setSignatoryInput({
+        ...signatoryInput,
+        [name]: value,
+      });
+    }
+  
     // Update validation errors if the field is empty
     setErrors({
       ...errors,
       [name]: value.trim() === '' ? 'This field is required' : '',
     });
   };
+  
 
 
   // State for signatories
@@ -251,37 +358,33 @@ const ProposalForm = () => {
 
   // Add a new signatory to the respective section
   const handleAddSignatory = (section) => {
-    if (section === 'prepared' && signatoryInput.preparedByName && signatoryInput.preparedByPosition) {
-      setSignatories([
-        ...signatories,
-        {
-          name: signatoryInput.preparedByName,
-          position: signatoryInput.preparedByPosition,
-          section: 'prepared',
-        },
-      ]);
-      setSignatoryInput({ ...signatoryInput, preparedByName: '', preparedByPosition: '' }); // Reset input fields for "Prepared By"
-    } else if (section === 'endorsed' && signatoryInput.endorsedByName && signatoryInput.endorsedByPosition) {
-      setSignatories([
-        ...signatories,
-        {
-          name: signatoryInput.endorsedByName,
-          position: signatoryInput.endorsedByPosition,
-          section: 'endorsed',
-        },
-      ]);
-      setSignatoryInput({ ...signatoryInput, endorsedByName: '', endorsedByPosition: '' }); // Reset input fields for "Endorsed By"
-    } else if (section === 'concurred' && signatoryInput.concurredByName && signatoryInput.concurredByPosition) {
-      setSignatories([
-        ...signatories,
-        {
-          name: signatoryInput.concurredByName,
-          position: signatoryInput.concurredByPosition,
-          section: 'concurred',
-        },
-      ]);
-      setSignatoryInput({ ...signatoryInput, concurredByName: '', concurredByPosition: '' }); // Reset input fields for "Concurred By"
+    const nameField = `${section}ByName`;
+    const positionField = `${section}ByPosition`;
+
+    if (!signatoryInput[nameField] || !signatoryInput[positionField]) {
+      setErrors({
+        [nameField]: !signatoryInput[nameField] ? 'Name is required' : '',
+        [positionField]: !signatoryInput[positionField] ? 'Position is required' : '',
+      });
+      return;
     }
+
+    setSignatories([
+      ...signatories,
+      {
+        id: new Date().getTime(), // Use timestamp as a unique ID
+        name: signatoryInput[nameField],
+        position: signatoryInput[positionField],
+        section: section,
+      },
+    ]);
+
+    setSignatoryInput({
+      ...signatoryInput,
+      [nameField]: '',
+      [positionField]: '',
+    });
+    setErrors({});
   };
 
 
@@ -394,6 +497,15 @@ const ProposalForm = () => {
         submitData.append(key, formData[key]);
       }
     });
+
+      // Validation: Check if "Research Agenda" is selected
+      if (formData.research_agendas.length === 0) {
+        setErrors((prevErrors) => ({
+          ...prevErrors,
+          agenda: 'Please select at least one research agenda.',
+        }));
+        return; // Stop submission
+      }
 
     // Append form fields except for proponents, signatories, and files
     Object.keys(formData).forEach(key => {
@@ -519,6 +631,7 @@ const ProposalForm = () => {
             {researchAgendas.map((agenda) => (
               <Form.Check
                 key={agenda.id}
+                name="agenda"
                 type="checkbox"
                 id={`agenda-${agenda.id}`}
                 label={agenda.label}
@@ -528,6 +641,8 @@ const ProposalForm = () => {
                 className="me-3" // Adds margin to the right for spacing
               />
             ))}
+            {/* Show error message if present */}
+            {errors.agenda && <p className="text-danger">{errors.agenda}</p>}
           </Col>
         </Form.Group>
 
@@ -607,6 +722,10 @@ const ProposalForm = () => {
               {proponents.map((p, index) => (
                 <li key={index}>
                   {p.name} - {p.position}
+                  <Button variant='danger ps-2 pe-2' style={{padding:'2px', fontSize: '10px' , color: 'white', fontWeight: 'bolder', cursor: 'pointer', marginLeft: '10px'}}
+                    onClick={() => handleDeleteProponent(index)}>
+                    <FontAwesomeIcon icon={faMinus}></FontAwesomeIcon>
+                  </Button>
                 </li>
               ))}
             </ul>
@@ -1043,9 +1162,13 @@ const ProposalForm = () => {
         <h5 className="mb-3">Prepared By:</h5>
         {signatories.filter(s => s.section === 'prepared').length > 0 && (
           <ul>
-            {signatories.filter(s => s.section === 'prepared').map((p, index) => (
-              <li key={index}>
+            {signatories.filter(s => s.section === 'prepared').map((p) => (
+              <li key={p.id}>
                 {p.name} - {p.position}
+                  <Button variant='danger ps-2 pe-2' style={{padding:'2px', fontSize: '10px' , color: 'white', fontWeight: 'bolder', cursor: 'pointer', marginLeft: '10px'}}
+                    onClick={() => handleDeletePreparedBy(p.id)}>
+                    <FontAwesomeIcon icon={faMinus}></FontAwesomeIcon>
+                  </Button>
               </li>
             ))}
           </ul>
@@ -1062,12 +1185,17 @@ const ProposalForm = () => {
                 onBlur={handleBlurSig}
                 list="prepared-signatory-suggestions"
                 placeholder="Enter name"
+                role='combobox'
               />
-              <datalist id="prepared-signatory-suggestions">
-                {signatoryNames.map((name, index) => {
-
-                  return <option key={index} value={name} />;
-                })}
+              <datalist role='listbox' id="prepared-signatory-suggestions">
+                {signatorySuggestions.map((suggestion, index) => (
+                  <option 
+                    key={index} 
+                    value={suggestion.name}
+                  >
+                    {suggestion.name} ({suggestion.position})
+                  </option>
+                ))}
               </datalist>
             </Form.Group>
             {errors.preparedByName && <p className="text-danger">{errors.preparedByName}</p>}
@@ -1099,9 +1227,13 @@ const ProposalForm = () => {
         <h5 className="mb-3">Endorsed By:</h5>
         {signatories.filter(s => s.section === 'endorsed').length > 0 && (
           <ul>
-            {signatories.filter(s => s.section === 'endorsed').map((p, index) => (
-              <li key={index}>
+            {signatories.filter(s => s.section === 'endorsed').map((p) => (
+              <li key={p.id}>
                 {p.name} - {p.position}
+                <Button variant='danger ps-2 pe-2' style={{padding:'2px', fontSize: '10px' , color: 'white', fontWeight: 'bolder', cursor: 'pointer', marginLeft: '10px'}}
+                    onClick={() => handleDeleteEndorsedBy(p.id)}>
+                    <FontAwesomeIcon icon={faMinus}></FontAwesomeIcon>
+                  </Button>
               </li>
             ))}
           </ul>
@@ -1116,12 +1248,17 @@ const ProposalForm = () => {
                 value={signatoryInput.endorsedByName}
                 onChange={handleSignatoryChange}
                 onBlur={handleBlurSig}
-                list='endrosed-by-signatory-suggestions'
+                list='endorsed-by-signatory-suggestions'
                 placeholder="Enter name"
               />
-              <datalist id="endrosed-by-signatory-suggestions">
-                {signatoryNames.map((name, index) => (
-                  <option key={index} value={name} />
+              <datalist id="endorsed-by-signatory-suggestions">
+                {signatorySuggestions.map((suggestion, index) => (
+                  <option 
+                    key={index} 
+                    value={suggestion.name}
+                  >
+                    {suggestion.name} ({suggestion.position})
+                  </option>
                 ))}
               </datalist>
             </Form.Group>
@@ -1154,9 +1291,13 @@ const ProposalForm = () => {
         <h5 className="mb-3">Concurred By:</h5>
         {signatories.filter(s => s.section === 'concurred').length > 0 && (
           <ul>
-            {signatories.filter(s => s.section === 'concurred').map((p, index) => (
-              <li key={index}>
+            {signatories.filter(s => s.section === 'concurred').map((p) => (
+              <li key={p.id}>
                 {p.name} - {p.position}
+                <Button variant='danger ps-2 pe-2' style={{padding:'2px', fontSize: '10px' , color: 'white', fontWeight: 'bolder', cursor: 'pointer', marginLeft: '10px'}}
+                    onClick={() => handleDeleteConcurredBy(p.id)}>
+                    <FontAwesomeIcon icon={faMinus}></FontAwesomeIcon>
+                  </Button>
               </li>
             ))}
           </ul>
@@ -1174,9 +1315,15 @@ const ProposalForm = () => {
                 list='concured-by-signatory-suggestions'
                 placeholder="Enter name"
               />
+
               <datalist id="concured-by-signatory-suggestions">
-                {signatoryNames.map((name, index) => (
-                  <option key={index} value={name} />
+                {signatorySuggestions.map((suggestion, index) => (
+                  <option 
+                  key={index} 
+                  value={suggestion.name}
+                >
+                  {suggestion.name} ({suggestion.position})
+                </option>
                 ))}
               </datalist>
             </Form.Group>

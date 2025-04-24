@@ -1,92 +1,141 @@
 import React, { useEffect, useState } from "react";
-import { Container, Table } from "react-bootstrap";
-import BtnCoorViewApprovedProposal from "../Buttons/Coordinator/BtnCoorViewApprovedProposal";
-import "../table.css";
-import ProposalPB from "../ProposalPB";
+import { Container, Card, Row, Col, Button, Spinner } from "react-bootstrap";
+import { useParams, useNavigate, useLocation } from "react-router-dom";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faChevronLeft } from "@fortawesome/free-solid-svg-icons";
 import { API_ENDPOINTS } from "../../config";
+import { jwtDecode } from "jwt-decode";
 
-const CoorApprovedPro = () => {
-    const [proposals, setProposals] = useState([]);
+const CoorApprovePro = () => {
+    const { departmentId } = useParams();
+    const [departmentProposals, setDepartmentProposals] = useState([]);
+    const [departmentName, setDepartmentName] = useState("");
     const [loading, setLoading] = useState(true);
+    const navigate = useNavigate();
+    const location = useLocation();
 
-    // Fetch approved proposals for the current user
     useEffect(() => {
-        const fetchApprovedProposals = async () => {
-            const token = localStorage.getItem("access_token"); // Get the token from localStorage
-            if (!token) {
-                console.error("No token found.");
-                setLoading(false); // Stop loading if there's no token
-                return;
-            }
-
+        const fetchDepartmentProposals = async () => {
             try {
-                // Fetch only approved proposals for the current user
-                const response = await fetch(`${API_ENDPOINTS.PROPOSAL_LIST_CREATE}?status=Approved by Barangay`, {
-                    method: 'GET',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${token}`,  // Add the Authorization header
-                    },
-                });
-
+                const token = localStorage.getItem("access_token");
+                if (!token) throw new Error("No token found.");
+                const decodedToken = jwtDecode(token);
+                const department = decodedToken.department.dept_id;
+                const response = await fetch(
+                    `${API_ENDPOINTS.PROPOSAL_LIST_CREATE}?status=Approved%20by%20President`,
+                    {
+                        method: "GET",
+                        headers: {
+                            "Content-Type": "application/json",
+                            Authorization: `Bearer ${token}`,
+                        },
+                    }
+                );
+                
+                console.log(department)
                 if (response.ok) {
                     const data = await response.json();
-                    setProposals(data); // Update the proposals state with the fetched data
-                    setLoading(false); // Stop loading once data is fetched
-                } else if (response.status === 401) {
-                    console.error("Unauthorized: Check if the token is valid.");
-                    setLoading(false);
+                    setDepartmentProposals(data);
                 } else {
-                    console.error("Error fetching proposals:", response.statusText);
-                    setLoading(false);
+                    console.error("Error fetching department proposals:", response.statusText);
                 }
             } catch (error) {
-                console.error("Error fetching proposals:", error);
+                console.error("Error fetching department proposals:", error);
+            } finally {
                 setLoading(false);
             }
         };
 
-        fetchApprovedProposals();
-    }, []);
+        const fetchDepartmentName = async () => {
+            try {
+                const response = await fetch(API_ENDPOINTS.DEPARTMENT_DETAIL);
+                if (response.ok) {
+                    const data = await response.json();
+                    setDepartmentName(data.dept_name);
+                }
+            } catch (error) {
+                console.error("Error fetching department name:", error);
+            }
+        };
+
+        if (location.state?.departmentProposals && location.state?.departmentName) {
+            setDepartmentProposals(location.state.departmentProposals);
+            // console.log(departmentProposals)
+            setDepartmentName(location.state.departmentName);
+            setLoading(false);
+        } else {
+            fetchDepartmentProposals();
+            fetchDepartmentName();
+        }
+    }, [departmentId, location.state]);
+
+    const handleProposalClick = async (proposal) => {
+        try {
+            const response = await fetch(
+                API_ENDPOINTS.ACTIVITY_SCHEDULE_BY_PROPOSAL(proposal.proposal_id)
+            );
+            if (response.ok) {
+                const eventData = await response.json();
+                console.log(eventData);
+                navigate("/coor/event-page", {
+                    state: {
+                        proposalEvents: eventData,
+                        proposalName: proposal.title,
+                    },
+                });
+            } else {
+                console.error("Error fetching proposal events:", response.statusText);
+            }
+        } catch (error) {
+            console.error("Error fetching proposal events:", error);
+        }
+    };
 
     return (
-        <Container fluid>
-            <div className="container">
-                <h1>APPROVED PROPOSALS</h1>
-            </div>
-           
+        <Container fluid className="mt-5">
             {loading ? (
-                <p>Loading...</p>
+                <Spinner animation="border" role="status">
+                    <span className="visually-hidden">Loading...</span>
+                </Spinner>
             ) : (
-                <Table responsive bordered striped hover className="tableStyle">
-                    <thead>
-                        <tr>
-                            <th>Proposal Title</th>
-                            <th>Location</th>
-                            <th>Target Date</th>
-                            <th></th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {proposals.length > 0 ? (
-                            proposals.map((proposal) => (
-                                <tr key={proposal.proposal_id}>
-                                    <td>{proposal.title}</td>
-                                    <td>{proposal.location}</td>
-                                    <td>{new Date(proposal.target_date).toLocaleDateString()}</td>
-                                    <td><BtnCoorViewApprovedProposal proposal={proposal} /></td>
-                                </tr>
-                            ))
-                        ) : (
-                            <tr>
-                                <td colSpan="4">No approved proposals found.</td>
-                            </tr>
-                        )}
-                    </tbody>
-                </Table>
+                <Row className="mb-4">
+                    <h1>APPROVED PROPOSALS</h1>
+                    {departmentProposals.map((proposal) => (
+                        <Col key={proposal.proposal_id} xs={12} className="mb-3"> {/* Use xs={12} to make it full width */}
+                            <Card
+                                className="border shadow"
+                                onClick={() => handleProposalClick(proposal)}
+                                style={{
+                                    cursor: "pointer",
+                                    border: "1px solid #71A872", // Adjust border color
+                                    borderRadius: "8px", // Smooth border edges
+                                    padding: "1rem", // Add some padding
+                                }}
+                            >
+                                <Card.Body>
+                                    <Card.Title
+                                        className="text-success"
+                                        style={{
+                                            fontSize: "20px", // Control text size
+                                            fontWeight: "bold", // Emphasize text
+                                            wordWrap: "break-word", // Wrap long words
+                                            overflow: "hidden", // Prevent overflow
+                                            textOverflow: "ellipsis", // Add ellipsis for overflow
+                                            display: "-webkit-box", // Enable multi-line ellipsis
+                                            WebkitLineClamp: 2, // Limit to 2 lines
+                                            WebkitBoxOrient: "vertical",
+                                        }}
+                                    >
+                                        {proposal.title}
+                                    </Card.Title>
+                                </Card.Body>
+                            </Card>
+                        </Col>
+                    ))}
+                </Row>
             )}
         </Container>
     );
 };
 
-export default CoorApprovedPro;
+export default CoorApprovePro;

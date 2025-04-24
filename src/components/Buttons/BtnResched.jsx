@@ -9,7 +9,7 @@ const BtnResched = () => {
     return (
         <div className="d-flex justify-content-start m-3">
             <div>
-                <Button style={{ backgroundColor: "#71A872", border: '0px', color: 'white' }} onClick={handleShowModal}>
+                <Button className="btn-danger" style={{border: '0px', color: 'white' }} onClick={handleShowModal}>
                     Request Reschedule
                 </Button>
             </div>

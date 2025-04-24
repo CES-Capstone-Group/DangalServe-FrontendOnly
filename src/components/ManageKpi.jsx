@@ -4,6 +4,7 @@ import {
     Container,
     Row,
     Table,
+    Col,
     Form,
     Modal,
     Button,
@@ -83,19 +84,55 @@ const ManageKpi = () => {
         setIsEditing(false);
     };
 
-    const handlePasswordConfirm = () => {
-        const correctPassword = "yourPassword"; // Replace with your actual password
+    const handlePasswordConfirm = async () => {
+        const token = localStorage.getItem("access_token");
+        if (!token) {
+            setPasswordError("You are not authenticated. Please log in again.");
+            return;
+        }
 
-        if (password === correctPassword) {
-            setIsEditing(false);
-            setShowSaveMessage(true);
-            setShowPasswordModal(false);
+        // Prepare the KPI updates payload
+        const kpiUpdates = [];
+        departments.forEach((dept) => {
+            dept.tables.forEach((table) => {
+                table.kpis.forEach((kpi) => {
+                    kpiUpdates.push({
+                        id: kpi.id, // Ensure each KPI has a unique ID
+                        quarterly_data: kpi.quarterly_data,
+                    });
+                });
+            });
+        });
 
-            setTimeout(() => {
-                setShowSaveMessage(false);
-            }, 3000);
-        } else {
-            setPasswordError("Incorrect password. Please try again.");
+        try {
+            const response = await fetch(API_ENDPOINTS.PASSWORD_VERIFY, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`,
+                },
+                body: JSON.stringify({
+                    password,
+                    kpi_updates: kpiUpdates, // Include KPI updates
+                }),
+            });
+
+            const result = await response.json();
+
+            if (response.ok) {
+                setIsEditing(false);
+                setShowSaveMessage(true);
+                setShowPasswordModal(false);
+
+                setTimeout(() => {
+                    setShowSaveMessage(false);
+                }, 3000);
+            } else {
+                setPasswordError(result.error || "Failed to verify password.");
+            }
+        } catch (error) {
+            console.error("Password verification failed:", error);
+            setPasswordError("An error occurred. Please try again.");
         }
     };
 
@@ -109,23 +146,33 @@ const ManageKpi = () => {
 
     return (
         <Container fluid className="py-4 mt-5 d-flex flex-column justify-content-center me-0 ms-0">
-            <Row className="mb-3">
-                <Button variant="link" onClick={handleBack} className="backBtn d-flex align-items-center text-success me-3">
-                    <FontAwesomeIcon icon={faChevronLeft} size="lg" />
-                    <span className="ms-2">Back</span>
-                </Button>
+            <Row className="align-items-center">
+                <Col xs="auto">
+                    <Button 
+                        variant="link" 
+                        onClick={handleBack} 
+                        className="backBtn d-flex align-items-center text-success"
+                    >
+                        <FontAwesomeIcon icon={faChevronLeft} size="lg" />
+                       
+                    </Button>
+                </Col>
+                <Col>
+                    <h1 className="mb-0" style={{ color: '#4B4A4A', marginBottom: '90px' }}>KPI Management</h1>
+                </Col>
             </Row>
             <Container
                 fluid
                 style={{
                     border: "1px",
                     borderStyle: "groove",
+                    marginTop: "3em",
                     borderTop: "0px",
                     boxShadow: "1px 7px 7px 4px #888888",
                     padding: "2em"
                 }}
             >
-                <h3 style={{ paddingBottom: "1em" }}>KPI Management</h3>
+                
                 <Form.Group controlId="departmentSelect">
                     <Form.Label>College Department:</Form.Label>
                     <Form.Control

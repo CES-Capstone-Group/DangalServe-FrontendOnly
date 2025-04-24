@@ -20,7 +20,7 @@ const AdminDeptApprovedPro = () => {
                 if (!token) throw new Error("No token found.");
 
                 const response = await fetch(
-                    `${API_ENDPOINTS.PROPOSAL_LIST_CREATE}?status=Approved by Barangay&department=${departmentId}`,
+                    `${API_ENDPOINTS.PROPOSAL_LIST_CREATE}?status=Approved%20by%20President&department=${departmentId}`,
                     {
                         method: "GET",
                         headers: {
@@ -57,6 +57,7 @@ const AdminDeptApprovedPro = () => {
 
         if (location.state?.departmentProposals && location.state?.departmentName) {
             setDepartmentProposals(location.state.departmentProposals);
+            console.log(departmentProposals);
             setDepartmentName(location.state.departmentName);
             setLoading(false);
         } else {
@@ -104,20 +105,36 @@ const AdminDeptApprovedPro = () => {
                     <span className="visually-hidden">Loading...</span>
                 </Spinner>
             ) : (
-                <Row className="mb-4">
-                    {departmentProposals.map((proposal) => (
-                        <Col key={proposal.proposal_id} md={6} className="mb-3">
-                            <Card
-                                className="department-card1"
-                                onClick={() => handleProposalClick(proposal)}
-                                style={{ cursor: "pointer" }}
-                            >
-                                <Card.Body>
-                                    <Card.Title className="text-success">{proposal.title}</Card.Title>
-                                </Card.Body>
-                            </Card>
-                        </Col>
-                    ))}
+                <Row xs={12} className="mb-4">
+                        <Row className="mb-4">
+                            {departmentProposals.map((proposal) => (
+                                <Col key={proposal.proposal_id} className="mb-3">
+                                    <Card
+                                        className="border shadow"
+                                        onClick={() => handleProposalClick(proposal)}
+                                        style={{
+                                            cursor: "pointer",
+                                            padding: "1rem",
+                                            overflow: "visible", // Allows content to overflow
+                                        }}
+                                    >
+                                        <Card.Body>
+                                            <Card.Title
+                                                className="text-success"
+                                                style={{
+                                                    fontSize: "1.5rem",
+                                                    wordWrap: "break-word", // Wrap long words
+                                                    overflow: "hidden", // Prevent overflow
+                                                    textOverflow: "ellipsis", // Add ellipsis for overflow
+                                                }}
+                                            >
+                                                {proposal.title}
+                                            </Card.Title>
+                                        </Card.Body>
+                                    </Card>
+                                </Col>
+                            ))}
+                        </Row>
                 </Row>
             )}
         </Container>

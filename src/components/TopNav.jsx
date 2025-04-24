@@ -77,19 +77,19 @@ const TopNav = ({ sidebarOpen, sidebarToggle, isHidden }) => {
 
           <Container className="d-flex justify-content-center welcome-message">
             <div style={{
-              backgroundColor: '#fff',
-              color: '#71A872',
-              padding: '10px 20px',
-              borderRadius: '10px',
-              boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
-              fontWeight: 'bold',
-              fontSize: '1.2rem',
-              textAlign: 'center',
-              maxWidth: '20rem'
+                backgroundColor: 'transparent', // Set background color to transparent
+                color: 'white', // Set text color to white
+                padding: '10px 20px',
+                borderRadius: '10px',
+                boxShadow: 'none', // Remove the shadow (optional, since background is transparent)
+                fontWeight: 'bold',
+                fontSize: '1.2rem',
+                textAlign: 'center',
+                maxWidth: '20rem'
             }}>
-              Welcome, {loggedUser}!
+                Welcome, {loggedUser}!
             </div>
-          </Container>
+        </Container>
 
           <Dropdown align='end' onToggle={() => setShowDropdown(!showDropdown)} show={showDropdown}>
             <Dropdown.Toggle style={{ borderWidth: '0px', backgroundColor: '#dddddd00' }}>

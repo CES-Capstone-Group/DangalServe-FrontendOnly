@@ -40,9 +40,9 @@ const BrgyApprovedPro = () => {
 
     return (
         <Container fluid>
-            <div className="container">
-                <h1>APPROVED PROPOSALS</h1>
-            </div>
+
+            <h1>APPROVED PROPOSALS</h1>
+
 
             <Table responsive bordered striped hover className="tableStyle">
                 <thead>

@@ -50,14 +50,14 @@ const AdminApprovedAch = () => {
 
     return(
         <Container fluid>
-            <Row>
+            {/* <Row>
                 <Col className="d-flex justify-content-end">
                     <Button style={{backgroundColor:'#71A872', border: '0px'}}>
                         <FontAwesomeIcon className='me-2' icon={faFilter} ></FontAwesomeIcon>
                         Filter
                     </Button>
                 </Col>
-            </Row>
+            </Row> */}
             <Row>
                 <Col><h1> Admin Approved Achivement</h1></Col>
             </Row>

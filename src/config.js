@@ -1,9 +1,11 @@
-const BASE_URL = "https://pamantasances.pythonanywhere.com";
-// const BASE_URL = "http://127.0.0.1:8000";
+// const BASE_URL = "https://pamantasances.pythonanywhere.com";
+const BASE_URL = "http://127.0.0.1:8000";
+const MEDIA_BASE_URL = `${BASE_URL}`;
 
 export const API_ENDPOINTS = {
     // Authentication Endpoints
     BASE: `${BASE_URL}`,
+    MEDIA_BASE_URL: `${MEDIA_BASE_URL}`,
 
     TOKEN: `${BASE_URL}/api/token/`,
     TOKEN_REFRESH: `${BASE_URL}/api/token/refresh/`,
@@ -62,12 +64,13 @@ export const API_ENDPOINTS = {
     ACTIVITY_SCHEDULE_DETAIL: (id) => `${BASE_URL}/api/activity-schedules/${id}/`,
     ACTIVITY_SCHEDULE_CREATE: `${BASE_URL}/api/activity-schedules/create/`,
     ACTIVITY_SCHEDULE_BY_PROPOSAL: (proposal_id) => `${BASE_URL}/api/activity-schedules/${proposal_id}/proposals`,
-
-
+    AAR_BY_PROPOSAL: (activity_schedule_id) => `${BASE_URL}/api/activity/${activity_schedule_id}/`,
+    AAR_DETAILS_VIEW: (activity_schedule_id) => `${BASE_URL}/api/activity/${activity_schedule_id}/aar-details/`,
     // Documents Endpoints
     DOCUMENT_LIST: `${BASE_URL}/api/documents/`,
     UPLOAD_DOCUMENT: `${BASE_URL}/api/documents/upload/`,
     DELETE_DOCUMENT: (id) => `${BASE_URL}/api/documents/delete/${id}/`,
+    UPDATE_DOCUMENT: (id) => `${BASE_URL}/api/documents/update/${id}/`,
 
     // Signatory Name Suggestions
     SIGNATORY_NAMES: `${BASE_URL}/api/signatory-names/`,
@@ -108,7 +111,7 @@ export const API_ENDPOINTS = {
     EVALUATION_FORM_LIST: `${BASE_URL}/evaluation/evaluation-forms/`,  // GET
     EVALUATION_FORM_LIST_ALL: `${BASE_URL}/evaluation/view-all/evaluation-forms/`, // GET - List all evaluation forms
     EVALUATION_FORM_LIST_ACTIVE: `${BASE_URL}/evaluation/view-active/evaluation-forms/`, // GET - List all evaluation forms
-    EVALUATION_FORM_SPECIFIC: (form_id) => `${BASE_URL}/evaluation/display-specific-eval-form/${form_id}/`, 
+    EVALUATION_FORM_SPECIFIC: (form_id) => `${BASE_URL}/evaluation/display-specific-eval-form/${form_id}/`,
 
     EVALUATION_FORM_CREATE: `${BASE_URL}/evaluation/evaluation-forms/create/`,  // POST
     EVALUATION_FORM_DETAIL: (id) => `${BASE_URL}/evaluation/evaluation-forms/${id}/`,  // GET, PUT, DELETE
@@ -121,7 +124,7 @@ export const API_ENDPOINTS = {
     FORM_QUESTION_CREATE: `${BASE_URL}/evaluation/form-questions/create/`,  // POST
     FORM_QUESTION_DETAIL: (id) => `${BASE_URL}/evaluation/form-questions/${id}/`,  // GET, PUT, DELETE
 
-       // Responses
+    // Responses
     RESPONSE_LIST: `${BASE_URL}/evaluation/responses/`, // GET
     RESPONSE_CREATE: `${BASE_URL}/evaluation/responses/create/`, // POST
     RESPONSE_DETAIL: (id) => `${BASE_URL}/evaluation/responses/${id}/`, // GET, PUT, DELETE
@@ -132,7 +135,21 @@ export const API_ENDPOINTS = {
     ANSWER_DETAIL: (id) => `${BASE_URL}/evaluation/answers/${id}/`, // GET, PUT, DELETE
 
     KPI_TABLE: `${BASE_URL}/kpi/`,
-    KPI_TABLE_KPIS: `${BASE_URL}/kpi/kpis/`
+    KPI_TABLE_KPIS: `${BASE_URL}/kpi/kpis/`,
+    PASSWORD_VERIFY: `${BASE_URL}/kpi/password-verify/`,
+
+    // Form Details Endpoint
+    EVAL_SUMMARY_DETAILS: (formId) => `${BASE_URL}/evaluation/eval-summary/header/${formId}/`, // GET - Fetch form details (sections and questions)
+
+    // Responses and Answers Endpoint
+    RESPONSES_AND_ANSWERS: (formId) => `${BASE_URL}/evaluation/responses/${formId}/answers/`, // GET - Fetch responses and answers
+
+    GET_AVAILABLE_FORMS: `${BASE_URL}/evaluation/forms/available/`, // Endpoint for available forms
+
+    REPORTS: `${BASE_URL}/api/reports/`,
+    REPORT_DETAIL: (reportDataId) => `${BASE_URL}/api/reports/${reportDataId}/`,
+
+    AFTER_ACTIVITY_EVALUATION_RESPONSES: `${BASE_URL}/evaluation/get-after-activity-evaluation-responses/`, // GET: Fetch all "After Activity Evaluation" responses
 };
 
 

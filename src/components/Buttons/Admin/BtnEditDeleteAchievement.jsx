@@ -105,6 +105,7 @@ const BtnEditDeleteAchievement = ({ achievement, onAchievementUpdated }) => {
                 <Modal.Body>
                     <Form onSubmit={updateAchievement}>
                         <Form.Group className='mb-3' controlId='AwardTitle'>
+                            <Form.Label className='h5'>Award Title</Form.Label>
                             <Form.Control
                                 className='input'
                                 type='text'

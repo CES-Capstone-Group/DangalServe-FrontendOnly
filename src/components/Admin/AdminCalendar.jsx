@@ -4,7 +4,6 @@ import dayGridPlugin from "@fullcalendar/daygrid";
 import timeGridPlugin from "@fullcalendar/timegrid";
 import interactionPlugin from "@fullcalendar/interaction";
 import { Button, Col, Container, Form, InputGroup, Row, Modal } from "react-bootstrap";
-import BtnResched from "../Buttons/BtnResched";
 import BtnAddSchedule from "../Buttons/BtnAddSchedule"; // Import BtnAddSchedule
 
 import { API_ENDPOINTS } from "../../config";
@@ -20,7 +19,6 @@ function AdminCalendar() {
     const [proposalMap, setProposalMap] = useState({});
 
 
-
     const fetchActivities = async () => {
         fetch(API_ENDPOINTS.ACTIVITY_SCHEDULE_LIST)
             .then(response => {
@@ -34,10 +32,12 @@ function AdminCalendar() {
                 const formattedEvents = data.map(event => ({
                     id: event.id,
                     title: event.activity_title,
-                    start: `${event.target_date}T${event.target_time}`,
+                    start: `${event.target_date}T${event.target_time || "00:00:00"}`, // Use default time if missing
                     extendedProps: {
-                        proposal: event.proposal_title, // Assume you have 'proposal_title' in your backend
+                        proposal: event.proposal_title,
                         file: event.file,
+                        venue: event.activity_venue,
+                        objectives: event.activity_objectives
                     }
                 }));
                 setEvents(formattedEvents);  // Set the events into state
@@ -51,23 +51,31 @@ function AdminCalendar() {
     }, [currentYear]);
 
     // Handle event click to show modal with event details
-    const handleEventClick = (clickInfo) => {
-        const event = clickInfo.event;
-
-        setSelectedEvent({
-            proposal: event.extendedProps.proposal || "No proposal title",  // Ensure the proposal is passed
-            activity: event.title || "No activity title",
-            date: event.startStr.split('T')[0] || "No date",
-            time: event.startStr.split('T')[1] || "No time",
+    const handleEventClick = (info) => {
+        const event = info.event;
+        const localTime = new Date(event.start).toLocaleTimeString([], {
+            hour: "2-digit",
+            minute: "2-digit",
+            hour12: true,
         });
-
-        setShowEventDetailsModal(true);  // Show the event details modal
+    
+        setSelectedEvent({
+            proposal: event.extendedProps.proposal,
+            activity: event.title,
+            date: event.start.toISOString().split("T")[0],
+            time: localTime,
+            venue: event.extendedProps.venue,
+            objectives: event.extendedProps.objectives,
+        });
+        
+        setShowEventDetailsModal(true);
+        console.log(localTime)
     };
 
     // Function to open modal for creating new events
     const handleShowAddScheduleModal = (selectInfo) => {
-        setSelectedDate(selectInfo.startStr);  // Get the start date from the selection
-        setShowAddScheduleModal(true);  // Show the Add Schedule modal
+        setSelectedDate(selectInfo.startStr); 
+        setShowAddScheduleModal(true);
     };
 
     // Function to close Add Schedule modal
@@ -92,7 +100,7 @@ function AdminCalendar() {
         }
 
         try {
-            const response = await fetch(`${API_ENDPOINTS.PROPOSAL_LIST_CREATE}?status=Approved by Barangay`, {
+            const response = await fetch(`${API_ENDPOINTS.PROPOSAL_LIST_CREATE}?status=Approved%20by%20President`, {
                 method: "GET",
                 headers: {
                     "Content-Type": "application/json",
@@ -142,7 +150,7 @@ function AdminCalendar() {
     // Render modal dynamically based on selected event
     const renderEventModal = () => {
         if (!selectedEvent) return null;  // Return null if no event is selected
-        const { proposal, activity, date, time } = selectedEvent;
+        const { proposal, activity, date, time, venue, objectives } = selectedEvent;
         return (
             <Modal backdrop="static" centered size="lg" show={showEventDetailsModal} onHide={handleCloseEventDetailsModal}>
                 <Modal.Header closeButton>
@@ -185,7 +193,7 @@ function AdminCalendar() {
                                     <Form.Control
                                         className="input"
                                         type="date"
-                                        value={date}
+                                        value={date} // Date is already in correct format
                                         readOnly
                                     />
                                 </InputGroup>
@@ -195,11 +203,36 @@ function AdminCalendar() {
                                 <InputGroup>
                                     <Form.Control
                                         className="input"
-                                        type="time"
+                                        type="input"
                                         value={time}
+                                        placeholder={time === "" ? "--:--" : ""}
                                         readOnly
                                     />
                                 </InputGroup>
+                            </Col>
+                        </Form.Group>
+
+                        <Form.Group as={Row} className="mb-3" controlId="venue">
+                            <Form.Label column sm={2} className="h5">Venue:</Form.Label>
+                            <Col>
+                                <Form.Control
+                                    className="input"
+                                    type="text"
+                                    value={venue || ""}
+                                    readOnly
+                                />
+                            </Col>
+                        </Form.Group>
+
+                        <Form.Group as={Row} className="mb-3" controlId="activityObjectives">
+                            <Form.Label column sm={2} className="h5">Activity Objective/s:</Form.Label>
+                            <Col>
+                                <Form.Control
+                                    as="textarea"
+                                    rows={3}
+                                    value={objectives || ""}
+                                    readOnly
+                                />
                             </Col>
                         </Form.Group>
                     </Form>
@@ -216,9 +249,10 @@ function AdminCalendar() {
     return (
         <Container fluid>
             <h1>Admin Calendar</h1>
-            <BtnResched />
-
             {/* Pass modal state and close function to BtnAddSchedule */}
+
+            {/* Dropdown to select the year */}
+            <div className="calendar-header">
             <BtnAddSchedule
                 showModal={showAddScheduleModal}
                 handleShowModal={handleShowAddScheduleModal}
@@ -226,29 +260,30 @@ function AdminCalendar() {
                 selectedDate={selectedDate}
                 addNewEvent={addNewEvent}
             />
-
-            {/* Dropdown to select the year */}
-            <div className="calendar-header">
-                <Form.Group controlId="yearSelect" className="mb-3">
-                    <Form.Label>Select Year:</Form.Label>
-                    <Form.Select
-                        value={currentYear}
-                        onChange={handleYearChange}
-                        style={{
-                            marginRight: '10px',
-                            height: 'auto',
-                            overflowY: 'auto'
-                        }}
-                    >
-                        {Array.from({ length: 20 }, (_, index) => {
-                            const year = new Date().getFullYear() - 5 + index;
-                            return (
-                                <option key={year} value={year}>
-                                    {year}
-                                </option>
-                            );
-                        })}
-                    </Form.Select>
+                <Form.Group as={Row} controlId="yearSelect" className="mb-3">
+                    <Col>
+                        <Form.Label>Select Year:</Form.Label>
+                    </Col>
+                    <Col>
+                        <Form.Select
+                            value={currentYear}
+                            onChange={handleYearChange}
+                            style={{
+                                marginRight: '10px',
+                                height: 'auto',
+                                overflowY: 'auto'
+                            }}
+                        >
+                            {Array.from({ length: 20 }, (_, index) => {
+                                const year = new Date().getFullYear() - 5 + index;
+                                return (
+                                    <option key={year} value={year}>
+                                        {year}
+                                    </option>
+                                );
+                            })}
+                        </Form.Select>
+                    </Col>
                 </Form.Group>
             </div>
 
@@ -258,6 +293,7 @@ function AdminCalendar() {
                     plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
                     initialView={"dayGridMonth"}
                     height={'50em'}
+                    timeZone="local"
 
                     customButtons={{
                         Legend: {

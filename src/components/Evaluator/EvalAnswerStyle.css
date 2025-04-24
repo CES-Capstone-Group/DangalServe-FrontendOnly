@@ -1,23 +1,42 @@
 .card-header {
-    font-size: 1.2rem;
-    letter-spacing: 0.5px;
-  }
-  
-  .table th {
-    background-color: #78C57B;
-    color: white;
-    font-weight: bold;
-  }
-  
-  .table td {
-    vertical-align: middle;
-  }
-  
-  button {
-    transition: all 0.3s ease;
-  }
-  
-  button:hover {
-    background-color: #5CA964 !important;
-  }
-  
+  font-size: 1.2rem;
+  letter-spacing: 0.5px;
+}
+
+.table th {
+  background-color: #78C57B;
+  color: white;
+  font-weight: bold;
+}
+
+.table td {
+  vertical-align: middle;
+}
+
+button {
+  transition: all 0.3s ease;
+}
+
+.success-modal .modal-content {
+  background-color: #f7fdf7;
+  border-radius: 10px;
+  box-shadow: 0px 5px 20px rgba(0, 0, 0, 0.1);
+}
+
+.success-modal .modal-body {
+  text-align: center;
+}
+
+.success-modal .modal-header {
+  border-bottom: none;
+}
+
+.tableStyle th,
+.tableStyle td {
+  vertical-align: middle;
+}
+
+#propHeader {
+  font-size: 28px;
+  color: #2e6c2f;
+}

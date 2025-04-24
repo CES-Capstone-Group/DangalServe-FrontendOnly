@@ -61,12 +61,12 @@ const BrgyEventRequest = () => {
     return(
         <Container fluid>
             <Row>
-                <Col className="d-flex justify-content-end">
+                {/* <Col className="d-flex justify-content-end">
                     <Button style={{backgroundColor:'#71A872', border: '0px'}}>
                         <FontAwesomeIcon className='me-2' icon={faFilter} ></FontAwesomeIcon>
                         Filter
                     </Button>
-                </Col>
+                </Col> */}
             </Row>
             <Row>
                 <Col><h1> Event Reschedule</h1></Col>

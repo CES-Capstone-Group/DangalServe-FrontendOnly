@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Col, Container, Row, Table } from "react-bootstrap";
-import BtnViewApproveProposal from "../Buttons/BtnViewApproveProposal";  
+import BtnViewApproveProposal from "../Buttons/BtnViewApproveProposal";
 import BtnAddProposal from "../Buttons/Coordinator/BtnAddProposal";
 import BtnPendingRejectFilter from "../Buttons/BtnPendingRejectFilter";
 import "../table.css";
@@ -20,13 +20,13 @@ const CoorPenProposal = () => {
         }
 
         let filter = '';
-    
+
         if (filterStatus === 'Rejected') {
             filter = 'status=Rejected';
         } else if (filterStatus === 'Pending') {
             filter = 'status=Pending';
         }
-        
+
         try {
             const response = await fetch(`${API_ENDPOINTS.PROPOSAL_LIST_CREATE}?${filter}`, {
                 method: 'GET',
@@ -62,10 +62,9 @@ const CoorPenProposal = () => {
     };
 
     return (
-        <Container fluid>
-            <div className="container">
-                <h1>{filterStatus.toUpperCase()} PROPOSALS</h1>
-            </div>
+        <Container fluid className="py-5">
+
+            <h1>{filterStatus.toUpperCase()} PROPOSALS</h1>
 
             {/* Filter Buttons */}
             <Row className="mb-3">
@@ -99,9 +98,9 @@ const CoorPenProposal = () => {
                                 <td>{proposal.status}</td>
                                 <td>{proposal.current_version || 'N/A'}</td>
                                 <td>
-                                    <BtnViewApproveProposal 
-                                        proposal={proposal} 
-                                        onApprove={handleProposalApproved} 
+                                    <BtnViewApproveProposal
+                                        proposal={proposal}
+                                        onApprove={handleProposalApproved}
                                     />
                                 </td>
                             </tr>

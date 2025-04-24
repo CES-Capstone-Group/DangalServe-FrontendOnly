@@ -74,16 +74,17 @@ const BrgyManagement = () => {
 
     // Updated `Rows` component to pass all required props to `BtnEditDelete`
     const Rows = (props) => {
-        const { brgy_id, brgyName, moa } = props;
+        const { brgy_id, brgyName, moa, phone_number } = props;
         return (
             <tr>
-                <td>{brgy_id}</td>
+               
                 <td>{brgyName}</td>
                 <td>
                     <Button variant="success link" style={{fontSize: '13px'}} onClick={() => handleContentClick(moa)}>
                         <FontAwesomeIcon  icon={faEye} />
                     </Button>
                 </td>
+                <td>{phone_number}</td>
                 {/* Pass `brgy_id` and `brgyName` to `BtnEditDelete` */}
                 <td><BtnEditDelete brgyId={brgy_id} brgyName={brgyName} onBrgyUpdated={fetchBarangays} /></td> {/* <-- Pass `brgyName` as a prop */}
             </tr>
@@ -95,9 +96,10 @@ const BrgyManagement = () => {
             <Table responsive striped bordered hover className="tableStyle">
                 <thead>
                     <tr>
-                        <th style={{width: '5%'}}>ID</th>
+                        
                         <th>Barangay Name</th>
                         <th>MOA</th>
+                        <th>Phone Number</th>
                         <th>Actions</th>
                     </tr>
                 </thead>
@@ -105,9 +107,11 @@ const BrgyManagement = () => {
                     {data.map((row) => (
                         <Rows
                             key={row.id}
-                            brgy_id={row.id}
+                            
                             brgyName={row.brgy_name}  // <-- Pass `brgy_name` to the child component
                             moa={row.moa}
+                            phone_number={row.phone_number}
+
                         />
                     ))}
                 </tbody>
@@ -118,21 +122,21 @@ const BrgyManagement = () => {
     return (
         <Container fluid 
         className="py-4 mt-5 d-flex flex-column justify-content-center me-0 ms-0">
-            <Row>
-                <Button variant="link" onClick={handleBack} className="backBtn d-flex align-items-center text-success me-3">
-                    <FontAwesomeIcon icon={faChevronLeft} size="lg" />
-                    <span className="ms-2">Back</span>
-                </Button>
-                <Col className="d-flex justify-content-end">
-                    <Button style={{ backgroundColor: '#71A872', border: '0px' }}>
-                        <FontAwesomeIcon className='me-2' icon={faFilter}></FontAwesomeIcon>
-                        Filter
-                    </Button>
-                </Col>
-            </Row>
-            <Row>
-                <Col><h1>Barangay Management</h1></Col>
-            </Row>
+          <Row className="align-items-center">
+                          <Col xs="auto">
+                              <Button 
+                                  variant="link" 
+                                  onClick={handleBack} 
+                                  className="backBtn d-flex align-items-center text-success"
+                              >
+                                  <FontAwesomeIcon icon={faChevronLeft} size="lg" />
+                                 
+                              </Button>
+                          </Col>
+                          <Col>
+                              <h1 className="mb-0" style={{ color: '#4B4A4A' }}>Barangay Management</h1>
+                          </Col>
+                      </Row>
             <Row>
                 <Col className="mb-3 d-flex justify-content-end">
                     <input type="search" className="form-control" placeholder='Search' style={{ width: '300px' }} onChange={handleSearch}/>

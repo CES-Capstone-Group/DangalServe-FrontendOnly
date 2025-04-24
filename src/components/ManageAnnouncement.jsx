@@ -64,15 +64,15 @@ const ManageAnnouncement = () => {
     //search function
     const handleSearch = (e) => {
         setSearchQuery(e.target.value);
-      };
-      
-      // Filter barangays based on the search query
-      const filteredAnn = announcements.filter(announcement => {
+    };
+
+    // Filter barangays based on the search query
+    const filteredAnn = announcements.filter(announcement => {
         if (!announcement || typeof announcement !== 'object') return false; // Safeguard against unexpected data
         return (
             (announcement.title && announcement.title.toLowerCase().includes(searchQuery.toLowerCase()))
         );
-      });
+    });
     //end of search function
 
     // Handle announcement updates
@@ -94,7 +94,7 @@ const ManageAnnouncement = () => {
             <td>{announcement.title}</td>
             <td>{announcement.details}</td>
             <td>
-                <Button style={{fontSize: '13px'}} variant="success link" onClick={() => handleContentClick(announcement.image_url)}>
+                <Button style={{ fontSize: '13px' }} variant="success link" onClick={() => handleContentClick(announcement.image_url)}>
                     <FontAwesomeIcon icon={faEye} />
                 </Button>
             </td>
@@ -131,26 +131,26 @@ const ManageAnnouncement = () => {
     );
 
     return (
-        <Container fluid 
-        className="py-4 mt-5 d-flex flex-column justify-content-center me-0 ms-0">
-            <Row>
-                <Button variant="link" onClick={handleBack} className="backBtn d-flex align-items-center text-success me-3">
-                    <FontAwesomeIcon icon={faChevronLeft} size="lg" />
-                    <span className="ms-2">Back</span>
-                </Button>
-                <Col className="d-flex justify-content-end">
-                    <Button style={{ backgroundColor: '#71A872', border: '0px' }}>
-                        <FontAwesomeIcon className='me-2' icon={faFilter} />
-                        Filter
+        <Container fluid
+            className="py-4 mt-5 d-flex flex-column justify-content-center me-0 ms-0">
+          <Row className="align-items-center">
+                <Col xs="auto">
+                    <Button 
+                        variant="link" 
+                        onClick={handleBack} 
+                        className="backBtn d-flex align-items-center text-success"
+                    >
+                        <FontAwesomeIcon icon={faChevronLeft} size="lg" />
+                       
                     </Button>
+                </Col>
+                <Col>
+                    <h1 className="mb-0" style={{ color: '#4B4A4A' }}>Announcement Management</h1>
                 </Col>
             </Row>
             <Row>
-                <Col><h1>Announcement Management</h1></Col>
-            </Row>
-            <Row>
                 <Col className="mb-3 d-flex justify-content-end">
-                    <input type="search" className="form-control" placeholder='Search' style={{ width: '300px' }} onChange={handleSearch}/>
+                    <input type="search" className="form-control" placeholder='Search' style={{ width: '300px' }} onChange={handleSearch} />
                 </Col>
                 {/* Modal for viewing full image or PDF */}
                 <Modal size="lg" show={showModal} onHide={handleCloseModal} centered>

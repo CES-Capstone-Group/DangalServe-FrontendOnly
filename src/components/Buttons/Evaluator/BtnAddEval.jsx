@@ -4,6 +4,8 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { jwtDecode } from "jwt-decode";
 import { API_ENDPOINTS } from "../../../config";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faPlus } from "@fortawesome/free-solid-svg-icons";
 
 const BtnAddEval = () => {
     const [showModal, setShowModal] = useState(false);
@@ -15,22 +17,28 @@ const BtnAddEval = () => {
     const [formData, setFormData] = useState({
         proposal: '',
         activity: '',
+        activityTitle: '',
         eval_type: ''
     });
 
     const navigate = useNavigate();
+    const [validationErrors, setValidationErrors] = useState({}); // Validation errors state
+
 
     const handleShowModal = () => setShowModal(true);
     const handleCloseModal = () => {
         setFormData({
             proposal: '',
             activity: '',
+            activityTitle: '',
             eval_type: ''
         });
         setShowModal(false);
+        setValidationErrors({});
     };
 
     const handleShowConfirmation = () => {
+        if (!validateForm()) return; // Exit if form validation fails
         setShowModal(false); // Close the Add Evaluation Form modal
         setShowConfirmation(true); // Show the confirmation modal
     };
@@ -40,6 +48,7 @@ const BtnAddEval = () => {
         setFormData({
             proposal: '',
             activity: '',
+            activityTitle: '',
             eval_type: ''
         });
     };
@@ -52,7 +61,7 @@ const BtnAddEval = () => {
                     console.error("No access token found");
                     return;
                 }
-                const response = await axios.get(`${API_ENDPOINTS.PROPOSAL_LIST_CREATE}?status=Approved%20by%20Barangay`, {
+                const response = await axios.get(`${API_ENDPOINTS.PROPOSAL_LIST_CREATE}?status=Approved%20by%20President`, {
                     headers: { Authorization: `Bearer ${token}` },
                 });
                 setProposals(response.data || []);
@@ -98,11 +107,38 @@ const BtnAddEval = () => {
 
     const handleChange = (e) => {
         const { name, value } = e.target;
-        setFormData((prevState) => ({
-            ...prevState,
-            [name]: value,
-            ...(name === "proposal" ? { activity: "" } : {}) // Reset activity when proposal changes
+
+        if (name === "activity") {
+            const selectedActivity = filteredActivities.find((activity) => activity.id === parseInt(value));
+            setFormData((prevState) => ({
+                ...prevState,
+                activity: value,
+                activityTitle: selectedActivity ? selectedActivity.activity_title : ''
+            }));
+        } else {
+            setFormData((prevState) => ({
+                ...prevState,
+                [name]: value,
+                ...(name === "proposal" ? { activity: "", activityTitle: "" } : {}) // Reset activity and title when proposal changes
+            }));
+        }
+
+        // Clear validation error for the field being changed
+        setValidationErrors((prevErrors) => ({
+            ...prevErrors,
+            [name]: "",
         }));
+    };
+
+
+    const validateForm = () => {
+        const errors = {};
+        if (!formData.proposal) errors.proposal = "Please select a proposal.";
+        if (!formData.activity) errors.activity = "Please select an activity.";
+        if (!formData.eval_type) errors.eval_type = "Please select an evaluation type.";
+
+        setValidationErrors(errors);
+        return Object.keys(errors).length === 0;
     };
 
     const handleSubmit = () => {
@@ -113,26 +149,54 @@ const BtnAddEval = () => {
                 alert("You are not logged in or your session has expired.");
                 return;
             }
+
             const decodedToken = jwtDecode(token);
-            const userId = decodedToken?.user_id; // Use optional chaining
+            const userId = decodedToken?.user_id;
 
             if (!userId) {
                 throw new Error("User ID not found in token");
             }
 
-            const payload = {
+            const selectedActivityDetails = filteredActivities.find(
+                (activity) => activity.id === parseInt(formData.activity)
+            );
+
+            if (!selectedActivityDetails) {
+                console.error("Activity not found");
+                return;
+            }
+
+            // Debugging payload
+            console.log("Payload:", {
                 proposal_id: formData.proposal,
                 activity_id: formData.activity,
+                activity_title: selectedActivityDetails.activity_title,
                 evaluation_type_id: formData.eval_type,
-                user_id: userId // Pass the logged-in user ID
-            };
-            setFormData({
-                proposal: '',
-                activity: '',
-                eval_type: ''
+                user_id: userId,
             });
-            handleCloseConfirmation(); // Close the confirmation modal
-            navigate("/manage/eval-create/", { state: payload });
+
+            // Navigate to ImpactEvalForm with state
+            navigate("eval-create", {
+                state: {
+                    activity_id: formData.activity,
+                    title: selectedActivityDetails.activity_title || "Default Title",
+                    date: selectedActivityDetails.target_date || "Default Date",
+                    activity_venue: selectedActivityDetails.activity_venue || "Default Venue",
+                    activity_objectives: selectedActivityDetails.activity_objectives || "Default Objectives",
+                    proposal_id: formData.proposal,
+                    evaluation_type_id: formData.eval_type,
+                    user_id: userId
+                },
+            });
+
+            // Clear form data and close modal
+            setFormData({
+                proposal: "",
+                activity: "",
+                activityTitle: "",
+                eval_type: "",
+            });
+            handleCloseConfirmation();
         } catch (error) {
             console.error("Error handling submission:", error);
             alert("An error occurred while processing the request.");
@@ -146,6 +210,7 @@ const BtnAddEval = () => {
                 className="me-3"
                 style={{ backgroundColor: "#71A872", border: "0px", color: "white" }}
             >
+                <FontAwesomeIcon icon={faPlus} size={16} /> {/* Add the icon */}
                 Add Evaluation
             </Button>
 
@@ -156,12 +221,13 @@ const BtnAddEval = () => {
                 <Modal.Body>
                     <Form>
                         <Form.Group className="mb-3" as={Row}>
-                            <Form.Label column sm={2}>Proposal:</Form.Label>
+                            <Form.Label column sm={2}>Proposal:<span style={{ color: "red" }}>*</span></Form.Label>
                             <Col>
                                 <Form.Select
                                     name="proposal"
                                     value={formData.proposal}
                                     onChange={handleChange}
+                                    isInvalid={!!validationErrors.proposal}
                                 >
                                     <option value="" disabled>Select Proposal</option>
                                     {proposals.map((proposal) => (
@@ -170,17 +236,21 @@ const BtnAddEval = () => {
                                         </option>
                                     ))}
                                 </Form.Select>
+                                <Form.Control.Feedback type="invalid">
+                                    {validationErrors.proposal}
+                                </Form.Control.Feedback>
                             </Col>
                         </Form.Group>
 
                         <Form.Group as={Row} className="mb-3">
-                            <Form.Label column sm={3}>Select Title of the Activity:</Form.Label>
+                            <Form.Label column sm={3}>Select Title of the Activity:<span style={{ color: "red" }}>*</span></Form.Label>
                             <Col>
                                 <Form.Select
                                     name="activity"
                                     value={formData.activity}
                                     onChange={handleChange}
                                     disabled={!formData.proposal}
+                                    isInvalid={!!validationErrors.activity}
                                 >
                                     <option value="">Select an Activity</option>
                                     {filteredActivities.map((activity) => (
@@ -189,16 +259,20 @@ const BtnAddEval = () => {
                                         </option>
                                     ))}
                                 </Form.Select>
+                                <Form.Control.Feedback type="invalid">
+                                    {validationErrors.activity}
+                                </Form.Control.Feedback>
                             </Col>
                         </Form.Group>
 
                         <Form.Group as={Row} className="mb-3">
-                            <Form.Label column sm={3}>Select Evaluation Type:</Form.Label>
+                            <Form.Label column sm={3}>Select Evaluation Type:<span style={{ color: "red" }}>*</span></Form.Label>
                             <Col>
                                 <Form.Select
                                     name="eval_type"
                                     value={formData.eval_type}
                                     onChange={handleChange}
+                                    isInvalid={!!validationErrors.eval_type}
                                 >
                                     <option value="">Select Evaluation Type</option>
                                     {evaluationTypes.map((type) => (
@@ -207,6 +281,9 @@ const BtnAddEval = () => {
                                         </option>
                                     ))}
                                 </Form.Select>
+                                <Form.Control.Feedback type="invalid">
+                                    {validationErrors.eval_type}
+                                </Form.Control.Feedback>
                             </Col>
                         </Form.Group>
                     </Form>

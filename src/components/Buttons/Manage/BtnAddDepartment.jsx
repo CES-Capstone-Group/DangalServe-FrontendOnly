@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import { Button, Modal, Row, Col, Form } from "react-bootstrap";
 import { API_ENDPOINTS } from "../../../config";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faPlus } from "@fortawesome/free-solid-svg-icons";
 
 const BtnAddDepartment = ({ onDepartmentAdded }) => {  // <-- Added `onDepartmentAdded` prop
     const [showModal, setShowModal] = useState(false);
@@ -10,7 +12,7 @@ const BtnAddDepartment = ({ onDepartmentAdded }) => {  // <-- Added `onDepartmen
     const validateForm = () => {
         const newErrors = {};
 
-        if(!departmentName) newErrors.deptName = 'Please enter a Department Name ex: CCS, COE, CHAS';
+        if (!departmentName) newErrors.deptName = 'Please enter a Department Name ex: CCS, COE, CHAS';
 
 
         setErrors(newErrors);
@@ -29,7 +31,7 @@ const BtnAddDepartment = ({ onDepartmentAdded }) => {  // <-- Added `onDepartmen
     // **Function to handle form submission and backend integration**
     const handleSubmit = async (e) => {
         e.preventDefault();
-        if(!validateForm()) return;
+        if (!validateForm()) return;
 
         const formData = { dept_name: departmentName };  // Prepare data to send to backend
 
@@ -57,8 +59,8 @@ const BtnAddDepartment = ({ onDepartmentAdded }) => {  // <-- Added `onDepartmen
 
     return (
         <div className="d-flex justify-content-end m-3">
-            <Button className="shadow" style={{ backgroundColor: "#71A872", border: '0px', color: 'white' }} onClick={handleShowModal}>
-                Add Department
+            <Button className="shadow" style={{ backgroundColor: "#71A872", border: '0px', color: 'white', padding: "10px 20px" }} onClick={handleShowModal}>
+                <FontAwesomeIcon icon={faPlus} size={16} /> {/* Add the icon */} Add Department
             </Button>
 
             <Modal backdrop='static' centered size="lg" show={showModal} onHide={handleCloseModal}>
@@ -69,9 +71,9 @@ const BtnAddDepartment = ({ onDepartmentAdded }) => {  // <-- Added `onDepartmen
                 <Modal.Body>
                     <Form>
                         <Form.Group as={Row} className="mb-3">
-                            <Form.Label column sm={4}>Department Name:</Form.Label>
+                            <Form.Label column sm={4}>Department Name:<span style={{ color: "red" }}>*</span></Form.Label>
                             <Col sm={8}>
-                                <Form.Control 
+                                <Form.Control
                                     type="text"
                                     name="deptName"
                                     isInvalid={!!errors.deptName}
@@ -89,7 +91,7 @@ const BtnAddDepartment = ({ onDepartmentAdded }) => {  // <-- Added `onDepartmen
 
                 <Modal.Footer className="d-flex justify-content-center">
                     <Button onClick={handleSubmit} variant='success'>  {/* <-- Call handleSubmit on click */}
-                        Save Changes
+                        Add
                     </Button>
                     <Button onClick={handleCloseModal} variant="danger">
                         Cancel

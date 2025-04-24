@@ -6,36 +6,36 @@ import "../table.css";
 import { API_ENDPOINTS } from "../../config";
 
 const AdminPenProposal = () => {
-    const [proposals, setProposals] = useState([]);  
-    const [loading, setLoading] = useState(true);   
+    const [proposals, setProposals] = useState([]);
+    const [loading, setLoading] = useState(true);
     const [filterStatus, setFilterStatus] = useState("Pending");
 
 
     const fetchProposals = async (status) => {
-        const token = localStorage.getItem('access_token'); 
+        const token = localStorage.getItem('access_token');
         if (!token) {
             console.error("No token found.");
             setLoading(false);
             return;
         }
-    
+
         try {
             let filter = '';
-    
+
             if (filterStatus === 'Rejected') {
                 filter = 'status=Rejected';
             } else if (filterStatus === 'Pending') {
                 filter = 'status=Pending';
             }
-    
+
             const response = await fetch(`${API_ENDPOINTS.PROPOSAL_LIST_CREATE}?${filter}`, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`, 
+                    'Authorization': `Bearer ${token}`,
                 },
             });
-    
+
             if (response.ok) {
                 const data = await response.json();
                 setProposals(data);
@@ -67,9 +67,7 @@ const AdminPenProposal = () => {
 
     return (
         <Container fluid>
-            <div className="container">
-                <h1>{filterStatus.toUpperCase()} PROPOSALS</h1>
-            </div>
+            <h1>{filterStatus.toUpperCase()} PROPOSALS</h1>
 
             {/* Filter Buttons */}
             <Row className="mb-3">
@@ -101,9 +99,9 @@ const AdminPenProposal = () => {
                                 <td>{new Date(proposal.target_date).toLocaleDateString()}</td>
                                 <td>{proposal.status}</td>
                                 <td>
-                                    <BtnViewApproveProposal 
-                                        proposal={proposal} 
-                                        onApprove={handleProposalApproved} 
+                                    <BtnViewApproveProposal
+                                        proposal={proposal}
+                                        onApprove={handleProposalApproved}
                                     />
                                 </td>
                             </tr>

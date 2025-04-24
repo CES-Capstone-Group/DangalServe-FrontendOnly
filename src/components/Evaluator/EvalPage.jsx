@@ -1,11 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { Col, Container, Row, Table, Button, Alert } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faFilter, faChevronLeft } from "@fortawesome/free-solid-svg-icons";
+import { faChevronLeft } from "@fortawesome/free-solid-svg-icons";
 import { useNavigate } from "react-router-dom";
 import BtnAddEval from "../Buttons/Evaluator/BtnAddEval";
-import BtnViewTally from "../Buttons/Evaluator/BtnViewTally";
-import BtnViewAllResponse from "../Buttons/Evaluator/BtnViewAllResponse";
+import BtnViewAllResponse from "../Buttons/Evaluator/BtnViewAllResponse"; // Ensure this is imported correctly
 import { API_ENDPOINTS } from "../../config";
 import "../table.css";
 
@@ -70,6 +69,11 @@ const EvalPage = () => {
         navigate(-1);
     };
 
+    // Handle view all responses button click
+    const handleViewResponses = (formId) => {
+        navigate("responses", { state: { formId } });  // Pass formId using location.state
+    };
+
     if (loading) {
         return <p>Loading...</p>;
     }
@@ -80,27 +84,21 @@ const EvalPage = () => {
 
     return (
         <Container fluid className="py-4 d-flex flex-column justify-content-center">
-            <Row>
-                <Button
-                    variant="link"
-                    onClick={handleBack}
-                    className="backBtn d-flex align-items-center text-success"
-                >
-                    <FontAwesomeIcon icon={faChevronLeft} size="lg" />
-                    <span className="ms-2">Back</span>
-                </Button>
-
-                <Col className="d-flex justify-content-end">
-                    <Button style={{ backgroundColor: "#71A872", border: "0px" }}>
-                        <FontAwesomeIcon className="me-2" icon={faFilter}></FontAwesomeIcon>
-                        Filter
-                    </Button>
-                </Col>
-            </Row>
-
-            <div className="container">
-                <h1>ACTIVITY EVALUATION</h1>
-            </div>
+            <Row className="align-items-center">
+                            <Col xs="auto">
+                                <Button 
+                                    variant="link" 
+                                    onClick={handleBack} 
+                                    className="backBtn d-flex align-items-center text-success"
+                                >
+                                    <FontAwesomeIcon icon={faChevronLeft} size="lg" />
+                                   
+                                </Button>
+                            </Col>
+                            <Col>
+                                <h1 className="mb-0" style={{ color: '#4B4A4A' }}>Activity Evaluation</h1>
+                            </Col>
+                        </Row>
 
             {/* Display success message */}
             {successMessage && (
@@ -109,7 +107,7 @@ const EvalPage = () => {
                 </Alert>
             )}
 
-            <Table responsive bordered striped hover className="tableStyle mt-3">
+            <Table responsive bordered striped hover className="tableStyle mt-5">
                 <thead>
                     <tr>
                         <th>Evaluation Type</th>
@@ -118,7 +116,7 @@ const EvalPage = () => {
                         <th>Activity Venue</th>
                         <th>Date Created</th>
                         <th>Status</th>
-                        <th style={{ width: "40%" }}>Actions</th>
+                        <th style={{ width: "20%" }}>Actions</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -131,8 +129,12 @@ const EvalPage = () => {
                             <td>{new Date(form.created_at).toLocaleDateString()}</td>
                             <td>{form.status}</td>
                             <td>
-                                <BtnViewTally />
-                                <BtnViewAllResponse />
+                                <Button
+                                    variant="success"
+                                    onClick={() => handleViewResponses(form.form_id)}
+                                >
+                                    View All Responses
+                                </Button>
                                 <Button
                                     variant="warning"
                                     onClick={() => toggleStatus(form.form_id, form.status)}

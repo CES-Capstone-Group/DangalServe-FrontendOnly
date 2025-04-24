@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from "react-router-dom";
 import { Container, Table, Button, Row, Col, Form, Badge } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faChevronLeft } from "@fortawesome/free-solid-svg-icons";
+import { faChevronLeft, faPlus } from "@fortawesome/free-solid-svg-icons";
 import BtnAddQuestion from "./Buttons/Manage/BtnAddQuestion.jsx";
 import BtnAddSection from "./Buttons/Manage/BtnAddSection.jsx";
 import BtnEditDelSection from "./Buttons/Manage/BtnEditDelSection.jsx";
@@ -192,6 +192,7 @@ const ManageEvaluationForm = () => {
                     className="mt-3"
                     onClick={() => openAddQuestionModal(section.section_id, section.question_type)}
                 >
+                    <FontAwesomeIcon icon={faPlus} size={16} /> {/* Add the icon */}
                     Add Question
                 </Button>
             </div>
@@ -200,7 +201,7 @@ const ManageEvaluationForm = () => {
 
     return (
         <Container fluid className="py-4 mt-5 d-flex flex-column justify-content-center">
-            <Row>
+            <Row className="mb-4">
                 <Button variant="link" onClick={handleBack} className="d-flex align-items-center text-success">
                     <FontAwesomeIcon icon={faChevronLeft} size="lg" />
                     <span className="ms-2">Back</span>

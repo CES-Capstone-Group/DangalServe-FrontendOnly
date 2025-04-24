@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { Button, Modal, Row, Col, Form } from "react-bootstrap";
 import { API_ENDPOINTS } from "../../../config";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faPlus } from "@fortawesome/free-solid-svg-icons";
 
-const BtnAddCourse = ({ onCourseAdded }) => {  
+const BtnAddCourse = ({ onCourseAdded }) => {
     const [showModal, setShowModal] = useState(false);
     const [CourseName, setCourseName] = useState("");  // State for Course name
     const [departments, setDepartments] = useState([]);  // Store departments
@@ -16,15 +18,15 @@ const BtnAddCourse = ({ onCourseAdded }) => {
     // **Close the modal and reset form fields**
     const handleCloseModal = () => {
         setShowModal(false);
-        setCourseName("");  
-        setSelectedDepartment("");  
+        setCourseName("");
+        setSelectedDepartment("");
     };
 
     const validateForm = () => {
         const newErrors = {};
 
-        if(!selectedDepartment) newErrors.departmentName = 'Please Select a Department first';
-        if(!CourseName) newErrors.courseName = 'Please enter a Course Name';
+        if (!selectedDepartment) newErrors.departmentName = 'Please Select a Department first';
+        if (!CourseName) newErrors.courseName = 'Please enter a Course Name';
 
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
@@ -35,13 +37,13 @@ const BtnAddCourse = ({ onCourseAdded }) => {
     // **Function to handle form submission and backend integration**
     const handleSubmit = async (e) => {
         e.preventDefault();
-        if(!validateForm()) return;
+        if (!validateForm()) return;
 
-        const formData = {  
+        const formData = {
             course_name: CourseName,
             dept: selectedDepartment  // Send selected department ID
         };
-        
+
         try {
             const response = await fetch(API_ENDPOINTS.COURSE_CREATE, {
                 method: "POST",
@@ -51,9 +53,9 @@ const BtnAddCourse = ({ onCourseAdded }) => {
                 body: JSON.stringify(formData)  // Convert form data to JSON
             });
 
-            if (response.ok) {  
+            if (response.ok) {
                 alert("Course added successfully!");
-                handleCloseModal();  
+                handleCloseModal();
                 onCourseAdded();  // Notify parent to refresh the table
             } else {
                 // const errorData = await response.json();
@@ -89,10 +91,11 @@ const BtnAddCourse = ({ onCourseAdded }) => {
 
     return (
         <div className="d-flex justify-content-end m-3">
-            <Button 
-                className="shadow" 
-                style={{ backgroundColor: "#71A872", border: '0px', color: 'white' }} 
+            <Button
+                className="shadow"
+                style={{ backgroundColor: "#71A872", border: '0px', color: 'white', padding: "10px 20px" }}
                 onClick={handleShowModal}>
+                <FontAwesomeIcon icon={faPlus} size={16} /> {/* Add the icon */}
                 Add Course
             </Button>
 
@@ -105,14 +108,14 @@ const BtnAddCourse = ({ onCourseAdded }) => {
                     <Form>
                         {/* Combo box for department */}
                         <Form.Group as={Row} className="mb-3">
-                            <Form.Label column sm={3}>Department:</Form.Label>
+                            <Form.Label column sm={3}>Department:<span style={{ color: "red" }}>*</span></Form.Label>
                             <Col>
                                 <Form.Select
-                                 name="selectedDepartment"
-                                 value={selectedDepartment} 
-                                 isInvalid={!!errors.departmentName}
-                                 onChange={handleDepartmentChange}>
-                                    <option value="">Select Department</option>  
+                                    name="selectedDepartment"
+                                    value={selectedDepartment}
+                                    isInvalid={!!errors.departmentName}
+                                    onChange={handleDepartmentChange}>
+                                    <option value="">Select Department</option>
                                     {departments.map(department => (
                                         <option key={department.dept_id} value={department.dept_id}>
                                             {department.dept_name}
@@ -126,13 +129,13 @@ const BtnAddCourse = ({ onCourseAdded }) => {
                         </Form.Group>
 
                         <Form.Group as={Row} className="mb-3">
-                            <Form.Label column sm={3}>Course Name:</Form.Label>
+                            <Form.Label column sm={3}>Course Name:<span style={{ color: "red" }}>*</span></Form.Label>
                             <Col sm={8}>
-                                <Form.Control 
+                                <Form.Control
                                     type="text"
                                     name="courseName"
                                     placeholder="Enter Course Name"
-                                    value={CourseName}  
+                                    value={CourseName}
                                     onChange={(e) => setCourseName(e.target.value)}
                                     isInvalid={!!errors.courseName}
 
@@ -146,8 +149,8 @@ const BtnAddCourse = ({ onCourseAdded }) => {
                 </Modal.Body>
 
                 <Modal.Footer className="d-flex justify-content-center">
-                    <Button onClick={handleSubmit} variant='success'>  
-                        Save Changes
+                    <Button onClick={handleSubmit} variant='success'>
+                        Add
                     </Button>
                     <Button onClick={handleCloseModal} variant="danger">
                         Cancel

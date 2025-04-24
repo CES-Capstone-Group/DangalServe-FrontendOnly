@@ -1,5 +1,5 @@
-import React from 'react';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import React, { Suspense } from 'react';
+import { Routes, Route } from 'react-router-dom';
 import LoginPage from './components/LoginPage';
 import MainContent from './components/MainContent';
 import UserManagementCon from './components/Admin/UserManagementCon.jsx';
@@ -33,6 +33,7 @@ import EvalPage from './components/Evaluator/EvalPage';
 
 import ProposalForm from './components/Forms/ProposalForm.jsx';
 import DocumentPage from './components/DocumentPage';
+import DocumentPageCoor from './components/DocumentPageCoor';
 import UserAdminPage from './components/MainPages/UserAdminPage';
 import UserBarangayPage from './components/MainPages/UserBarangayPage';
 import UserCoorPage from './components/MainPages/UserCoorPage';
@@ -59,7 +60,6 @@ import ManageCalendar from './components/ManageCalendar.jsx';
 import ManageCourse from './components/ManageCourse.jsx';
 import ManageEvaluators from './components/ManageEvaluators.jsx';
 import { UserProvider } from './components/UserContext.jsx';
-import ManageResponses from './components/ManageResponse.jsx';
 import EvalSummary from './components/EvalSummary.jsx';
 import EvalCards from './components/Evaluator/EvalCards.jsx';
 import AdminDeptApprovedPro from './components/Admin/AdminDeptApprovedPro.jsx';
@@ -76,6 +76,12 @@ import InvTable from './components/Admin/InvTable.jsx';
 import ManageKpi from './components/ManageKpi.jsx';
 import ImpactPage from './components/Admin/ImpactPage.jsx';
 import EvalAnswerPage from './components/Evaluator/EvalAnswerPage.jsx';
+import CoorKpiPage from './components/Coordinator/CoorKpiPage.jsx';
+import ManageResponses from './components/ManageResponses.jsx';
+import CoorEventPage from './components/Coordinator/CoorEventPage.jsx';
+import CoorEventDetailsPage from './components/Coordinator/CoorEventDetailsPage.jsx';
+import BackupRestore from './components/BackupRestore .jsx';
+import AARDetailsPage from './components/Admin/AARDetailsPage.jsx';
 
 const App = () => {
   return (
@@ -89,30 +95,8 @@ const App = () => {
 
           {/* Admin Routes - Only accessible to Admin */}
           <Route element={<PrivateRoute allowedRoles={['Admin']} />}>
-            <Route path='/landing' element={<AdminLanding />} />
-            <Route path='/manage' element={<AdminManagePage />} >
-              <Route index element={<AdminManage />} />
-              <Route path='accmngmnt' element={<UserManagementCon />} />
-              <Route path='manage-agenda' element={<ManageAgenda />} />
-              <Route path='manage-ach' element={<ManageAchievements />} />
-              <Route path='manage-ann' element={<ManageAnnouncement />} />
-              <Route path='manage-docs' element={<ManageDocuments />} />
-              <Route path='brgy-management' element={<BrgyManagement />} />
-              <Route path='dept-management' element={<DepartmentManagement />} />
-              <Route path='course-management' element={<ManageCourse />} />
-              <Route path='calendar' element={<ManageCalendar />} />
-              <Route path='evaluators' element={<ManageEvaluators />} />
-              <Route path='responses' element={<ManageResponses />} />
-              <Route path='eval-management' element={<EvalPage />} />
-              <Route path='eval-sum' element={<EvalSummary />} />
-              <Route path='eval-cards' element={<EvalCards />} />
-              {/* <Route path='manage-questions' element={<ManageQuestions />} /> */}
-              {/* <Route path="evaluation-form-management" element={<EvalFormManagement />} /> */}
-              <Route path='manage-eval-form' element={<ManageEvaluationForm />} />
-              <Route path="eval-type-management" element={<EvalTypeManagement />} />
-              <Route path='eval-create' element={<EvalCreate />} />
-              <Route path='kpi-manage' element={<ManageKpi />} />
-            </Route>
+            <Route path='/landing' element={<UserAdminPage />} />
+            
             <Route path='/admin' element={<UserAdminPage />}>
               <Route path='proposal-form' element={<ProposalForm />} />
               <Route index element={<AdminMainContent />} />
@@ -132,10 +116,40 @@ const App = () => {
               <Route path='eval-page' element={<EvalPage />} />
               <Route path='kpi' element={<KpiPage />} />
               <Route path='eval-cards' element={<EvalCards />} />
+              <Route path='eval-page/eval-create' element={<EvalCreate />} />
               <Route path='profile' element={<MyProfilePage />} />
               <Route path="inv-table/:chartType" element={<InvTable />} />
-              <Route path='responses' element={<ManageResponses />} />
               <Route path='impact' element={<ImpactPage />} />
+              <Route path='/admin/eval-page/responses' element={<ManageResponses />} />
+              <Route path='aarForm' element={<AARForm />} />
+              <Route path='eval-create' element={<EvalCreate />} />
+
+              <Route path='manage' element={<AdminManage />} />
+                  <Route path='accmngmnt' element={<UserManagementCon />} />
+                  <Route path='manage-agenda' element={<ManageAgenda />} />
+                  <Route path='manage-ach' element={<ManageAchievements />} />
+                  <Route path='manage-ann' element={<ManageAnnouncement />} />
+                  <Route path='manage-docs' element={<ManageDocuments />} />
+                  <Route path='brgy-management' element={<BrgyManagement />} />
+                  <Route path='dept-management' element={<DepartmentManagement />} />
+                  <Route path='course-management' element={<ManageCourse />} />
+                  <Route path='manage-calendar' element={<ManageCalendar />} />
+                  <Route path='evaluators' element={<ManageEvaluators />} />
+                  <Route path='eval-management' element={<EvalPage />} />
+                  <Route path='eval-sum' element={<EvalSummary />} />
+                  <Route path='eval-cards' element={<EvalCards />} />
+                  {/* <Route path='manage-questions' element={<ManageQuestions />} /> */}
+                  {/* <Route path="evaluation-form-management" element={<EvalFormManagement />} /> */}
+                  <Route path='manage-eval-form' element={<ManageEvaluationForm />} />
+                  <Route path="eval-type-management" element={<EvalTypeManagement />} />
+
+
+                  <Route path='aarview' element={<AARDetailsPage />} />
+                
+                  <Route path='kpi-manage' element={<ManageKpi />} />
+                  <Route path='responses' element={<ManageResponses />} />
+                  <Route path='backup' element={<BackupRestore />} />
+              {/* </Route> */}
             </Route>
           </Route>
 
@@ -162,13 +176,19 @@ const App = () => {
               <Route path='pending-achievements' element={<CoorPenAchievements />} />
               <Route path='approved-achievements' element={<CoorApprovedAch />} />
               <Route path='resched' element={<CoorEventRequest />} />
-              <Route path='docs' element={<DocumentPage />} />
+              <Route path='docs-coor' element={<DocumentPageCoor />} />
               <Route path='calendar' element={<CoorCalendar />} />
-              <Route path='kpi' element={<KpiPage />} />
+              <Route path='kpi' element={<CoorKpiPage />} />
               <Route path='eval-page' element={<EvalPage />} />
+              <Route path='eval-page/eval-create' element={<EvalCreate />} />
               <Route path='proposal-form' element={<ProposalForm />} />
               <Route path='proposal-form/:proposalId/resubmit' element={<ProposalForm />} /> {/* Resubmission */}
               <Route path='profile' element={<MyProfilePage />} />
+              <Route path='/coor/event-page' element={<CoorEventPage />} />
+              <Route path='/coor/event-detail' element={<CoorEventDetailsPage />} />
+              <Route path='/coor/eval-page/responses' element={<ManageResponses />} />
+            <Route path='aarForm' element={<AARForm />} />
+            <Route path='aarview' element={<AARDetailsPage />} />
             </Route>
           </Route>
 
@@ -179,19 +199,18 @@ const App = () => {
             <Route path='dashboard' element={<MainContent />} />
             <Route path='eval-page' element={<EvalPage />} />
             <Route path='eval-cards' element={<EvalCards />} />
-            <Route path='eval-answer' element={<EvalAnswerPage/>} />
+            <Route path='eval-answer' element={<EvalAnswerPage />} />
           </Route>
           {/* </Route> */}
 
           {/* Other Routes */}
-          <Route path='/eval-select' element={<EvalSelect />} />         
+          <Route path='/eval-select' element={<EvalSelect />} />
           <Route path='/actEvalForm' element={<ActEvalForm />} />
           <Route path='/funding' element={<FundingProposalForm />} />
           <Route path='/cesEvalForm' element={<CesEvalForm />} />
           <Route path='aarForm' element={<AARForm />} />
           <Route path='impact-eval' element={<ImpactEvalForm />} />
-          <Route path='eval-login' element={<EvalLogIn/>} />
-          
+          <Route path='eval-login' element={<EvalLogIn />} />
         </Routes>
       </UserProvider>
 

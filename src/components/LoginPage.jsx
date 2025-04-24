@@ -20,7 +20,7 @@ function LoginPage() {
     const [errors, setErrors] = useState({});
     const navigate = useNavigate();
 
-    
+
     useEffect(() => {
         const accessToken = localStorage.getItem('access_token');
         if (accessToken) {
@@ -43,16 +43,16 @@ function LoginPage() {
     const validateLogin = () => {
         const newErrors = {};
 
-        if(!username) newErrors.txtUsername = "Enter your username";
+        if (!username) newErrors.txtUsername = "Enter your username";
         if (!password) newErrors.txtPassword = "Enter your password";
-        
+
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
     }
-    
+
     const handleLogin = async (e) => {
         e.preventDefault();
-        if(!validateLogin()) return;
+        if (!validateLogin()) return;
 
         const loginData = { username, password };
 
@@ -79,15 +79,26 @@ function LoginPage() {
 
                 redirectToRolePage(accountType);
             } else {
-                const errorData = await response.json();
-                setErrors({
-                    txtUsername: 'Incorrect user login details',
-                    txtPassword: 'Incorrect user login details',
-                });
-                // Optionally, display the error details for debugging
-                console.error('Login error details:', errorData);
-                
+                const errorData = await response.json(); // Retrieve the error data from the response
 
+                if (errorData.detail.includes("Account is locked")) {
+                    setErrors({
+                        txtUsername: `${JSON.stringify(errorData.detail)}`,
+                        txtPassword: '',
+                    });
+
+                } else {
+                    setErrors({
+                        txtUsername: 'Incorrect user login details',
+                        txtPassword: 'Incorrect user login details',
+                    });
+
+                }
+
+                console.log(errorData)
+
+                // Optional: Display the error details for debugging
+                // alert(`Login error details: ${errorData.detail || 'No additional details provided'}`);
             }
         } catch (error) {
             console.error('Error during login:', error);
@@ -97,7 +108,7 @@ function LoginPage() {
 
     const redirectToRolePage = (accountType) => {
         if (accountType === 'Admin') {
-            navigate('/landing');
+            navigate('/admin');
         } else if (accountType === 'Brgy. Official') {
             navigate('/barangay');
         } else if (accountType === 'Proponent') {
@@ -115,7 +126,7 @@ function LoginPage() {
 
     return (
         <body className='loginBg'>
-            <Container className="d-flex justify-content-center align-items-center min-vh-100">
+            <Container className="d-flex justify-content-center align-items-center min-vh-100 login-container ">
                 <Card>
                     <Card.Img className='fluid ps-5 pe-5' variant='top' src={Logo} />
                     <Card.Title className='text-success' style={{ textAlign: 'center', fontSize: '3vh' }}>Community Extension Service Management System</Card.Title><br />
@@ -133,8 +144,8 @@ function LoginPage() {
                                                 type='text'
                                                 placeholder='Insert your username here'
                                                 value={username}
-                                                onChange={(e) => setUsername(e.target.value)} 
-                                                isInvalid={!!errors.txtUsername}/>
+                                                onChange={(e) => setUsername(e.target.value)}
+                                                isInvalid={!!errors.txtUsername} />
                                             <Form.Control.Feedback type="invalid">
                                                 {errors.txtUsername}
                                             </Form.Control.Feedback>
@@ -155,7 +166,7 @@ function LoginPage() {
                                                 placeholder='Insert your Password here'
                                                 value={password}
                                                 onChange={(e) => setPassword(e.target.value)}
-                                                />
+                                            />
                                             <Button variant='success' onClick={togglePasswordVisibility}>
                                                 <FontAwesomeIcon icon={showPassword ? faEyeSlash : faEye} />
                                             </Button>
@@ -167,9 +178,10 @@ function LoginPage() {
                                 </Row>
 
                                 <Row>
-                                    <Form.Group as={Col} className="mb-3 ps-5" controlId="CheckBox">
+                                    <Form.Group as={Col} className="mb-3 ps-5 rememberMe" controlId="CheckBox">
                                         <Form.Check
                                             type="checkbox"
+                                            className='rememberMe'
                                             label="Remember Me"
                                             checked={rememberMe}
                                             onChange={(e) => setRememberMe(e.target.checked)}
@@ -182,6 +194,12 @@ function LoginPage() {
                                     </Form.Group>
                                 </Row>
                             </Form>
+                            <Row className='d-flex flex-column flex-wrap justify-content-center align-content-center'>
+                                <div className='d-flex justify-content-center'>
+                                    <a className='text-success' href="/eval-select">Register as an Evaluator</a>
+                                </div>
+
+                            </Row>
                         </Col>
                     </Row>
                 </Card>

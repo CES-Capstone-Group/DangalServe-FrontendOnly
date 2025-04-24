@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react"; // Make sure all hooks are imported
-import { faPlus } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Button, Modal, Row, Col, Form } from "react-bootstrap";
 import { API_ENDPOINTS } from "../../../config";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faPlus } from "@fortawesome/free-solid-svg-icons";
 
 const BtnAddSection = ({ onSectionAdded, evalTypeId }) => {
     const [showModal, setShowModal] = useState(false);
@@ -114,11 +114,12 @@ const BtnAddSection = ({ onSectionAdded, evalTypeId }) => {
 
     return (
         <div style={{ width: "100%" }}>
-            <Button 
-                className="shadow w-100" 
-                style={{ backgroundColor: "#71A872", border: '0px', color: 'white' }} 
+            <Button
+                className="shadow w-100"
+                style={{ backgroundColor: "#71A872", border: '0px', color: 'white' }}
                 onClick={handleShowModal}>
-                <FontAwesomeIcon icon={faPlus}/>
+                <FontAwesomeIcon icon={faPlus} size={16} /> {/* Add the icon */}
+
                 <span className="h5"> Add Section </span>
             </Button>
 
@@ -132,11 +133,11 @@ const BtnAddSection = ({ onSectionAdded, evalTypeId }) => {
                         <Form.Group as={Row} className="mb-3">
                             <Form.Label column sm={3}>Section:</Form.Label>
                             <Col>
-                                <Form.Control 
+                                <Form.Control
                                     type="text"
                                     placeholder="Enter section label"
                                     value={sectionLabel}
-                                    onChange={(e) => setSectionLabel(e.target.value)} 
+                                    onChange={(e) => setSectionLabel(e.target.value)}
                                 />
                             </Col>
                         </Form.Group>
@@ -144,8 +145,8 @@ const BtnAddSection = ({ onSectionAdded, evalTypeId }) => {
                         <Form.Group as={Row} className="mb-3">
                             <Form.Label column sm={3}>Section Type:</Form.Label>
                             <Col>
-                                <Form.Control 
-                                    as="select" 
+                                <Form.Control
+                                    as="select"
                                     value={sectionType}
                                     onChange={handleSectionTypeChange}
                                 >
@@ -175,8 +176,8 @@ const BtnAddSection = ({ onSectionAdded, evalTypeId }) => {
                             <Form.Group as={Row} className="mb-3">
                                 <Form.Label column sm={3}>Question Type:</Form.Label>
                                 <Col>
-                                    <Form.Control 
-                                        as="select" 
+                                    <Form.Control
+                                        as="select"
                                         value={questionType}
                                         onChange={(e) => setQuestionType(e.target.value)}
                                     >
@@ -194,7 +195,7 @@ const BtnAddSection = ({ onSectionAdded, evalTypeId }) => {
                                 <Form.Group as={Row} className="mb-3">
                                     <Form.Label column sm={3}>Rating Scale:</Form.Label>
                                     <Col>
-                                        <Form.Control 
+                                        <Form.Control
                                             type="number"
                                             min={1}
                                             max={10}
@@ -223,7 +224,7 @@ const BtnAddSection = ({ onSectionAdded, evalTypeId }) => {
                         <Form.Group as={Row} className="mb-3">
                             <Form.Label column sm={3}>Required Section:</Form.Label>
                             <Col>
-                                <Form.Check 
+                                <Form.Check
                                     type="checkbox"
                                     label="Automatically include this section in every new form"
                                     checked={isFixed}
@@ -238,7 +239,7 @@ const BtnAddSection = ({ onSectionAdded, evalTypeId }) => {
                 </Modal.Body>
 
                 <Modal.Footer className="d-flex justify-content-center">
-                    <Button variant="success" onClick={handleAddSection}>  
+                    <Button variant="success" onClick={handleAddSection}>
                         Add Section
                     </Button>
                     <Button onClick={handleCloseModal} variant="danger">

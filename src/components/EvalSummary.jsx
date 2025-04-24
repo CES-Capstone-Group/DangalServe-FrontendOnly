@@ -141,12 +141,12 @@ const EvalSummary = () => {
                         <span className="ms-2">Back</span>
                     </Button>
                 </Col>
-                <Col xs={6} className="d-flex justify-content-end mt-4">
+                {/* <Col xs={6} className="d-flex justify-content-end mt-4">
                     <Button style={{ backgroundColor: '#71A87E', border: '0px' }}>
                         <FontAwesomeIcon className="me-2" icon={faFilter} />
                         Filter
                     </Button>
-                </Col>
+                </Col> */}
             </Row>
 
 

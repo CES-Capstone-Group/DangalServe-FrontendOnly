@@ -9,6 +9,7 @@ const BtnEditDelete = ({ brgyId, brgyName: initialBrgyName, onBrgyUpdated }) => 
     const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
     const [brgyName, setBrgyName] = useState("");  // State for barangay name
     const [moaFile, setMoaFile] = useState(null);  // State for file upload
+    const [phoneNumber, setPhoneNumber] = useState(null);  // State for file upload
 
     // **Modified: Open/Close Edit Modal with Prefilled Values**
     const handleShowEdit = () => {
@@ -28,7 +29,7 @@ const BtnEditDelete = ({ brgyId, brgyName: initialBrgyName, onBrgyUpdated }) => 
         if (moaFile) {
             formData.append("moa", moaFile);  // Append the MOA file if selected
         }
-
+        formData.append("phone_number", phoneNumber)
         try {
             const response = await fetch(API_ENDPOINTS.BARANGAY_UPDATE_DELETE(brgyId), {
                 method: "PUT",
@@ -107,6 +108,19 @@ const BtnEditDelete = ({ brgyId, brgyName: initialBrgyName, onBrgyUpdated }) => 
                                     name="brgyName"
                                     value={brgyName}  // Prefill current name
                                     onChange={(e) => setBrgyName(e.target.value)}  // Handle name change
+                                />
+                            </Col>
+                        </Form.Group>
+                        <Form.Group as={Row} className="mb-3">
+                            <Form.Label column sm={4}>
+                                Phone Number:
+                            </Form.Label>
+                            <Col sm={8}>
+                                <Form.Control
+                                    type="number"
+                                    name="phone_number"
+                                    value={phoneNumber}  // Prefill current name
+                                    onChange={(e) => setPhoneNumber(e.target.value)}  // Handle name change
                                 />
                             </Col>
                         </Form.Group>

@@ -5,13 +5,14 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCheckCircle, faChevronLeft, faMinusCircle } from "@fortawesome/free-solid-svg-icons";
 import { API_ENDPOINTS } from "../../config";
 
-const AdminEventDetailsPage = () => {
+const CoorEventDetailsPage = () => {
     const location = useLocation();
     const { eventDetails, eventName, activity_schedule_id } = location.state || {};
     const navigate = useNavigate();
     const { proposal_title, target_date, target_time, activity_venue, activity_objectives, status, files } = eventDetails || {};
     const [showModal, setShowModal] = useState(false);
     const [aar, setAar] = useState(null);
+
     // Display the list of files as links
     const displayFiles = (files) => {
         if (!files || files.length === 0) {
@@ -32,6 +33,8 @@ const AdminEventDetailsPage = () => {
     };
 
     useEffect(() => {
+        console.log(eventDetails); // Log the files array
+
         if (files) {
             console.log("Files:", files); // Log the files array
         }
@@ -62,7 +65,7 @@ const AdminEventDetailsPage = () => {
     
         fetchAar();
     }, [activity_schedule_id]);
-    
+
     const handleCloseModal = () => setShowModal(false);
 
     return (
@@ -130,25 +133,36 @@ const AdminEventDetailsPage = () => {
                                     <Card.Title className="h1">After Activity Report</Card.Title>
                                 </Col>
                                 <Col md={4} className="d-flex justify-content-end">
-                                    {aar ? (
-                                        <Button
-                                            onClick={() =>
-                                                navigate("/admin/aarview", {
-                                                    state: { activity_schedule_id },
-                                                })
-                                            }
-                                            variant="success"
-                                        >
-                                            View AAR
-                                        </Button>
+                                {aar ? (
+                                    <Button
+                                        onClick={() =>
+                                            navigate("/coor/aarview", {
+                                                state: { activity_schedule_id },
+                                            })
+                                        }
+                                        variant="success"
+                                    >
+                                        View AAR
+                                    </Button>
                                     ) : (
-                                        <Button
-                                            disabled
-                                            variant="danger"
-                                        >
-                                            Not Submitted
-                                        </Button>
-                                    )}
+                                    <Button
+                                        onClick={() =>
+                                            navigate("/coor/aarform", {
+                                                state: {
+                                                    activity_schedule_id,
+                                                    eventDetails,
+                                                    eventName,
+                                                    target_date,
+                                                    activity_venue,
+                                                    activity_objectives,
+                                                },
+                                            })
+                                        }
+                                        variant="success"
+                                    >
+                                        Submit
+                                    </Button>
+                                )}
                                 </Col>
                             </Row>
                         </Card.Body>
@@ -176,4 +190,4 @@ const AdminEventDetailsPage = () => {
     );
 };
 
-export default AdminEventDetailsPage;
+export default CoorEventDetailsPage;

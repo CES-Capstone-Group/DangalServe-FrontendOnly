@@ -3,7 +3,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React, { useEffect, useState } from "react";
 import { Container, Button, Modal, Form, Row, Col } from "react-bootstrap";
 import pncbg from '../assets/pncbg.png'; // Ensure this path is correct
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios'; // Import axios
 import { API_ENDPOINTS } from "../config";
 
@@ -98,7 +98,7 @@ const EvalSelect = () => {
             'Non-Teaching': 'Non-Teaching',
             'Faculty': 'Faculty', // Changed from Teaching to Faculty
             'Alumni': 'Alumni',
-            'Participant': 'External'
+            'External Participant': 'External'
         };
 
         setFormData(prevState => ({
@@ -125,32 +125,35 @@ const EvalSelect = () => {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(formData),
-            });        
+            });
             if (!response.ok) throw new Error('Network response was not ok');
             const data = await response.json();
-            navigate("/eval");
+            navigate("/");
         } catch (error) {
             console.error("There was an error creating the account:", error);
         }
     };
 
-    const roles = ['Student', 'Non-Teaching', 'Faculty', 'Alumni', 'Participant'];
+    const roles = ['Student', 'Non-Teaching', 'Faculty', 'Alumni', 'External Participant'];
+
+  
 
     return (
         <div className="vh-100 fluid loginBg" style={{ backgroundImage: `url(${pncbg})`, backgroundSize: 'cover' }}>
             <Container className="d-flex flex-column justify-content-center align-items-center evalSel">
-                <h2 className="mt-4 mb-4" style={{ textAlign: 'center' }} id='propHeader1'>
+                <h2 className="mt-4 mb-4" style={{ textAlign: 'center'   }} id='propHeader1'>
                     Account Registration
                 </h2>
                 {roles.map((roleItem, index) => (
                     <Button key={index} variant="outline-success"
                         className="d-flex align-items-center mb-3 px-4"
-                        style={{ borderRadius: "10px", fontSize: "50px", width: "500px" }}
+                        style={{ borderRadius: "10px", fontSize: "25px", width: "400px" }}
                         onClick={() => handleSetRole(roleItem)}>
                         <FontAwesomeIcon icon={faUser} className="me-2" />
                         {roleItem}
                     </Button>
                 ))}
+                <p >Already have an account? : <span><a href="/" className="text-success">Log in</a></span></p>
             </Container>
 
             <Modal size="lg" centered show={showModal} onHide={handleCloseModal}>
@@ -202,7 +205,7 @@ const EvalSelect = () => {
                             <InputField label="Position" type="text" name="position" placeholder="Enter Position" required onChange={handleInputChange} />
                         )}
 
-                        {role === 'Participant' && (
+                        {role === 'External Participant' && (
                             <Form.Group as={Row} className="mb-3">
                                 <Form.Label column sm={3}>Barangay:</Form.Label>
                                 <Col>
@@ -220,7 +223,7 @@ const EvalSelect = () => {
 
                         <InputField label="Username" type="text" name="username" placeholder="Enter username" required onChange={handleInputChange} />
                         <InputField label="Password" type="password" name="password" placeholder="Enter password" required onChange={handleInputChange} />
-                        <Button type="submit" variant='success' size='lg'>Submit</Button>
+                        <Button type="submit" onClick={handleSubmit} variant='success' >Submit</Button>
                     </Form>
                 </Modal.Body>
             </Modal>

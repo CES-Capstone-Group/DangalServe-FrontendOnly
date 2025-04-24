@@ -41,7 +41,7 @@ const ProposalPB = ({ status }) => {
                     {/* Barangay's Approval */}
                     <ProgressBar 
                         variant={isBarangayApproved ? "success" : isPartlyBrgyApproved ? "warning" : "danger"} 
-                        now={isBarangayApproved ? 100 : isPartlyBrgyApproved ? 50 : 0} 
+                        now={isBarangayApproved ? 100 : isPartlyBrgyApproved ? 100 : 0} 
                         style={{ height: '1px' }} 
                     />
                 </Col>

@@ -8,6 +8,32 @@
     justify-content: center;
     background-color: rgba(255, 255, 255, 0.055);
   }
+  .loginBg {
+    height: 100vh;
+    background: url("../assets/pncbg.png") no-repeat center center fixed;
+    background-size: cover;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative; /* Set relative positioning for the pseudo-element */
+}
+
+.loginBg::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(46, 45, 45, 0.416); /* Black overlay with 50% opacity */
+    z-index: 0; /* Place it behind the content but above the background */
+}
+
+.login-container {
+    position: relative; /* Keep the container above the overlay */
+    z-index: 3; /* Ensures content stays above the overlay */
+}
+
   
   .input{
     width: 500px;
@@ -16,10 +42,13 @@
   
   .card {
     padding: 4em;
-    border-radius: 20px;
+    border-radius: 10px !important;
+    background-color: rgba(255, 255, 255, 0.8) !important; /* Adjust the last value (0.8) for opacity */
+   
   }
   
   .logo{
     width: 2em;
   }
+  
   

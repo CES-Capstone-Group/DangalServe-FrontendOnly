@@ -3,6 +3,7 @@ import { Container, Row, Col, Button } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
+import { jwtDecode } from 'jwt-decode';
 import "../../App.css";
 
 const UnauthorizedPage = () => {
@@ -25,8 +26,24 @@ const UnauthorizedPage = () => {
             localStorage.removeItem("refresh_token");
             navigate("/login");
         } else {
+            const decodedToken = jwtDecode(data.access);  // Using jwt_decode
+            const accountType = decodedToken.accountType;
             // Navigate to the previous page
-            navigate(-1);
+            redirectToRolePage(accountType);
+        }
+    };
+
+    const redirectToRolePage = (accountType) => {
+        if (accountType === 'Admin') {
+            navigate('/landing');
+        } else if (accountType === 'Brgy. Official') {
+            navigate('/barangay');
+        } else if (accountType === 'Proponent') {
+            navigate('/coor');
+        } else if (accountType === 'Evaluator') {
+            navigate('/eval');
+        } else {
+            alert('Unknown account type!');
         }
     };
 

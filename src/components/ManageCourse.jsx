@@ -36,16 +36,16 @@ const CourseManagement = () => {
     //search function
     const handleSearch = (e) => {
         setSearchQuery(e.target.value);
-      };
-      
-      // Filter barangays based on the search query
-      const filteredCourses = courses.filter(course => {
+    };
+
+    // Filter barangays based on the search query
+    const filteredCourses = courses.filter(course => {
         if (!course || typeof course !== 'object') return false; // Safeguard against unexpected data
         return (
-            (course.course_name && course.course_name.toLowerCase().includes(searchQuery.toLowerCase()))||
+            (course.course_name && course.course_name.toLowerCase().includes(searchQuery.toLowerCase())) ||
             (course.dept_name && course.dept_name.toLowerCase().includes(searchQuery.toLowerCase()))
         );
-      });
+    });
     //end of search function
 
     // **Handle Back Navigation**
@@ -59,16 +59,16 @@ const CourseManagement = () => {
 
         return (
             <tr>
-                <td>{course_id}</td>
+
                 <td>{course_name}</td>
                 <td>{dept_name}</td>
                 {/* Pass Props to BtnEditDeleteCourse */}
                 <td>
-                    <BtnEditDeleteCourse 
-                        courseId={course_id} 
-                        courseName={course_name} 
-                        deptName={dept_name} 
-                        onCourseUpdated={fetchCourses} 
+                    <BtnEditDeleteCourse
+                        courseId={course_id}
+                        courseName={course_name}
+                        deptName={dept_name}
+                        onCourseUpdated={fetchCourses}
                     />
                 </td>
             </tr>
@@ -81,7 +81,7 @@ const CourseManagement = () => {
             <Table responsive striped bordered hover className="tableStyle">
                 <thead>
                     <tr>
-                        <th style={{width: '5%'}}>ID</th>
+
                         <th>Course Name</th>
                         <th>Department Name</th>
                         <th>Actions</th>
@@ -102,36 +102,32 @@ const CourseManagement = () => {
     };
 
     return (
-        <Container 
-            fluid 
+        <Container
+            fluid
             className="py-4 mt-5  d-flex flex-column justify-content-center me-0 ms-0"
         >
-            <Row>
-                <Button 
-                    variant="link" 
-                    onClick={handleBack} 
-                    className="backBtn d-flex align-items-center text-success me-3"
-                >
-                    <FontAwesomeIcon icon={faChevronLeft} size="lg" />
-                    <span className="ms-2">Back</span>
-                </Button>
-                <Col className="d-flex justify-content-end">
-                    <Button style={{ backgroundColor: "#71A872", border: "0px" }}>
-                        <FontAwesomeIcon className="me-2" icon={faFilter} />
-                        Filter
+            <Row className="align-items-center">
+                <Col xs="auto">
+                    <Button
+                        variant="link"
+                        onClick={handleBack}
+                        className="backBtn d-flex align-items-center text-success"
+                    >
+                        <FontAwesomeIcon icon={faChevronLeft} size="lg" />
+
                     </Button>
+                </Col>
+                <Col>
+                    <h1 className="mb-0" style={{ color: '#4B4A4A' }}>Course Management</h1>
                 </Col>
             </Row>
             <Row>
-                <Col><h1>Course Management</h1></Col>
-            </Row>
-            <Row>
                 <Col className="mb-3 d-flex justify-content-end">
-                    <input 
-                        type="search" 
-                        className="form-control" 
-                        placeholder="Search" 
-                        style={{ width: "300px" }} 
+                    <input
+                        type="search"
+                        className="form-control"
+                        placeholder="Search"
+                        style={{ width: "300px" }}
                         onChange={handleSearch}
                     />
                 </Col>

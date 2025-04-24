@@ -131,7 +131,13 @@ const BtnCoorViewApprovedProposal = ({ proposal }) => {
                         <Form.Group as={Row} className="mb-3">
                             <Form.Label column sm={4}>Identified Needs</Form.Label>
                             <Col sm={8}>
-                                <Form.Control readOnly type="text" value={proposal.identified_needs || "N/A"} />
+                                {proposal.identified_needs_file ? (
+                                    <a href={proposal.identified_needs_file} target="_blank" rel="noopener noreferrer">
+                                        View File
+                                    </a>
+                                ) : (
+                                    <Form.Control readOnly type="text" value={proposal.identified_needs_text || "N/A"} />
+                                )}
                             </Col>
                         </Form.Group>
 

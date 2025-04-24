@@ -4,8 +4,20 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
 import { API_ENDPOINTS } from "../../config";
 import "../table.css";
+import { jwtDecode } from "jwt-decode";
 
-const KpiPage = () => {
+const decodeToken = (token) => {
+    try {
+        const payload = JSON.parse(atob(token.split('.')[1]));
+        return payload;
+    } catch (error) {
+        console.error("Failed to decode token:", error);
+        return null;
+    }
+};
+
+const CoorKpiPage = () => {
+    const [departments, setDepartments] = useState([]);
     const [selectedDepartment, setSelectedDepartment] = useState("");
     const [isEditing, setIsEditing] = useState(false);
     const [showSaveMessage, setShowSaveMessage] = useState(false);
@@ -13,12 +25,33 @@ const KpiPage = () => {
     const [password, setPassword] = useState("");
     const [showPassword, setShowPassword] = useState(false);
     const [passwordError, setPasswordError] = useState("");
-    const [departments, setDepartments] = useState([]);
     const [originalDepartments, setOriginalDepartments] = useState([]);
 
     // Function to fetch departments and KPI tables
     const fetchData = async () => {
         try {
+            // Retrieve the token from localStorage
+            const token = localStorage.getItem('access_token');
+            const decodedToken = decodeToken(token);
+
+            if (decodedToken && decodedToken.department) {
+                // Set the department from the token
+                setSelectedDepartment(decodedToken.department);
+            }
+
+            if (!token) {
+                console.error("No token found! Please log in.");
+                return;
+            }
+
+            if (decodedToken) {
+                console.log("Logged-in User Data:", decodedToken); // Log current account data
+            } else {
+                console.error("Failed to decode token.");
+                return;
+            }
+
+            // Fetch departments
             const departmentResponse = await fetch(API_ENDPOINTS.DEPARTMENT_LIST);
             const departmentData = await departmentResponse.json();
             const departments = Array.isArray(departmentData) ? departmentData : [];
@@ -34,20 +67,19 @@ const KpiPage = () => {
             );
 
             setDepartments(updatedDepartments);
+            console.log("Fetched Departments with KPI Tables:", updatedDepartments);
             setOriginalDepartments(JSON.parse(JSON.stringify(updatedDepartments))); // Save original state
         } catch (error) {
             console.error("Error fetching department and KPI data:", error);
         }
     };
-
     // Fetch data when the component mounts
     useEffect(() => {
         fetchData();
     }, []);
 
-
     return (
-        <Container fluid className="">
+        <Container fluid className="py-4 mt-5">
             <Container
                 fluid
                 style={{
@@ -62,11 +94,11 @@ const KpiPage = () => {
                 <Form.Group controlId="departmentSelect">
                     <Form.Label>College Department:</Form.Label>
                     <Form.Control
+                        disabled
                         as="select"
                         value={selectedDepartment}
                         onChange={(e) => setSelectedDepartment(e.target.value)}
                     >
-                        <option value="">Select Department</option>
                         {departments.map((dept) => (
                             <option key={dept.dept_id} value={dept.dept_name}>
                                 {dept.dept_name}
@@ -159,5 +191,4 @@ const KpiPage = () => {
         </Container>
     );
 };
-
-export default KpiPage;
+export default CoorKpiPage;

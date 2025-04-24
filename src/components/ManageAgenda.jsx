@@ -129,21 +129,21 @@ const ManageAgenda = () => {
     return (
         <Container fluid 
         className="py-4 mt-5 d-flex flex-column justify-content-center me-0 ms-0">
-            <Row>
-                <Button variant="link" onClick={handleBack} className="backBtn d-flex align-items-center text-success me-3">
-                    <FontAwesomeIcon icon={faChevronLeft} size="lg" />
-                    <span className="ms-2">Back</span>
-                </Button>
-                <Col className="d-flex justify-content-end">
-                    <Button style={{ backgroundColor: '#71A872', border: '0px' }}>
-                        <FontAwesomeIcon className='me-2' icon={faFilter} ></FontAwesomeIcon>
-                        Filter
-                    </Button>
-                </Col>
-            </Row>
-            <Row>
-                <Col><h1>Research Agenda Management</h1></Col>
-            </Row>
+            <Row className="align-items-center">
+                            <Col xs="auto">
+                                <Button 
+                                    variant="link" 
+                                    onClick={handleBack} 
+                                    className="backBtn d-flex align-items-center text-success"
+                                >
+                                    <FontAwesomeIcon icon={faChevronLeft} size="lg" />
+                                   
+                                </Button>
+                            </Col>
+                            <Col>
+                                <h1 className="mb-0" style={{ color: '#4B4A4A' }}>Research Agenda Management</h1>
+                            </Col>
+                        </Row>
             <Row>
                 <Col className="mb-3 d-flex justify-content-end">
                     <input type="search" className="form-control" placeholder='Search' style={{ width: '300px' }} onChange={handleSearch}/>

@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import { Button, Modal, Form, InputGroup } from "react-bootstrap";
 import { API_ENDPOINTS } from "../../../config";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faPlus } from "@fortawesome/free-solid-svg-icons";
 
 const BtnAddAnnouncement = ({ onAnnouncementAdded }) => {
     const [showModal, setShowModal] = useState(false);
@@ -12,8 +14,8 @@ const BtnAddAnnouncement = ({ onAnnouncementAdded }) => {
     const validateForm = () => {
         const newErrors = {};
 
-        if(!title) newErrors.title = 'Please enter an Announcement Title';
-        if(!details) newErrors.details = 'Please enter the Announcement Details';
+        if (!title) newErrors.title = 'Please enter an Announcement Title';
+        if (!details) newErrors.details = 'Please enter the Announcement Details';
 
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
@@ -33,12 +35,12 @@ const BtnAddAnnouncement = ({ onAnnouncementAdded }) => {
 
     const addAnnouncement = async (e) => {
         e.preventDefault();
-        if(!validateForm()) return;
+        if (!validateForm()) return;
 
         const announcementData = new FormData();
         announcementData.append("title", title);
         announcementData.append("details", details);
-        
+
         if (image) {
             announcementData.append("image", image);
         }
@@ -68,8 +70,8 @@ const BtnAddAnnouncement = ({ onAnnouncementAdded }) => {
     return (
         <div className="d-flex justify-content-end m-3">
             <div>
-                <Button className="shadow" style={{ backgroundColor: "#71A872", border: '0px', color: 'white' , fontSize: '1rem' }} onClick={handleShowModal}>
-                    + Add Announcement
+                <Button className="shadow" style={{ backgroundColor: "#71A872", padding: "10px 20px", border: '0px', color: 'white', fontSize: '1rem' }} onClick={handleShowModal}>
+                    <FontAwesomeIcon icon={faPlus} size={16} /> {/* Add the icon */} Add Announcement
                 </Button>
             </div>
 
@@ -81,13 +83,13 @@ const BtnAddAnnouncement = ({ onAnnouncementAdded }) => {
                 <Modal.Body>
                     <Form onSubmit={addAnnouncement}>
                         <Form.Group className='mb-3' controlId='AnnouncementTitle'>
-                            <Form.Label className='h5'>Announcement Title</Form.Label>
+                            <Form.Label className='h5'>Announcement Title<span style={{ color: "red" }}>*</span></Form.Label>
                             <InputGroup>
-                                <Form.Control 
-                                    className='input' 
-                                    type='text' 
+                                <Form.Control
+                                    className='input'
+                                    type='text'
                                     name="title"
-                                    placeholder='' 
+                                    placeholder=''
                                     value={title}
                                     onChange={(e) => setTitle(e.target.value)}
                                     isInvalid={!!errors.title}
@@ -99,14 +101,14 @@ const BtnAddAnnouncement = ({ onAnnouncementAdded }) => {
                         </Form.Group>
 
                         <Form.Group className='mb-3' controlId='AnnouncementDetails'>
-                            <Form.Label className='h5'>Announcement Details</Form.Label>
+                            <Form.Label className='h5'>Announcement Details<span style={{ color: "red" }}>*</span></Form.Label>
                             <InputGroup>
-                                <Form.Control 
-                                    className='input' 
-                                    as='textarea' 
+                                <Form.Control
+                                    className='input'
+                                    as='textarea'
                                     name="details"
                                     rows={4}
-                                    placeholder='' 
+                                    placeholder=''
                                     value={details}
                                     onChange={(e) => setDetails(e.target.value)}
                                     isInvalid={!!errors.details}
@@ -120,10 +122,10 @@ const BtnAddAnnouncement = ({ onAnnouncementAdded }) => {
                         <Form.Group className='mb-3' controlId='AnnImage'>
                             <Form.Label className='h5'>Upload your Image</Form.Label>
                             <InputGroup>
-                                <Form.Control 
-                                    className="inputFile" 
-                                    type="file" 
-                                    onChange={(e) => setImage(e.target.files[0])} 
+                                <Form.Control
+                                    className="inputFile"
+                                    type="file"
+                                    onChange={(e) => setImage(e.target.files[0])}
                                     accept="image/*"
                                 />
                             </InputGroup>
@@ -131,10 +133,10 @@ const BtnAddAnnouncement = ({ onAnnouncementAdded }) => {
                         </Form.Group>
 
                         <Modal.Footer className="d-flex justify-content-center">
-                            <Button size="lg" variant='success' type="submit">
+                            <Button variant='success' type="submit">
                                 Add
                             </Button>
-                            <Button size="lg" variant="danger" onClick={handleCloseModal}>
+                            <Button variant="danger" onClick={handleCloseModal}>
                                 Cancel
                             </Button>
                         </Modal.Footer>

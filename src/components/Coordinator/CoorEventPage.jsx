@@ -5,7 +5,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCheckCircle, faChevronLeft, faMinusCircle } from "@fortawesome/free-solid-svg-icons";
 import { API_ENDPOINTS } from "../../config";
 
-const AdminEventPage = () => {
+const CoorEventPage = () => {
     const location = useLocation();
     const { proposalEvents, proposalName } = location.state || {};
     const navigate = useNavigate();
@@ -14,14 +14,14 @@ const AdminEventPage = () => {
         try {
             // Fetch the event details using the event's ID
             const response = await fetch(API_ENDPOINTS.ACTIVITY_SCHEDULE_DETAIL(event.id));
-            console.log(event.id)
+            
             if (response.ok) {
-                const eventData = await response.json();
+                const coorEventData = await response.json();
                 // Navigate to the event details page with the fetched event data
-                navigate(`/admin/event-detail`, {
+                navigate(`/coor/event-detail`, {
                     state: {
                         activity_schedule_id: event.id,
-                        eventDetails: eventData,
+                        eventDetails: coorEventData,
                         eventName: event.activity_title
                     }
                 });
@@ -65,8 +65,8 @@ const AdminEventPage = () => {
                                                 event.status === "Completed"
                                                     ? faCheckCircle
                                                     : event.status === "In Progress"
-                                                        ? faMinusCircle
-                                                        : null
+                                                    ? faMinusCircle
+                                                    : null
                                             }
                                             className="ms-2"
                                         />
@@ -89,4 +89,4 @@ const AdminEventPage = () => {
     );
 };
 
-export default AdminEventPage;
+export default CoorEventPage;

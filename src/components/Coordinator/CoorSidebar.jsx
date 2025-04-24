@@ -1,6 +1,6 @@
 import React from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faTableColumns, faTrophy, faClipboardList, faFileLines, faChevronDown, faInbox, faCalendar, faChartLine, faFile } from '@fortawesome/free-solid-svg-icons'
+import { faTableColumns, faTrophy, faClipboardList, faFileLines, faChevronDown, faInbox, faCalendar, faChartLine, faFile, faCircleArrowLeft } from '@fortawesome/free-solid-svg-icons'
 import SidebarMenu from 'react-bootstrap-sidebar-menu';
 import Logo from '../../assets/pnclogo.png'
 import '../../App.css'
@@ -10,9 +10,11 @@ const CoorSidebar = ({ sidebarOpen, toggleSidebar }) => {
   return (
     <SidebarMenu expand="lg" className={`d-md-block bg-light flex-column ${sidebarOpen ? 'side active justify-content-center align-items-center' : 'side collapsed '}`} style={{ width: sidebarOpen ? '250px' : '80px', boxShadow: '0px 3px 10px', marginTop: sidebarOpen ? '0px' : '50px' }}>
       {/*SidebarMenu Header*/}
-      <SidebarMenu.Toggle onClick={toggleSidebar}>
+      <SidebarMenu.Toggle>
         <SidebarMenu.Brand>
-          <img className='logo img-fluid' src={Logo} alt="pnclogo" style={{ display: sidebarOpen ? 'block' : 'none' }} />
+          <NavLink to={'dashboard'} className={({ isActive }) => "nav-link" + (isActive ? " active" : "")} style={{backgroundColor:'transparent'}}>
+              <img className='logo img-fluid' src={Logo} alt="pnclogo" style={{ display: sidebarOpen ? 'block' : 'none' }} />
+            </NavLink>
         </SidebarMenu.Brand>
       </SidebarMenu.Toggle>
 
@@ -50,7 +52,7 @@ const CoorSidebar = ({ sidebarOpen, toggleSidebar }) => {
           <SidebarMenu.Sub>
             <SidebarMenu.Sub.Toggle>
               <SidebarMenu.Nav.Icon>
-                <FontAwesomeIcon onClick={toggleSidebar} icon={faFileLines} style={{ color: 'grey', fontSize: sidebarOpen ? '20px' : '20px', marginBottom: sidebarOpen ? '0px' : '0px' }}></FontAwesomeIcon>
+                <FontAwesomeIcon icon={faFileLines} style={{ color: 'grey', fontSize: sidebarOpen ? '20px' : '20px', marginBottom: sidebarOpen ? '0px' : '0px' }}></FontAwesomeIcon>
               </SidebarMenu.Nav.Icon>
               {sidebarOpen && (<SidebarMenu.Nav.Title> Proposals </SidebarMenu.Nav.Title>)}
               <SidebarMenu.Nav.Icon>
@@ -74,7 +76,17 @@ const CoorSidebar = ({ sidebarOpen, toggleSidebar }) => {
           </SidebarMenu.Sub>
         </SidebarMenu.Nav>
 
-        {/* ACHIEVEMENTS */}
+         {/* DOCUMENTS */}
+         <SidebarMenu.Nav>
+            <NavLink to={'/coor/docs-coor'} className={({ isActive }) => "nav-link" + (isActive ? " active" : "")}>
+              <SidebarMenu.Nav.Icon>
+                <FontAwesomeIcon icon={faFile} style={{ color: 'grey', fontSize: sidebarOpen ? '20px' : '20px', marginBottom: sidebarOpen ? '0px' : '10px' }} />
+              </SidebarMenu.Nav.Icon>
+              {sidebarOpen && (<SidebarMenu.Nav.Title> Documents </SidebarMenu.Nav.Title>)}
+            </NavLink>
+          </SidebarMenu.Nav>
+
+        {/* ACHIEVEMENTS
         <SidebarMenu.Nav>
           <SidebarMenu.Sub>
             <SidebarMenu.Sub.Toggle>
@@ -101,7 +113,7 @@ const CoorSidebar = ({ sidebarOpen, toggleSidebar }) => {
               </SidebarMenu.Nav>
             </SidebarMenu.Sub.Collapse>
           </SidebarMenu.Sub>
-        </SidebarMenu.Nav>
+        </SidebarMenu.Nav> */}
 
         {/* CALENDAR */}
         <SidebarMenu.Nav>

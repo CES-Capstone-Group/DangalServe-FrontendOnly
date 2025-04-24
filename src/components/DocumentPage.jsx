@@ -9,12 +9,12 @@ const DocumentPage = () => {
     return (
         <Container className="container-fluid">
 
-            <Col className="d-flex justify-content-end">
+            {/* <Col className="d-flex justify-content-end">
                 <Button style={{ backgroundColor: '#71A872', border: '0px' }}>
                     <FontAwesomeIcon className='me-2' icon={faFilter} ></FontAwesomeIcon>
                     Filter
                 </Button>
-            </Col>
+            </Col> */}
 
             <div className="container">
                 <h1> DOCUMENTS </h1>

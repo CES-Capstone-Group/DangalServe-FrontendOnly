@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { jwtDecode } from "jwt-decode";
 import { Container, Card, Button, Row, Col, Modal, Form } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faChevronLeft, faPenToSquare, faTrashAlt } from '@fortawesome/free-solid-svg-icons';
+import { faChevronLeft, faPenToSquare, faPlus, faTrashAlt } from '@fortawesome/free-solid-svg-icons';
 import { API_ENDPOINTS } from '../config';
 
 const EvalTypeManagement = () => {
@@ -18,6 +18,7 @@ const EvalTypeManagement = () => {
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [formName, setFormName] = useState('');
   const [formDescription, setFormDescription] = useState('');
+  const [validated, setValidated] = useState(false); // Add validated state
 
   const navigate = useNavigate();
 
@@ -105,19 +106,26 @@ const EvalTypeManagement = () => {
     setShowDeleteConfirm(true);
   };
 
-  const handleAddClick = () => {
-    // Show the confirmation modal while keeping the Add Form modal open
+  const handleAddClick = (e) => {
+    e.preventDefault();
+    setValidated(true); // Trigger validation
+
+    if (!formName.trim() || !formDescription.trim()) {
+      return; // Stop if validation fails
+    }
+
+    // Proceed with showing the confirmation modal
     setShowConfirmation(true);
     setAddModalOpen(false);
   };
 
   const handleConfirmAdd = () => {
-    // Use the form values from state to proceed with adding the form
     addEvaluationForm(formName, formDescription);
     setFormName('');
     setFormDescription('');
-    setShowConfirmation(false); // Close the confirmation modal
-    setAddModalOpen(false); // Close the Add Form modal after confirmation
+    setValidated(false); // Reset validation state
+    setShowConfirmation(false);
+    setAddModalOpen(false);
   };
 
   const handleCancelAdd = () => {
@@ -127,6 +135,9 @@ const EvalTypeManagement = () => {
   };
 
   const handleCloseDeleteConfirm = () => setShowDeleteConfirm(false);
+
+  if (loading) return <p>Loading...</p>;
+  if (error) return <p className="text-danger">Error: {error}</p>;
 
   const handleDelete = async () => {
     try {
@@ -153,7 +164,7 @@ const EvalTypeManagement = () => {
   };
 
   const handleManage = (formId) => {
-    navigate('/manage/manage-eval-form', { state: { formId } });
+    navigate('/admin/manage-eval-form', { state: { formId } });
   };
 
   if (loading) return <p>Loading...</p>;
@@ -161,13 +172,20 @@ const EvalTypeManagement = () => {
 
   return (
     <Container fluid className="py-4 mt-5">
-      <Row className="mb-3">
-        <Button variant="link" onClick={handleBack} className="backBtn d-flex align-items-center text-success me-3">
-          <FontAwesomeIcon icon={faChevronLeft} /> Back
-        </Button>
-      </Row>
-      <Row className="mb-3">
-        <Col><h1>Evaluation Form Management</h1></Col>
+      <Row className="align-items-center" style={{ marginBottom: '30px' }}>
+        <Col xs="auto">
+          <Button
+            variant="link"
+            onClick={handleBack}
+            className="backBtn d-flex align-items-center text-success"
+          >
+            <FontAwesomeIcon icon={faChevronLeft} size="lg" />
+
+          </Button>
+        </Col>
+        <Col>
+          <h1 className="mb-0" style={{ color: '#4B4A4A' }}>Evaluation Form Management</h1>
+        </Col>
       </Row>
       <Row>
         {forms.map((form) => (
@@ -192,7 +210,7 @@ const EvalTypeManagement = () => {
       </Row>
       <Row>
         <Col className='d-flex justify-content-end'>
-          <Button variant="success" onClick={() => setAddModalOpen(true)}>+ Add Evaluation</Button>
+          <Button variant="success" onClick={() => setAddModalOpen(true)}>   <FontAwesomeIcon icon={faPlus} size={16} /> {/* Add the icon */}Add Evaluation</Button>
         </Col>
       </Row>
 
@@ -202,29 +220,42 @@ const EvalTypeManagement = () => {
           <Modal.Title>Add New Evaluation Form</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <Form onSubmit={(e) => { e.preventDefault(); handleAddClick(); }}>
+          <Form onSubmit={handleAddClick}>
             <Form.Group controlId="formName">
-              <Form.Label>Form Name</Form.Label>
+              <Form.Label>
+                Form Name<span style={{ color: "red" }}>*</span>
+              </Form.Label>
               <Form.Control
                 type="text"
                 placeholder="Enter form name"
                 value={formName}
                 onChange={(e) => setFormName(e.target.value)}
-                required
+                isInvalid={validated && !formName.trim()} // Validation after submit attempt
               />
+              <Form.Control.Feedback type="invalid">
+                Form Name is required.
+              </Form.Control.Feedback>
             </Form.Group>
             <Form.Group controlId="formDescription" className="mt-3">
-              <Form.Label>Description</Form.Label>
+              <Form.Label>
+                Description<span style={{ color: "red" }}>*</span>
+              </Form.Label>
               <Form.Control
                 as="textarea"
                 rows={3}
                 placeholder="Enter description"
                 value={formDescription}
                 onChange={(e) => setFormDescription(e.target.value)}
+                isInvalid={validated && !formDescription.trim()} // Validation after submit attempt
               />
+              <Form.Control.Feedback type="invalid">
+                Description is required.
+              </Form.Control.Feedback>
             </Form.Group>
             <div className="d-flex justify-content-end">
-              <Button variant="success" type="submit" className="mt-3">+ Add</Button>
+              <Button variant="success" type="submit" className="mt-3" style={{ padding: "10px 20px" }}>
+                <FontAwesomeIcon icon={faPlus} size={16} /> {/* Add the icon */} Add
+              </Button>
             </div>
           </Form>
         </Modal.Body>

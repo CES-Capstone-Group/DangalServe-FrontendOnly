@@ -9,7 +9,7 @@ import "../table.css"
 import "../../App.css"
 import { API_ENDPOINTS } from "../../config";
 
-const Rows = ({ user_id, username, name, type, department_name, course_name, barangay_name, position, actDate, deacDate, status, fetchUsers }) => {
+const Rows = ({ index, user_id, username, name, type, department_name, course_name, barangay_name, position, actDate, deacDate, status, fetchUsers }) => {
     const account = {
         user_id: user_id,
         username: username,
@@ -67,7 +67,7 @@ const Rows = ({ user_id, username, name, type, department_name, course_name, bar
 
     return (
         <tr>
-            <td>{user_id}</td>
+            
             <td>{username}</td>
             <td>{name}</td>
             <td>{type}</td>
@@ -82,7 +82,7 @@ const Rows = ({ user_id, username, name, type, department_name, course_name, bar
                     style={{
                         backgroundColor: status === "Active" ? "green" : "red",
                         color: 'white',
-                        padding: '6px',
+                        padding: '4px',
                         borderRadius: '3px',
                     }}
                 >
@@ -90,11 +90,13 @@ const Rows = ({ user_id, username, name, type, department_name, course_name, bar
                 </span>
             </td>
             <td>
-                <BtnEditDeac
-                    account={account}
-                    onDeactivate={handleDeactivateAccount}
-                    onSave={fetchUsers}
-                />
+                {index !== 0 && (
+                    <BtnEditDeac
+                        account={account}
+                        onDeactivate={handleDeactivateAccount}
+                        onSave={fetchUsers}
+                    />
+                )}
             </td>
         </tr>
     );
@@ -104,23 +106,24 @@ const NewTable = ({ data, fetchUsers }) => {
     return (
         <Table responsive striped bordered hover className="tableStyle">
             <thead>
-                <th>ID</th>
+               
                 <th>Username</th>
                 <th>Name</th>
-                <th>Account Type</th>
+                <th style={{ width: '5%' }}>Account Type</th>
                 {/* <th>Department</th> */}
                 {/* <th>Course</th> */}
                 {/* <th>Barangay</th> */}
                 <th>Position</th>
                 <th>Activation Date</th>
-                <th>Deactivation Date</th>
+                <th style={{ width: '5%' }}>Deactivation Date</th>
                 <th>Status</th>
-                <th style={{width: '9%'}}>Actions</th>
+                <th style={{ width: '7%' }}>Actions</th>
             </thead>
             <tbody>
-                {data.map((row) => (
+                {data.map((row, index) => (
                     <Rows
-                        key={row.user_id}  // Use a unique ID, like accountID
+                        key={row.user_id}
+                        index={index} // Pass the index to identify the first user
                         user_id={row.user_id}
                         username={row.username}
                         name={row.name}
@@ -210,32 +213,25 @@ const UserManagementCon = () => {
     //end of search function
 
     return (
-        <Container fluid style={{padding: '0'}}
+        <Container fluid style={{ padding: '0' }}
             className="py-4 mt-5 d-flex flex-column justify-content-center me-0 ms-0">
             {/* Row for the Back Button */}
-            <Row>
+             {/* Row for Back Button and Title */}
+            <Row className="align-items-center">
                 <Col xs="auto">
-                    <Button variant="link" onClick={handleBack} className="backBtn d-flex align-items-center text-success">
+                    <Button 
+                        variant="link" 
+                        onClick={handleBack} 
+                        className="backBtn d-flex align-items-center text-success"
+                    >
                         <FontAwesomeIcon icon={faChevronLeft} size="lg" />
-                        <span className="ms-2">Back</span>
+                       
                     </Button>
                 </Col>
-            </Row>
-
-            {/* Row for the Filter Button */}
-            <Row>
-                <Col className="d-flex justify-content-end">
-                    <Button style={{ backgroundColor: '#71A872', border: '0px' }}>
-                        <FontAwesomeIcon className='me-2' icon={faFilter}></FontAwesomeIcon>
-                        Filter
-                    </Button>
+                <Col>
+                    <h1 className="mb-0" style={{ color: '#4B4A4A' }}>Account Management</h1>
                 </Col>
             </Row>
-
-            <Row>
-                <Col><h1>Account Management</h1></Col>
-            </Row>
-
             <Row>
                 <Col className="mb-3 d-flex justify-content-end">
                     <input type="search" onChange={handleSearch} className="form-control" placeholder='Search' style={{ width: '300px' }} />

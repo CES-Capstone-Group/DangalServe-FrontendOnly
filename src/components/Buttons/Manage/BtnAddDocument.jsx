@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import { Button, Modal, Row, Col, Form } from "react-bootstrap";
 import { API_ENDPOINTS } from "../../../config";
+import { faPlus } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 const BtnAddDocument = ({ onDocumentAdded }) => {
     const [showModal, setShowModal] = useState(false);
@@ -11,7 +13,7 @@ const BtnAddDocument = ({ onDocumentAdded }) => {
     const validateForm = () => {
         const newErrors = {};
 
-        if(!documentTitle) newErrors.docTitle = 'Please Enter Document Title';
+        if (!documentTitle) newErrors.docTitle = 'Please Enter Document Title';
 
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
@@ -29,7 +31,7 @@ const BtnAddDocument = ({ onDocumentAdded }) => {
 
     // **Function to handle form submission and backend integration**
     const handleSubmit = async () => {
-        if(!validateForm()) return;
+        if (!validateForm()) return;
 
         if (!documentTitle || !documentFile) {
             alert("Please provide both a document title and a file.");
@@ -61,8 +63,8 @@ const BtnAddDocument = ({ onDocumentAdded }) => {
 
     return (
         <div className="d-flex justify-content-end m-3">
-            <Button className="shadow" style={{ backgroundColor: "#71A872", border: '0px', color: 'white' }} onClick={handleShowModal}>
-                Add Document
+            <Button className="shadow" style={{ backgroundColor: "#71A872", padding: "10px 20px", border: '0px', color: 'white' }} onClick={handleShowModal}>
+                <FontAwesomeIcon icon={faPlus} size={16} /> {/* Add the icon */}Add Document
             </Button>
 
             <Modal backdrop='static' centered size="lg" show={showModal} onHide={handleCloseModal}>
@@ -73,9 +75,9 @@ const BtnAddDocument = ({ onDocumentAdded }) => {
                 <Modal.Body>
                     <Form>
                         <Form.Group as={Row} className="mb-3">
-                            <Form.Label column sm={4}>Document Title:</Form.Label>
+                            <Form.Label column sm={4}>Document Title:<span style={{ color: "red" }}>*</span></Form.Label>
                             <Col sm={8}>
-                                <Form.Control 
+                                <Form.Control
                                     type="text"
                                     name="docTitle"
                                     isInvalid={!!errors.docTitle}
@@ -91,10 +93,10 @@ const BtnAddDocument = ({ onDocumentAdded }) => {
                         <Form.Group className="mb-3">
                             <Form.Label>Upload File:</Form.Label>
                             <Form.Control
-                                 className="inputFile" 
-                                 type="file" 
-                                 accept="image/*, application/pdf, .docx"  // Accept image, PDF, DOCX formats
-                                 onChange={(e) => setDocumentFile(e.target.files[0])}  // Handle file selection
+                                className="inputFile"
+                                type="file"
+                                accept="image/*, application/pdf, .docx"  // Accept image, PDF, DOCX formats
+                                onChange={(e) => setDocumentFile(e.target.files[0])}  // Handle file selection
                             />
                         </Form.Group>
                     </Form>
@@ -102,7 +104,7 @@ const BtnAddDocument = ({ onDocumentAdded }) => {
 
                 <Modal.Footer className="d-flex justify-content-center">
                     <Button onClick={handleSubmit} variant='success'>  {/* Call handleSubmit on click */}
-                        Save Changes
+                        Add
                     </Button>
                     <Button onClick={handleCloseModal} variant="danger">
                         Cancel

@@ -59,7 +59,7 @@ const DepartmentManagement = () => {
 
         return (
             <tr>
-                <td>{dept_id}</td>
+                
                 <td>{dept_name}</td>
                 {/* **Pass Parameters to BtnEditDelete** */}
                 <td><BtnEditDeleteDept deptId={dept_id} deptName={dept_name} onDepartmentUpdated={fetchDepartments} /></td>
@@ -73,7 +73,7 @@ const DepartmentManagement = () => {
             <Table responsive striped bordered hover className="tableStyle">
                 <thead>
                     <tr>
-                        <th style={{width: '5%'}}>ID</th>
+                       
                         <th>Department Name</th>
                         <th>Actions</th>
                     </tr>
@@ -94,20 +94,20 @@ const DepartmentManagement = () => {
     return (
         <Container fluid 
         className="py-4 mt-5  d-flex flex-column justify-content-center me-0 ms-0">
-            <Row>
-                <Button variant="link" onClick={handleBack} className="backBtn d-flex align-items-center text-success me-3">
-                    <FontAwesomeIcon icon={faChevronLeft} size="lg" />
-                    <span className="ms-2">Back</span>
-                </Button>
-                <Col className="d-flex justify-content-end">
-                    <Button style={{ backgroundColor: '#71A872', border: '0px' }}>
-                        <FontAwesomeIcon className='me-2' icon={faFilter}></FontAwesomeIcon>
-                        Filter
+            <Row className="align-items-center">
+                <Col xs="auto">
+                    <Button 
+                        variant="link" 
+                        onClick={handleBack} 
+                        className="backBtn d-flex align-items-center text-success"
+                    >
+                        <FontAwesomeIcon icon={faChevronLeft} size="lg" />
+                       
                     </Button>
                 </Col>
-            </Row>
-            <Row>
-                <Col><h1>Department Management</h1></Col>
+                <Col>
+                    <h1 className="mb-0" style={{ color: '#4B4A4A' }}>Department Management</h1>
+                </Col>
             </Row>
             <Row>
                 <Col className="mb-3 d-flex justify-content-end">

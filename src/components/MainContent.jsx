@@ -126,7 +126,7 @@ const MainContent = () => {
       <Row>
         <Container className='welcomeDashboard'>
           <h1 className='h1'>Welcome to University of Cabuyao</h1>
-          <h1>Community Extension Services</h1>
+          <h1>Community Extension and Services</h1>
         </Container>
       </Row>
       <Row>

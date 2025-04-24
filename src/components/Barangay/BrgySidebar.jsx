@@ -10,9 +10,11 @@ const BrgySidebar = ({ sidebarOpen, toggleSidebar }) => {
   return(
     <SidebarMenu expand="lg" className={`d-md-block bg-light flex-column ${sidebarOpen ? 'side active justify-content-center align-items-center' : 'side collapsed '}`} style={{ width: sidebarOpen ? '250px' : '80px', boxShadow: '0px 3px 10px', marginTop: sidebarOpen ? '0px' : '50px' }}>
     {/*SidebarMenu Header*/}
-    <SidebarMenu.Toggle onClick={toggleSidebar}>
+    <SidebarMenu.Toggle>
       <SidebarMenu.Brand>
-        <img className='logo img-fluid' src={Logo} alt="pnclogo"  style={{ display: sidebarOpen ? 'block' : 'none' }} />
+        <NavLink to={'dashboard'} className={({ isActive }) => "nav-link" + (isActive ? " active" : "")} style={{backgroundColor:'transparent'}}>
+              <img className='logo img-fluid' src={Logo} alt="pnclogo" style={{ display: sidebarOpen ? 'block' : 'none' }} />
+            </NavLink>
       </SidebarMenu.Brand>
     </SidebarMenu.Toggle>
 
@@ -23,7 +25,6 @@ const BrgySidebar = ({ sidebarOpen, toggleSidebar }) => {
       </SidebarMenu.Brand>
     </SidebarMenu.Header>
     )}
-
       <SidebarMenu.Body>
         <SidebarMenu.Nav>
           <NavLink to={'/barangay/dashboard'} className={({ isActive }) => "nav-link" + (isActive ? " active" : "")}>
@@ -38,7 +39,7 @@ const BrgySidebar = ({ sidebarOpen, toggleSidebar }) => {
           <SidebarMenu.Sub>
             <SidebarMenu.Sub.Toggle>
               <SidebarMenu.Nav.Icon>
-                <FontAwesomeIcon onClick={toggleSidebar} icon={faFileLines} style={{ color: 'grey' , fontSize: sidebarOpen ? '20px' : '22px', marginBottom: sidebarOpen ? '0px' : '10px'}}></FontAwesomeIcon>
+                <FontAwesomeIcon icon={faFileLines} style={{ color: 'grey' , fontSize: sidebarOpen ? '20px' : '22px', marginBottom: sidebarOpen ? '0px' : '10px'}}></FontAwesomeIcon>
               </SidebarMenu.Nav.Icon>
                 {sidebarOpen && (<SidebarMenu.Nav.Title> Proposals </SidebarMenu.Nav.Title>)}
                 <SidebarMenu.Nav.Icon>

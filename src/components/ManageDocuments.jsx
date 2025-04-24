@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from 'react-router-dom';
-import { Container, Table, Button, Row, Col, Modal } from "react-bootstrap";
+import { Container, Table, Button, Row, Col, Modal, Form } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faFilter, faChevronLeft, faEye, faTrash, faTrashAlt } from "@fortawesome/free-solid-svg-icons";
+import { faChevronLeft, faEye, faTrashAlt, faEdit } from "@fortawesome/free-solid-svg-icons";
 import BtnAddDocument from "./Buttons/Manage/BtnAddDocument";
 import { API_ENDPOINTS } from "../config";
 
@@ -10,46 +10,48 @@ const ManageDocuments = () => {
     const [showModal, setShowModal] = useState(false);
     const [selectedContent, setSelectedContent] = useState(null);
     const [contentType, setContentType] = useState("");
-    const [documents, setDocuments] = useState([]);  // <-- Store documents data
+    const [documents, setDocuments] = useState([]);
+    const [showEditForm, setShowEditForm] = useState(false);
+    const [currentDocument, setCurrentDocument] = useState(null);
+    const [newTitle, setNewTitle] = useState("");
+    const [newFile, setNewFile] = useState(null); // State for the new file
     const navigate = useNavigate();
     const [searchQuery, setSearchQuery] = useState("");
 
     // Fetch documents from the backend
     const fetchDocuments = async () => {
         try {
-            const response = await fetch(API_ENDPOINTS.DOCUMENT_LIST);  // Adjust your backend URL
+            const response = await fetch(API_ENDPOINTS.DOCUMENT_LIST);
             if (!response.ok) throw new Error("Failed to fetch documents.");
             const data = await response.json();
-            setDocuments(data);  // Update state with fetched data
+            setDocuments(data);
         } catch (error) {
             console.error("Error fetching documents:", error);
         }
     };
 
-    // Fetch documents on component mount
     useEffect(() => {
-        fetchDocuments();  // Initial data load
+        fetchDocuments();
     }, []);
 
-    //search function
+    // Search function
     const handleSearch = (e) => {
         setSearchQuery(e.target.value);
-      };
-      
-      // Filter barangays based on the search query
-      const filteredDocs = documents.filter(document => {
-        if (!document || typeof document !== 'object') return false; // Safeguard against unexpected data
+    };
+
+    // Filter documents based on the search query
+    const filteredDocs = documents.filter(document => {
         return (
-            (document.title && document.title.toLowerCase().includes(searchQuery.toLowerCase()))||
+            (document.title && document.title.toLowerCase().includes(searchQuery.toLowerCase())) ||
             (document.id && document.id.toLowerCase().includes(searchQuery.toLowerCase()))
         );
-      });
-    //end of search function
+    });
 
+    // Open the content (PDF, DOCX, Image)
     const handleContentClick = (contentUrl) => {
         const fullUrl = `${API_ENDPOINTS.BASE}${contentUrl}`;
         if (fullUrl.endsWith(".pdf")) {
-            window.open(fullUrl, "_blank"); // Open PDF in a new tab
+            window.open(fullUrl, "_blank");
         } else if (fullUrl.endsWith(".docx")) {
             const link = document.createElement("a");
             link.href = fullUrl;
@@ -64,21 +66,17 @@ const ManageDocuments = () => {
         }
     };
 
-    useEffect(() => {    
-    }, [selectedContent]);
-
     const handleCloseModal = () => {
         setShowModal(false);
         setSelectedContent(null);
         setContentType("");
     };
 
-    // Handle back navigation
     const handleBack = () => {
-        navigate(-1);  // Navigate to the previous page
+        navigate(-1);
     };
 
-    // Handle Document Deletion
+    // Delete document
     const handleDeleteDocument = async (documentId) => {
         if (!window.confirm("Are you sure you want to delete this document?")) {
             return;
@@ -88,7 +86,7 @@ const ManageDocuments = () => {
                 method: 'DELETE',
             });
             if (response.ok) {
-                fetchDocuments();  // Refresh the table data after deletion
+                fetchDocuments();
             } else {
                 throw new Error('Failed to delete document.');
             }
@@ -97,21 +95,66 @@ const ManageDocuments = () => {
         }
     };
 
-    // Table row component
-    const Rows = (props) => {
-        const { id, title, file } = props;
+    // Handle editing document
+    const handleEditDocument = (document) => {
+        setCurrentDocument(document);
+        setNewTitle(document.title);
+        setShowEditForm(true);
+    };
+
+    // Handle file selection for edit
+    const handleFileChange = (e) => {
+        setNewFile(e.target.files[0]);
+    };
+
+    // Save the edited document
+    const handleSaveEdit = async () => {
+        const formData = new FormData();
+        formData.append("title", newTitle);
+        if (newFile) {
+            formData.append("file", newFile); // Append the new file
+        }
+
+        try {
+            const response = await fetch(API_ENDPOINTS.UPDATE_DOCUMENT(currentDocument.id), {
+                method: 'PUT',
+                body: formData,
+            });
+
+            if (response.ok) {
+                setShowEditForm(false);
+                fetchDocuments();
+            } else {
+                throw new Error('Failed to update document.');
+            }
+        } catch (error) {
+            console.error("Error updating document:", error);
+        }
+    };
+
+    const Rows = ({ id, title, file }) => {
         return (
             <tr>
-                <td>{id}</td>
+                
                 <td>{title}</td>
                 <td>
-                    <Button style={{fontSize: '13px'}} variant="success" onClick={() => handleContentClick(file)}> 
-                            <FontAwesomeIcon icon={faEye} />
+                    <Button style={{ fontSize: '13px' }} variant="success" onClick={() => handleContentClick(file)}>
+                        <FontAwesomeIcon icon={faEye} />
                     </Button>
                 </td>
                 <td>
-                    
-                    <Button style={{fontSize: '13px'}} variant="danger link" onClick={() => handleDeleteDocument(id)}>
+                    <Button
+                        style={{ fontSize: '13px', marginRight: '5px' }}
+                        variant="success"
+                        onClick={() => handleEditDocument({ id, title })}
+                    >
+                        <FontAwesomeIcon icon={faEdit} style={{ color: "white" }} />
+                    </Button>
+                    <Button
+                        style={{ fontSize: '13px' }}
+                        variant="danger"
+                        onClick={() => handleDeleteDocument(id)}
+                    >
                         <FontAwesomeIcon icon={faTrashAlt} />
                     </Button>
                 </td>
@@ -119,13 +162,12 @@ const ManageDocuments = () => {
         );
     };
 
-    // Table component
     const NewTable = ({ data }) => {
         return (
             <Table responsive bordered striped hover className="tableStyle">
                 <thead>
                     <tr>
-                        <th style={{width: '5%'}}>ID</th>
+                        
                         <th>Document Title</th>
                         <th>Document File</th>
                         <th>Actions</th>
@@ -133,12 +175,7 @@ const ManageDocuments = () => {
                 </thead>
                 <tbody>
                     {data.map((document) => (
-                        <Rows   
-                            key={document.id} 
-                            id={document.id}
-                            title={document.title} 
-                            file={document.file}
-                        />  // Pass each document as a prop
+                        <Rows key={document.id} id={document.id} title={document.title} file={document.file} />
                     ))}
                 </tbody>
             </Table>
@@ -146,52 +183,73 @@ const ManageDocuments = () => {
     };
 
     return (
-        <Container fluid 
-        className="py-4 mt-5  d-flex flex-column justify-content-center me-0 ms-0">
-            <Row>
-                <Button variant="link" onClick={handleBack} className="backBtn d-flex align-items-center text-success me-3">
-                    <FontAwesomeIcon icon={faChevronLeft} size="lg" />
-                    <span className="ms-2">Back</span>
-                </Button>
-
-                <Col className="d-flex justify-content-end">
-                    <Button style={{ backgroundColor: '#71A872', border: '0px' }}>
-                        <FontAwesomeIcon className='me-2' icon={faFilter} ></FontAwesomeIcon>
-                        Filter
+        <Container fluid className="py-4 mt-5 d-flex flex-column justify-content-center me-0 ms-0">
+            <Row className="align-items-center">
+                <Col xs="auto">
+                    <Button 
+                        variant="link" 
+                        onClick={handleBack} 
+                        className="backBtn d-flex align-items-center text-success"
+                    >
+                        <FontAwesomeIcon icon={faChevronLeft} size="lg" />
+                       
                     </Button>
                 </Col>
-            </Row>
-            <Row>
-                <Col><h1>Document Management</h1></Col>
-            </Row>
-            <Row>
-                <Col className="mb-3 d-flex justify-content-end">
-                    <input type="search" className="form-control" placeholder='Search' style={{ width: '300px' }} onChange={handleSearch}/>
+                <Col>
+                    <h1 className="mb-0" style={{ color: '#4B4A4A' }}>Document Management</h1>
                 </Col>
-                {/* Modal for viewing full image */}
-                <Modal size="lg" show={showModal} onHide={handleCloseModal} centered>
-                    <Modal.Header closeButton></Modal.Header>
-                    <Modal.Body className="text-center">
-                        {selectedContent && contentType === "pdf" && (
-                            <embed src={selectedContent} type="application/pdf" width="100%" height="900px" />
-                        )}
-                        {selectedContent && contentType === "docx" && (
-                            <a href={selectedContent} download>
-                                Click here to download the document
-                            </a>
-                        )}
-                        {/* Handle image content if necessary */}
-                    </Modal.Body>
-                </Modal>
+            </Row>
+            <Row>
+                <Col className="mb-3 d-flex justify-content-end">
+                    <input type="search" className="form-control" placeholder='Search' style={{ width: '300px' }} onChange={handleSearch} />
+                </Col>
             </Row>
 
-            {/* Render the documents table */}
-            <NewTable data={filteredDocs} className="tableStyle"/>
+            {/* Edit Document Form */}
+            {showEditForm && (
+                <Modal show={showEditForm} onHide={() => setShowEditForm(false)} centered>
+                    <Modal.Header closeButton>
+                        <Modal.Title>Edit Document</Modal.Title>
+                    </Modal.Header>
+                    <Modal.Body>
+                        <Form>
+                            <Form.Group controlId="formTitle">
+                                <Form.Label>Document Title</Form.Label>
+                                <Form.Control
+                                    type="text"
+                                    value={newTitle}
+                                    onChange={(e) => setNewTitle(e.target.value)}
+                                />
+                            </Form.Group>
+
+                            <Form.Group controlId="formFile">
+                                <Form.Label>Upload New File</Form.Label>
+                                <Form.Control
+                                    type="file"
+                                    onChange={handleFileChange}
+                                />
+                            </Form.Group>
+                        </Form>
+                    </Modal.Body>
+                    <Modal.Footer>
+                        
+                        <Button variant="success" onClick={handleSaveEdit}>
+                            Save Changes
+                        </Button>
+
+                        <Button variant="danger" onClick={() => setShowEditForm(false)}>
+                            Cancel
+                        </Button>
+                    </Modal.Footer>
+                </Modal>
+            )}
+
+            {/* Documents Table */}
+            <NewTable data={filteredDocs} />
 
             <Row>
                 <Col className="mb-3 d-flex justify-content-end">
-                    {/* Add Document Button */}
-                    <BtnAddDocument onDocumentAdded={fetchDocuments}  />  {/* <-- Call the refresh function on add */}
+                    <BtnAddDocument onDocumentAdded={fetchDocuments} />
                 </Col>
             </Row>
         </Container>

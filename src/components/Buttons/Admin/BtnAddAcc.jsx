@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { Button, Modal, Row, Col, Form } from "react-bootstrap";
 import { API_ENDPOINTS } from "../../../config";
-
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faUserPlus } from "@fortawesome/free-solid-svg-icons";
 const BtnAddAcc = ({ onAccountAdded }) => {
     const [showModal, setShowModal] = useState(false);
     const [departments, setDepartments] = useState([]);
@@ -116,6 +117,23 @@ const BtnAddAcc = ({ onAccountAdded }) => {
 
     const handleChange = (e) => {
         const { name, value } = e.target;
+        const allowedChars = /^[a-zA-Z0-9\s@_.]*$/;
+
+        if (name === "username" || name === "name") {
+            if (!allowedChars.test(value)) {
+                setErrors((prevErrors) => ({
+                    ...prevErrors,
+                    [name]: "Special characters are not allowed.",
+                }));
+                return; // Prevent updating formData if invalid input
+            } else {
+                setErrors((prevErrors) => ({
+                    ...prevErrors,
+                    [name]: "", // Clear the error if input becomes valid
+                }));
+            }
+        }
+
         setFormData(prevState => ({
             ...prevState,
             [name]: value || null
@@ -205,7 +223,10 @@ const BtnAddAcc = ({ onAccountAdded }) => {
 
     return (
         <div className="d-flex justify-content-end m-3">
-            <Button className="shadow" style={{ backgroundColor: "#71A872", border: '0px', color: 'white' }} onClick={handleShowModal}>
+            <Button className="shadow d-flex align-items-center justify-content-center gap-2"
+                style={{ backgroundColor: "#71A872", border: '0px', color: 'white', width: '170px', height: '40px', fontSize: '16px', fontWeight: 'bold', alignItems: 'center' }}
+                onClick={handleShowModal}>
+                <FontAwesomeIcon icon={faUserPlus} size={20} /> {/* Add the icon */}
                 Add User
             </Button>
 
@@ -216,11 +237,13 @@ const BtnAddAcc = ({ onAccountAdded }) => {
                 </Modal.Header>
 
                 <Modal.Body>
-                    <Form>  
+                    <Form>
                         <Form.Group as={Row} className="mb-3">
-                            <Form.Label column sm={4}>User Name</Form.Label>
+                            <Form.Label column sm={4}>
+                                User Name<span style={{ color: "red" }}>*</span>
+                            </Form.Label>
                             <Col sm={8}>
-                                <Form.Control 
+                                <Form.Control
                                     type="text"
                                     name="username"
                                     value={formData.username}
@@ -235,9 +258,11 @@ const BtnAddAcc = ({ onAccountAdded }) => {
                         </Form.Group>
 
                         <Form.Group as={Row} className="mb-3">
-                            <Form.Label column sm={4}>Name</Form.Label>
+                            <Form.Label column sm={4}>
+                                Name<span style={{ color: "red" }}>*</span>
+                            </Form.Label>
                             <Col sm={8}>
-                                <Form.Control 
+                                <Form.Control
                                     type="text"
                                     name="name"
                                     value={formData.name}
@@ -252,11 +277,13 @@ const BtnAddAcc = ({ onAccountAdded }) => {
                         </Form.Group>
 
                         <Form.Group as={Row} className="mb-3">
-                            <Form.Label column sm={4}>Type of Account</Form.Label>
+                            <Form.Label column sm={4}>
+                                Type of Account<span style={{ color: "red" }}>*</span>
+                            </Form.Label>
                             <Col sm={8}>
-                                <Form.Select 
-                                    onChange={handleChange} 
-                                    value={formData.accountType}  
+                                <Form.Select
+                                    onChange={handleChange}
+                                    value={formData.accountType}
                                     name="accountType"
                                 >
                                     <option value="Admin">Admin</option>
@@ -267,9 +294,11 @@ const BtnAddAcc = ({ onAccountAdded }) => {
                         </Form.Group>
 
                         <Form.Group as={Row} className="mb-3">
-                            <Form.Label column sm={4}>Password</Form.Label>
+                            <Form.Label column sm={4}>
+                                Password<span style={{ color: "red" }}>*</span>
+                            </Form.Label>
                             <Col sm={8}>
-                                <Form.Control 
+                                <Form.Control
                                     type="password"
                                     name="password"
                                     value={formData.password}
@@ -283,14 +312,15 @@ const BtnAddAcc = ({ onAccountAdded }) => {
                             </Col>
                         </Form.Group>
 
-                        {/* Proponent Account Type */}
                         {formData.accountType === "Proponent" && (
                             <>
                                 <Form.Group as={Row} className="mb-3">
-                                    <Form.Label column sm={4}>Department</Form.Label>
+                                    <Form.Label column sm={4}>
+                                        Department<span style={{ color: "red" }}>*</span>
+                                    </Form.Label>
                                     <Col sm={8}>
-                                        <Form.Select 
-                                            name="department" 
+                                        <Form.Select
+                                            name="department"
                                             value={formData.department}
                                             onChange={handleChange}
                                             isInvalid={!!errors.department}
@@ -309,7 +339,9 @@ const BtnAddAcc = ({ onAccountAdded }) => {
                                 </Form.Group>
 
                                 <Form.Group as={Row} className="mb-3">
-                                    <Form.Label column sm={4}>Course</Form.Label>
+                                    <Form.Label column sm={4}>
+                                        Course<span style={{ color: "red" }}>*</span>
+                                    </Form.Label>
                                     <Col sm={8}>
                                         <Form.Select
                                             name="course"
@@ -332,20 +364,21 @@ const BtnAddAcc = ({ onAccountAdded }) => {
                             </>
                         )}
 
-                        {/* Barangay Official Account Type */}
                         {formData.accountType === "Brgy. Official" && (
                             <Form.Group as={Row} className="mb-3">
-                                <Form.Label column sm={4}>Barangay</Form.Label>
+                                <Form.Label column sm={4}>
+                                    Barangay<span style={{ color: "red" }}>*</span>
+                                </Form.Label>
                                 <Col sm={8}>
-                                    <Form.Select 
-                                        name="barangay" 
+                                    <Form.Select
+                                        name="barangay"
                                         value={formData.barangay}
                                         onChange={handleChange}
                                         isInvalid={!!errors.barangay}
-                                    >   
+                                    >
                                         <option value="">Select Barangay</option>
                                         {barangays.map(b => (
-                                            <option key={b.id} value={b.id}>                                                
+                                            <option key={b.id} value={b.id}>
                                                 {b.brgy_name}
                                             </option>
                                         ))}
@@ -358,9 +391,11 @@ const BtnAddAcc = ({ onAccountAdded }) => {
                         )}
 
                         <Form.Group as={Row} className="mb-3">
-                            <Form.Label column sm={4}>Position</Form.Label>
+                            <Form.Label column sm={4}>
+                                Position<span style={{ color: "red" }}>*</span>
+                            </Form.Label>
                             <Col sm={8}>
-                                <Form.Control 
+                                <Form.Control
                                     type="text"
                                     name="position"
                                     value={formData.position}
@@ -377,7 +412,7 @@ const BtnAddAcc = ({ onAccountAdded }) => {
                         <Form.Group as={Row} className="mb-3">
                             <Form.Label column sm={4}>Activation Date</Form.Label>
                             <Col sm={8}>
-                                <Form.Control 
+                                <Form.Control
                                     type="date"
                                     name="activationDate"
                                     value={formData.activationDate}
@@ -393,7 +428,7 @@ const BtnAddAcc = ({ onAccountAdded }) => {
                         <Form.Group as={Row} className="mb-3">
                             <Form.Label column sm={4}>Deactivation Date</Form.Label>
                             <Col sm={8}>
-                                <Form.Control 
+                                <Form.Control
                                     type="date"
                                     name="deactivationDate"
                                     value={formData.deactivationDate || ''}
@@ -410,7 +445,7 @@ const BtnAddAcc = ({ onAccountAdded }) => {
 
                 <Modal.Footer className="d-flex justify-content-center">
                     <Button onClick={handleSubmit} variant='success'>
-                        Save Changes
+                        Add
                     </Button>
                     <Button onClick={handleCloseModal} variant="danger">
                         Cancel

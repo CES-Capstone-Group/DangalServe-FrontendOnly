@@ -13,12 +13,8 @@ import {
     faFolderOpen,
     faCalendarAlt,
     faGraduationCap,
-    faSquarePersonConfined,
-    faFileArchive,
-    faFile,
-    faPerson,
-    faClipboardQuestion,
     faChartLine,
+    faDatabase
 } from '@fortawesome/free-solid-svg-icons'; // Import the icons you want to use
 
 const AdminManage = () => {
@@ -29,29 +25,23 @@ const AdminManage = () => {
         navigate(path);
     };
 
-    // Go back to the previous page
-    const handleBack = () => {
-        navigate(-1); // This will navigate to the previous page in the history
-    };
-
     // Sample data for management sections with corresponding icons
     const managementSections = [
-        { title: "Account Management", path: "/manage/accmngmnt", icon: faUser },
-        { title: "Barangay Management", path: "/manage/brgy-management", icon: faBuilding },
-        { title: "Research Agenda Management", path: "/manage/manage-agenda", icon: faFileAlt },
-        { title: "Course Management", path: "/manage/course-management", icon: faGraduationCap },
-        { title: "Department Management", path: "/manage/dept-management", icon: faUniversity },
-        { title: "Achievement Management", path: "/manage/manage-ach", icon: faTrophy },
-        { title: "Announcement Management", path: "/manage/manage-ann", icon: faBullhorn },
-        { title: "Document Management", path: "/manage/manage-docs", icon: faFolderOpen },
-        { title: "Calendar Management", path: "/manage/calendar", icon: faCalendarAlt },
-        { title: "Evaluator Management", path: "/manage/evaluators", icon: faPerson},
-        { title: "Evaluation Responses Management", path: "/manage/responses", icon: faFile },
-        { title: "Evaluation Form Management", path: "/manage/eval-type-management", icon: faFileAlt },
-        { title: "KPI Management", path: "/manage/kpi-manage", icon: faChartLine },
+        { title: "Account Management", path: "/admin/accmngmnt", icon: faUser },
+        { title: "Barangay Management", path: "/admin/brgy-management", icon: faBuilding },
+        { title: "Research Agenda Management", path: "/admin/manage-agenda", icon: faFileAlt },
+        { title: "Course Management", path: "/admin/course-management", icon: faGraduationCap },
+        { title: "Department Management", path: "/admin/dept-management", icon: faUniversity },
+        { title: "Achievement Management", path: "/admin/manage-ach", icon: faTrophy },
+        { title: "Announcement Management", path: "/admin/manage-ann", icon: faBullhorn },
+        { title: "Document Management", path: "/admin/manage-docs", icon: faFolderOpen },
+        { title: "Calendar Management", path: "/admin/manage-calendar", icon: faCalendarAlt },
+        { title: "Evaluation Form Management", path: "/admin/eval-type-management", icon: faFileAlt },
+        { title: "KPI Management", path: "/admin/kpi-manage", icon: faChartLine },
+        { title: "Backup", path: "/admin/backup", icon: faDatabase },
 
         // { title: "Question Management", path: "/manage/manage-questions", icon: faClipboardQuestion },
-        
+
     ];
 
     return (
@@ -60,11 +50,6 @@ const AdminManage = () => {
             {/* Row containing Back button and Management heading */}
             <Row className="d-flex align-items-center justify-content-center mb-4">
                 <div className="d-flex align-items-center">
-                    <Button variant="link" onClick={handleBack} className="backBtn d-flex align-items-center text-success me-3">
-                        <FontAwesomeIcon icon={faChevronLeft} size="lg" />
-                        <span className="ms-2">Back</span>
-                    </Button>
-
                     {/* Management Heading */}
                     <h2 className="m-0 text-success">Management</h2>
                 </div>
@@ -87,7 +72,7 @@ const AdminManage = () => {
                         >
                             <Card.Body className="d-flex flex-column justify-content-center align-items-center">
                                 <FontAwesomeIcon icon={section.icon} size="3x" className="mb-3" style={{ color: '#71A872' }} />
-                                <Card.Title style={{fontSize: '15px'}} className="mt-auto text-success">{section.title}</Card.Title>
+                                <Card.Title style={{ fontSize: '15px' }} className="mt-auto text-success">{section.title}</Card.Title>
                             </Card.Body>
                         </Card>
                     </Col>

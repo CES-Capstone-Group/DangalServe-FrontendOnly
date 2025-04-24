@@ -58,7 +58,7 @@ html {
   align-items: center;
 }
 
-.side.collapsed .sidebar-menu-body{
+.side.collapsed .sidebar-menu-body {
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -66,17 +66,21 @@ html {
   align-content: stretch;
   flex-wrap: wrap;
 }
+
 .side.collapsed .nav-link {
-  margin-bottom: 20px; /* Increase spacing between sidebar items */
+  margin-bottom: 20px;
+  /* Increase spacing between sidebar items */
 }
 
-.side.collapsed .nav-link.active{
+.side.collapsed .nav-link.active {
   background-color: #ffffff00;
   padding: 0px;
 }
-.sidebar-menu.collapsed .nav-link.active .sidebar-menu-nav-icon svg path{
+
+.sidebar-menu.collapsed .nav-link.active .sidebar-menu-nav-icon svg path {
   color: #76a577;
 }
+
 .sidebar-menu.collapsed .sidebar-menu-nav-title {
   display: none;
   /* Hide text labels when sidebar is collapsed */
@@ -95,14 +99,14 @@ html {
 
 /* Media query for smaller screens */
 @media (max-width: 768px) {
-  .topNav .navbar{
+  .topNav .navbar {
     height: 40px;
     font-size: 10px !important;
     padding-top: 0px;
   }
 
-  .topnav .sideBtn{
-    padding:  5px !important;
+  .topnav .sideBtn {
+    padding: 5px !important;
   }
 
   .topNav .navbar-brand .navbar-text {
@@ -200,10 +204,11 @@ html {
   padding: 10px;
 }
 
-.nav-link.active  .sidebar-menu-nav-title{
+.nav-link.active .sidebar-menu-nav-title {
   color: white !important;
 }
-.nav-link.active  .sidebar-menu-nav-icon svg{
+
+.nav-link.active .sidebar-menu-nav-icon svg {
   color: white !important;
 }
 
@@ -337,20 +342,26 @@ button.fc-Service-button.fc-button.fc-button-primary {
 
 .form {
   border-style: solid;
-  border-width: 2px;
+  border-color: #71a87266 !important;
+  border-width: 3px !important;
   padding: 3rem;
   border-radius: 5px;
-  box-shadow: 7px 7px 4px #888888;
-  background-color: rgb(243, 243, 243);
+  /* box-shadow: 7px 7px 4px #888888; */
+  /* background-color: rgb(243, 243, 243); */
 }
 
 
 
 #propHeader {
-  background-color: #71A872;
-  padding: 1rem;
-  border-radius: 5px;
-  box-shadow: 2px 2px 5px;
+  /* background-color: #71A872; */
+  padding: 1.2rem;
+  border-radius: 10px;
+  border-color: #71a87266;
+  border-width: 3px;
+  border-style: solid;
+  text-align: center;
+  color: #71A872 !important;
+  font-size: 2.5rem !important;
 }
 
 #propHeader1 {
@@ -361,7 +372,10 @@ button.fc-Service-button.fc-button.fc-button-primary {
 }
 
 #formbtn {
-  box-shadow: 4px 4px 4px rgb(88, 88, 88);
+  /* box-shadow: 4px 4px 4px rgb(88, 88, 88); */
+  font-size: large;
+  padding: 10px;
+  width: 15%;
 }
 
 #formlabel {
@@ -395,8 +409,16 @@ button.fc-Service-button.fc-button.fc-button-primary {
 }
 
 #conCard {
-  border: 1px solid lightgrey !important;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  border: 3px solid #71a87266 !important;
+  /* box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); */
+}
+
+.question-text {
+  font-size: 2.5rem !important;
+}
+
+#sectionp {
+  font-size: 1.6rem !important;
 }
 
 .conImg {
@@ -513,11 +535,13 @@ button.fc-Service-button.fc-button.fc-button-primary {
 
 .calendar-header {
   display: flex;
-  justify-content: flex-end;
+  justify-content: space-between;
   margin-bottom: 10px;
+  margin-top: 10px;
 }
-.event-card{
-  border-radius: 10%; 
+
+.event-card {
+  border-radius: 10%;
   border: 'none';
   overflow: "hidden";
 }
@@ -528,7 +552,7 @@ button.fc-Service-button.fc-button.fc-button-primary {
   cursor: pointer;
   border: 2px solid #71A872 !important;
   border-radius: 8px !important;
-  width: 225px !important;
+  width: 300px !important;
   /* Set a fixed width */
   height: 100px !important;
   /* Set a fixed height */
@@ -552,10 +576,11 @@ button.fc-Service-button.fc-button.fc-button-primary {
 
 .evalSel {
   background-color: white;
+  opacity: 90%;
   padding: 10px;
   border-radius: 10px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-  max-width: 600px !important;
+  max-width: 550px !important;
   /* Reduce the max-width to make it narrower */
   margin: auto;
   /* Center horizontally */
@@ -593,6 +618,16 @@ button.fc-Service-button.fc-button.fc-button-primary {
   padding: 10px 20px;
 }
 
-.back-button:hover {
-  background-color: #5c8962;
+.chart-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  justify-content: center;
+}
+
+.chart-card {
+  flex: 1 1 calc(33% - 1rem);
+  max-width: 30em;
+  border: 1px solid #ccc;
+  box-shadow: 1px 7px 7px 4px #888888;
 }

@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { Modal, Button, Form } from "react-bootstrap";
 import { API_ENDPOINTS } from "../../../config";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faPlus } from "@fortawesome/free-solid-svg-icons";
 
 const BtnAddQuestion = ({ show, onHide, questionType, sectionId, onSubmit }) => {
     const [questionText, setQuestionText] = useState("");
@@ -160,10 +162,9 @@ const BtnAddQuestion = ({ show, onHide, questionType, sectionId, onSubmit }) => 
                 </Form>
             </Modal.Body>
             <Modal.Footer>
-                <Button variant="secondary" onClick={onHide}>
-                    Cancel
-                </Button>
+
                 <Button variant="success" onClick={handleFormSubmit}>
+                    <FontAwesomeIcon icon={faPlus} size={16} /> {/* Add the icon */}
                     Add Question
                 </Button>
             </Modal.Footer>

@@ -12,9 +12,9 @@ const BtnViewApproveProposal = ({ proposal, onApprove }) => {
   const [isAdmin, setIsAdmin] = useState(false);
   const [isBrgy, setIsBrgy] = useState(false);
   const [rejectShow, setRejectShow] = useState(false);
-  const [rejectReason, setRejectReason] = useState("");
   const handleRejectShow = () => setRejectShow(true);
   const handleRejectClose = () => setRejectShow(false);
+  const [error, setError] = React.useState("");
 
   const [dirProgress, setDirProgress] = useState(0);
   const [vpreProgress, setVpreProgress] = useState(0);
@@ -72,7 +72,7 @@ const BtnViewApproveProposal = ({ proposal, onApprove }) => {
         }
       }
     };
-    
+
     checkApprovalStatus();
   }, [proposal.proposal_id, userBarangay]);
 
@@ -107,13 +107,13 @@ const BtnViewApproveProposal = ({ proposal, onApprove }) => {
   const handleApprove = async () => {
     try {
       // Check if the user is a barangay official and if the proposal requires barangay approval
-      if (isBrgy && (proposal.status === "Approved by Director" || proposal.status === "Partly Approved by Barangay")  && !isApproved ) {
+      if (isBrgy && (proposal.status === "Approved by Director" || proposal.status === "Partly Approved by Barangay") && !isApproved) {
         await barangayApproval("Approved");
-      } else if (proposal.status === "Pending") {       
+      } else if (proposal.status === "Pending") {
         await approval("Approved by Director");
-      } else if (proposal.status ==="Approved by Barangay") {        
+      } else if (proposal.status === "Approved by Barangay") {
         await approval("Approved by VPRE");
-      } else if (proposal.status === "Approved by VPRE") {        
+      } else if (proposal.status === "Approved by VPRE") {
         await approval("Approved by President");
       }
     } catch (error) {
@@ -126,7 +126,7 @@ const BtnViewApproveProposal = ({ proposal, onApprove }) => {
     const token = localStorage.getItem("access_token");
     const apiUrl = API_ENDPOINTS.PROPOSAL_DETAIL(proposal.proposal_id);
 
-    try {   
+    try {
 
       const response = await fetch(apiUrl, {
         method: "PATCH",
@@ -137,13 +137,13 @@ const BtnViewApproveProposal = ({ proposal, onApprove }) => {
         body: JSON.stringify({ status }),
       });
 
-      if (response.ok) {       
-        
+      if (response.ok) {
+
         if (status === "Approved by Director") {
           setDirApprove(true);
           setButtonText("Waiting for Barangay Approval");
           setButtonDisabled(true);
-        } else if(status === "Approved by Barangay"){
+        } else if (status === "Approved by Barangay") {
           setButtonText("VPRE Approve");
           setButtonDisabled(false);
         } else if (status === "Approved by VPRE") {
@@ -154,13 +154,7 @@ const BtnViewApproveProposal = ({ proposal, onApprove }) => {
           setPreApprove(true);
           setButtonText("Approval Complete");
           setButtonDisabled(true);
-        } 
-        // else if (status === "Partly Approved by Barangay") {
-        //   setPreApprove(true);
-        //   setButtonText("Barangay Approve");
-        // } else if (status === "Approved") {
-        //   setButtonText("Approval Complete");
-        // }
+        }
 
         if (onApprove) onApprove();
         handleClose();
@@ -208,35 +202,45 @@ const BtnViewApproveProposal = ({ proposal, onApprove }) => {
   };
 
   const handleReject = async () => {
+    if (!remarks.trim()) {
+        setError("Please provide a reason for rejection.");
+        return;
+    }
+    setError("");
+
     try {
         const token = localStorage.getItem("access_token");
-        const response = await fetch(
-            API_ENDPOINTS.PROPOSAL_DETAIL(proposal.proposal_id),
-            {
-                method: "PATCH",
-                headers: {
-                    "Content-Type": "application/json",
-                    Authorization: `Bearer ${token}`,
-                },
-                body: JSON.stringify({
-                    status: "Rejected",
-                    reject_reason: rejectReason,  // Include the rejection reason
-                    remarks: remarks,             // Include the remarks
-                }),
-            }
-        );
+        const apiUrl = API_ENDPOINTS.PROPOSAL_DETAIL(proposal.proposal_id);
+        console.log("API URL:", API_ENDPOINTS.PROPOSAL_DETAIL(proposal.proposal_id));
 
-        if (response.ok) {
-            handleRejectClose();
-            if (onApprove) onApprove();
-        } else {
-            const errorData = await response.json();
-            console.error("Failed to reject the proposal:", errorData);
-        }
-    } catch (error) {
-        console.error("Error rejecting the proposal:", error);
-    }
-};
+        const response = await fetch(apiUrl, {
+            method: "PATCH",
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify({
+                status: "Rejected",
+                remarks: remarks,
+            }),
+          });
+          console.log("remarks=", remarks);
+
+          if (response.ok) {
+              console.log("Rejection successful");
+              handleRejectClose();
+              if (onApprove) onApprove();
+          } else {
+              const errorData = await response.json();
+              setError(errorData.message || "Failed to reject the proposal.");
+          }
+      } catch (error) {
+          console.error("Error rejecting the proposal:", error);
+          setError("An unexpected error occurred. Please try again.");
+      }
+  };
+
+
 
   return (
     <>
@@ -248,30 +252,26 @@ const BtnViewApproveProposal = ({ proposal, onApprove }) => {
         View
       </Button>
 
-      {isBrgy && !isApproved && (proposal.status === "Partly Approved by Barangay" || proposal.status === "Approved by Director")  && (
-        <Button
-        className="mt-2 mb-2"
-        style={{ backgroundColor: buttonDisabled ? "#ccc" : "#71A872", margin: "0px", border: "0px", color: "white" }}
-        onClick={handleApprove}
-        disabled={buttonDisabled}
-      >
-        {buttonText}
-      </Button>
-        // <Button
-        //   className="mt-2 mb-2"
-        //   style={{
-        //     backgroundColor: isApproved ? "#ccc" : "#71A872",
-        //     margin: "0px",
-        //     border: "0px",
-        //     color: "white",
-        //   }}
-        //   onClick={handleApprove}
-        //   disabled={isApproved} // Disable if already approved
-        // >
-        //   {isApproved ? "Already Approved" : buttonText}
-        // </Button>
+      {isBrgy && !isApproved && (proposal.status === "Partly Approved by Barangay" || proposal.status === "Approved by Director") && (
+        <>
+          <Button
+            className="mt-2 mb-2"
+            style={{ backgroundColor: buttonDisabled ? "#ccc" : "#71A872", margin: "0px", border: "0px", color: "white" }}
+            onClick={handleApprove}
+            disabled={buttonDisabled}
+          >
+            {buttonText}
+          </Button>
+          <Button
+              className="btn btn-warning ms-2"
+              onClick={handleRejectShow}
+              style={{ border: "0px", color: "white" }}
+            >
+              Reject
+            </Button>
+        </>
       )}
-      
+
 
       {isAdmin &&
         !preApproved &&
@@ -287,14 +287,14 @@ const BtnViewApproveProposal = ({ proposal, onApprove }) => {
               {buttonText}
             </Button>
             <Button
-              className="btn btn-danger"
+              className="btn btn-warning"
               onClick={handleRejectShow}
               style={{ border: "0px", color: "white" }}
             >
               Reject
             </Button>
           </>
-      )}
+        )}
       {!isAdmin && proposal.status === "Rejected" && (
         <Button
           onClick={handleResubmit}
@@ -328,34 +328,19 @@ const BtnViewApproveProposal = ({ proposal, onApprove }) => {
 
             <Form.Group as={Row} className="mb-3">
               <Form.Label column sm={4}>
-                Reason for Rejection
+                Reason for rejection
               </Form.Label>
               <Col sm={8}>
-                <Form.Select
-                  value={rejectReason}
-                  onChange={(e) => setRejectReason(e.target.value)}
-                >
-                  <option value="">Select Reason</option>
-                  <option value="Rejected">Rejected by Director</option>
-                  <option value="Rejected by VPRE">Rejected by VPRE</option>
-                  <option value="Rejected by President">Rejected by President</option>
-                </Form.Select>
-              </Col>
-            </Form.Group>
-
-            <Form.Group as={Row} className="mb-3">
-              <Form.Label column sm={4}>
-                Remarks
-              </Form.Label>
-              <Col sm={8}>
-                <Form.Control 
-                  as="textarea" 
-                  rows={3} 
-                  value={remarks} 
+                <Form.Control
+                  as="textarea"
+                  rows={3}
+                  value={remarks}
                   onChange={(e) => setRemarks(e.target.value)}  // Correctly handle the change event
-                  placeholder="Add any remarks (optional)" 
+                  placeholder="Enter reason for rejection"
                 />
+                <Form.Text className="text-danger">{error}</Form.Text>
               </Col>
+              
             </Form.Group>
           </Form>
         </Modal.Body>
@@ -364,8 +349,6 @@ const BtnViewApproveProposal = ({ proposal, onApprove }) => {
           <Button variant="danger" onClick={handleReject}>
             Confirm Rejection
           </Button>
-          
-        
 
           <Button variant="secondary" onClick={handleRejectClose}>
             Close
@@ -493,14 +476,14 @@ const BtnViewApproveProposal = ({ proposal, onApprove }) => {
               <Form.Label column sm={4}>Identified Needs</Form.Label>
               <Col sm={8}>
                 {proposal.identified_needs_file ? (
+                  <Form.Control readOnly type="text" value={proposal.identified_needs_text || "N/A"} />
+                ) : (
                   <a href={proposal.identified_needs_file} target="_blank" rel="noopener noreferrer">
                     View File
                   </a>
-                ) : (
-                  <Form.Control readOnly type="text" value={proposal.identified_needs_text || "N/A"} />
                 )}
               </Col>
-          </Form.Group>
+            </Form.Group>
 
             {/* General Objectives */}
             <Form.Group as={Row} className="mb-3">
@@ -593,29 +576,29 @@ const BtnViewApproveProposal = ({ proposal, onApprove }) => {
               <Col sm={8}>
                 <Form.Control readOnly type="text" value={proposal.status} />
               </Col>
-            </Form.Group> 
+            </Form.Group>
 
             {/* Remarks for Barangay approval */}
             {isBrgy && (
               <Form.Group as={Row} className="mb-3">
                 <Form.Label column sm={4}>Remarks</Form.Label>
                 <Col sm={8}>
-                  <Form.Control 
-                    as="textarea" 
-                    rows={3} 
-                    value={remarks} 
-                    onChange={(e) => setRemarks(e.target.value)} 
-                    placeholder="Add any remarks (optional)" 
+                  <Form.Control
+                    as="textarea"
+                    rows={3}
+                    value={remarks}
+                    onChange={(e) => setRemarks(e.target.value)}
+                    placeholder="Add any remarks (optional)"
                   />
                 </Col>
               </Form.Group>
-            )}                         
+            )}
           </Form>
         </Modal.Body>
 
-        
+
         <Modal.Footer>
-        <ButtonDownloadProposal proposal={proposal}></ButtonDownloadProposal>
+          <ButtonDownloadProposal proposal={proposal}></ButtonDownloadProposal>
           <Button variant="success" onClick={handleClose}>
             Close
           </Button>

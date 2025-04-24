@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { jwtDecode } from "jwt-decode";
-import { Container, Row, Col, Card, Form, Button, Alert, Spinner, Table } from "react-bootstrap";
+import { Container, Row, Col, Card, Form, Button, Modal, Spinner, Table, Alert } from "react-bootstrap";
 import { API_ENDPOINTS } from "../../config";
 import "./EvalAnswerStyle.css";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faCheckCircle } from "@fortawesome/free-solid-svg-icons";
 
 const EvalAnswerPage = () => {
   const location = useLocation();
@@ -13,10 +15,11 @@ const EvalAnswerPage = () => {
   const [formDetails, setFormDetails] = useState(null);
   const [sections, setSections] = useState([]);
   const [answers, setAnswers] = useState({});
-  const [userId, setUserId] = useState(null); // Store user ID
+  const [userId, setUserId] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState(null);
-  const [success, setSuccess] = useState(false); // State for success message
+  const [success, setSuccess] = useState(false);
+  const [showModal, setShowModal] = useState(false);
 
   // Fetch user ID from token
   useEffect(() => {
@@ -109,7 +112,6 @@ const EvalAnswerPage = () => {
           question_option: question?.question_type === "multiple_choice" ? selectedOptionId : null,
           text_answer: question?.question_type === "open_ended" ? selectedOptionId : null,
         };
-        console.log(answerPayload);
         return fetch(API_ENDPOINTS.ANSWER_CREATE, {
           method: "POST",
           headers: {
@@ -122,10 +124,11 @@ const EvalAnswerPage = () => {
       // Wait for all answers to be submitted
       await Promise.all(answerPromises);
 
-      // Show success message
+      // Show success modal
       setSuccess(true);
+      setShowModal(true);
 
-      // Redirect after 3 seconds
+      // Redirect after closing the modal
       setTimeout(() => {
         navigate("/eval/dashboard");
       }, 3000);
@@ -135,6 +138,8 @@ const EvalAnswerPage = () => {
       setIsSubmitting(false);
     }
   };
+
+  const handleCloseModal = () => setShowModal(false);
 
   if (error) {
     return (
@@ -153,38 +158,33 @@ const EvalAnswerPage = () => {
     );
   }
 
-  if (success) {
-    return (
-      <Container className="mt-5 text-center">
-        <Alert variant="success" className="p-4">
-          <h4>Thank you!</h4>
-          <p>Your response has been successfully submitted.</p>
-          <Spinner animation="grow" variant="success" />
-        </Alert>
-      </Container>
-    );
-  }
-
   return (
     <Container className="mt-5">
       <Row className="mb-4">
         <Col>
-          <h2 className="text-center text-primary">{formDetails.title}</h2>
-          <p className="text-center text-muted">
+          <h1 id="propHeader" className="text-center mb-4">{formDetails.title}</h1>
+          <p className="text-center">
             {formDetails.activity_objectives || "No objectives provided."}
           </p>
         </Col>
       </Row>
       <Form onSubmit={handleSubmit}>
         {sections.map((section, index) => (
-          <Card className="mb-4 shadow-sm border-0" key={section.section_id}>
-            <Card.Header style={{ backgroundColor: "#78C57B", color: "#fff", fontWeight: "bold" }}>
-              <h5 className="mb-0">{`${index + 1}. ${section.section_title}`}</h5>
+          <Card className="mb-4 shadow border" key={section.section_id}>
+            <Card.Header style={{fontWeight: "bold", backgroundColor: "#669567", color: "white"  }}>
+              <h5 className="mb-0">{` ${section.section_title}`}</h5>
             </Card.Header>
             <Card.Body>
+              {/* Render Section Info if it's an informational section */}
+              {section.section_type === "info" && (
+                <div className="section-info">
+                  <p>{section.section_content || "No content available"}</p>
+                </div>
+              )}
+
               {/* Display Rating Questions in a Table */}
               {section.questions.some((q) => q.question_type === "rating") && (
-                <Table bordered className="text-center align-middle">
+                <Table responsive bordered className="text-center align-middle tableStyle" id="evaltable">
                   <thead>
                     <tr>
                       <th style={{ width: "40%" }}>Question</th>
@@ -263,14 +263,28 @@ const EvalAnswerPage = () => {
               type="submit"
               variant="success"
               disabled={isSubmitting}
-              className="px-5 py-2"
-              style={{ fontSize: "1.2rem", fontWeight: "bold" }}
+              className="btn-lg"
             >
-              {isSubmitting ? "Submitting..." : "Submit"}
+              {isSubmitting ? <Spinner animation="border" size="lg" /> : "Submit"}
             </Button>
           </Col>
         </Row>
       </Form>
+
+      {/* Success Modal */}
+      <Modal
+        show={showModal}
+        onHide={handleCloseModal}
+        backdrop="static"
+        keyboard={false}
+        centered
+        className="success-modal"
+      >
+        <Modal.Body className="text-center">
+          <FontAwesomeIcon icon={faCheckCircle} size="3x" color="#4CAF50" />
+          <h4 className="mt-3">Your response have been successfully submitted!</h4>
+        </Modal.Body>
+      </Modal>
     </Container>
   );
 };

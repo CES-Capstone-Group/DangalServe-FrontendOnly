@@ -38,6 +38,18 @@
   background-color: #045c2a !important;
   color: rgb(253, 253, 253) !important;
   font-weight: bold;
+  font-size: 20px !important;
+  padding: 8px;
+  text-align: center; /* Center text */
+  vertical-align: middle; /* Align text vertically in the middle */
+  white-space: nowrap; /* Prevent text wrapping */
+}
+
+#evaltable th {
+  background-color: #76ac77 !important;
+  color: rgb(253, 253, 253) !important;
+  font-weight: bold;
+  font-size: 20px !important;
   padding: 8px;
   text-align: center; /* Center text */
   vertical-align: middle; /* Align text vertically in the middle */
@@ -48,7 +60,7 @@
 .tableStyle td {
   text-align: center; /* Center the text */
   vertical-align: middle; /* Align text in the middle vertically */
-  font-size: 14px !important; /* Smaller font size for a sleeker look */
+  font-size: 18px !important; /* Smaller font size for a sleeker look */
   line-height: 1 !important; /* Tighter line height */
 }
 
